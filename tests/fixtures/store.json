@@ -1,0 +1,39 @@
+{
+  "_source": "Read-only Admin API snapshot taken 2026-10-26 (menus, product titles, prices, stock). Test data only.",
+  "menus": {
+    "main-menu": [
+      { "title": "Home", "url": "/" },
+      { "title": "White Friday Sale", "url": "/collections/white-friday-sale" },
+      {
+        "title": "All Categories ",
+        "url": "/collections",
+        "links": [
+          { "title": "Skirts", "url": "/collections/skirts" },
+          { "title": "Shirts & Blouses", "url": "/collections/shirts-blouses" },
+          { "title": "Dresses", "url": "/collections/dresses" },
+          { "title": "Basics", "url": "/collections/basics" },
+          { "title": "Pants", "url": "/collections/pants" },
+          { "title": "Coats & jackets", "url": "/collections/coats-jackets" },
+          { "title": "Abayas & Cardigans", "url": "/collections/cardigans" }
+        ]
+      },
+      { "title": "Complete Looks ", "url": "/collections/complete-looks" },
+      { "title": "back to university", "url": "/collections/back-to-university" },
+      { "title": "Home Wear", "url": "/collections/home-wear" },
+      { "title": "Last Pieces", "url": "/collections/last-pieces" },
+      { "title": "Navy & Blue", "url": "/collections/navy-and-blue" }
+    ]
+  },
+  "products": [
+    { "title": "Olive Chiffon Skirt | جيبة شيفون زيتونية", "handle": "olive-chiffon-maxi-skirt", "inventory": 3, "image": [810, 1080], "price": 24900, "price_max": 29900, "compare_at": 49900 },
+    { "title": "Beige Chiffon Skirt | جيبة شيفون بيج", "handle": "beige-chiffon-maxi-skirt", "inventory": 13, "image": [750, 1000], "price": 34900, "price_max": 39900, "compare_at": 49900 },
+    { "title": "Liner Skirt | جيبة بطانة", "handle": "lined-betana-maxi-skirt", "inventory": 58, "image": [750, 1000], "price": 24900, "price_max": 29900, "compare_at": 34900 },
+    { "title": "Basic Liner Skirt with Lace | جيبة بطانة بحافة دانتيل", "handle": "lined-joubert-maxi-skirt", "inventory": 1, "image": [1086, 1448], "price": 19900, "price_max": 19900, "compare_at": 34900 },
+    { "title": "Black Pocket Skirt | جيبة سوداء بجيوب", "handle": "black-pocket-maxi-skirt", "inventory": 44, "image": [750, 1000], "price": 49900, "price_max": 54900, "compare_at": 54900 },
+    { "title": "Wine Pocket Skirt | جيبة نبيتي بجيوب", "handle": "wine-pocket-maxi-skirt", "inventory": 12, "image": [810, 1080], "price": 39900, "price_max": 39900, "compare_at": 54900 },
+    { "title": "Three-Strand Blouse | بلوزة تلات خيوط", "handle": "three-strand-blouse", "inventory": 0, "image": [810, 1080], "price": 9900, "price_max": 14900, "compare_at": 19900 },
+    { "title": "Mint Green Felt Jacket | جاكيت فيلت منت جرين", "handle": "mint-green-gogh-jacket", "inventory": 0, "image": [750, 1000], "price": 34900, "price_max": 34900, "compare_at": 54900 },
+    { "title": "Wool Shawl Extra-Long | شال شتوي طويل", "handle": "wool-shawl-1", "inventory": 0, "image": [1024, 1536], "price": 9900, "price_max": 9900, "compare_at": 16100 }
+  ],
+  "logo": { "filename": "Full_Lookup_Clean_-_Gold.png", "width": 1281, "height": 428 }
+}

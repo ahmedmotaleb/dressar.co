@@ -16,6 +16,12 @@
   <link rel="stylesheet" href="{{ 'component-mega-menu.css' | asset_url }}" media="print" onload="this.media='all'">
 {%- endif -%}
 
+{%- comment -%}
+  Dressar header layer (docs/stages/stage-3.md). Render-blocking on purpose: it
+  sets the header's grid, so loading it late would shift the layout.
+{%- endcomment -%}
+{{ 'dsr-header.css' | asset_url | stylesheet_tag }}
+
 <style>
   header-drawer {
     justify-self: start;
@@ -122,6 +128,25 @@
       padding-bottom: {{ section.settings.padding_bottom }}px;
     }
   }
+
+  .section-header {
+    --dsr-logo-width-mobile: {{ section.settings.mobile_logo_width }}px;
+  }
+
+  {%- comment -%}
+    Dressar: the body font at weight 500 for navigation text, under its own
+    family name so nothing else on the site starts using the extra weight.
+  {%- endcomment -%}
+  {%- assign dsr_ui_font = settings.type_body_font | font_modify: 'weight', '500' -%}
+  {%- if dsr_ui_font and dsr_ui_font.system? == false -%}
+    @font-face {
+      font-family: 'Dressar UI';
+      src: url('{{ dsr_ui_font | font_url }}') format('woff2');
+      font-weight: 500;
+      font-style: normal;
+      font-display: swap;
+    }
+  {%- endif -%}
 {%- endstyle -%}
 
 <script src="{{ 'cart-notification.js' | asset_url }}" defer="defer"></script>
@@ -140,13 +165,19 @@
   if section.settings.sticky_header_type != 'none'
     assign header_tag = 'sticky-header'
   endif
+
+  # Dressar: over the homepage hero on desktop, solid once scrolled (dsr-header.css).
+  assign dsr_transparent = false
+  if section.settings.transparent_on_homepage and request.page_type == 'index'
+    assign dsr_transparent = true
+  endif
 %}
 
 <{{ header_tag }}
   {% if header_tag == 'sticky-header' %}
     data-sticky-type="{{ section.settings.sticky_header_type }}"
   {% endif %}
-  class="header-wrapper color-{{ section.settings.color_scheme }} gradient{% if section.settings.show_line_separator %} header-wrapper--border-bottom{% endif %}"
+  class="header-wrapper color-{{ section.settings.color_scheme }} gradient{% if section.settings.show_line_separator %} header-wrapper--border-bottom{% endif %}{% if dsr_transparent %} header-wrapper--transparent{% endif %}"
 >
   {%- liquid
     assign social_links = false
@@ -164,7 +195,7 @@
       assign language_selector = true
     endif
   -%}
-  <header class="header header--{{ section.settings.logo_position }} header--mobile-{{ section.settings.mobile_logo_position }} page-width{% if section.settings.menu_type_desktop == 'drawer' %} drawer-menu{% endif %}{% if section.settings.menu != blank %} header--has-menu{% endif %}{% if has_app_block %} header--has-app{% endif %}{% if social_links %} header--has-social{% endif %}{% if shop.customer_accounts_enabled %} header--has-account{% endif %}{% if country_selector or language_selector %} header--has-localizations{% endif %}">
+  <header class="header dsr-header header--{{ section.settings.logo_position }} header--mobile-{{ section.settings.mobile_logo_position }} page-width{% if section.settings.menu_type_desktop == 'drawer' %} drawer-menu{% endif %}{% if section.settings.menu != blank %} header--has-menu{% endif %}{% if has_app_block %} header--has-app{% endif %}{% if social_links %} header--has-social{% endif %}{% if shop.customer_accounts_enabled %} header--has-account{% endif %}{% if country_selector or language_selector %} header--has-localizations{% endif %}">
     {%- liquid
       assign render_search_left = false
       if section.settings.logo_position == 'top-center' or section.settings.menu == blank or shop.customer_accounts_enabled
@@ -336,14 +367,23 @@
     connectedCallback() {
       this.header = document.querySelector('.section-header');
       this.mobileMediaQuery = window.matchMedia('(max-width: 990px)');
+      this.isCompact = this.getAttribute('data-sticky-type') === 'compact';
+      // Same breakpoint as the desktop header CSS (min-width: 990px); Dawn's
+      // mobile query above also matches at exactly 990px.
+      this.desktopMediaQuery = window.matchMedia('(min-width: 990px)');
       this.headerIsAlwaysSticky =
         this.getAttribute('data-sticky-type') === 'always' ||
-        this.getAttribute('data-sticky-type') === 'reduce-logo-size';
+        this.getAttribute('data-sticky-type') === 'reduce-logo-size' ||
+        this.isCompact;
       this.headerBounds = {};
 
       this.setHeaderHeight();
 
       this.mobileMediaQuery.addEventListener('change', this.setHeaderHeight);
+      if (this.isCompact) {
+        this.desktopMediaQuery.addEventListener('change', this.setHeaderHeight);
+        window.addEventListener('load', this.setHeaderHeight, { once: true });
+      }
 
       if (this.headerIsAlwaysSticky) {
         this.header.classList.add('shopify-section-header-sticky');
@@ -364,10 +404,23 @@
 
     setHeaderHeight() {
       document.documentElement.style.setProperty('--header-height', `${this.header.offsetHeight}px`);
+      if (this.isCompact) this.setCompactOffset();
+    }
+
+    // Dressar "Always, compact": on desktop the header stays sticky but pinned at
+    // minus the logo row's height, so the logo row scrolls away and the
+    // navigation row (search, menu, account, cart) stays. Nothing changes size,
+    // so there is no layout shift. The mobile header is one row: offset 0.
+    setCompactOffset() {
+      const logoRow = this.querySelector('.header__heading, .header > .header__heading-link');
+      const offset = this.desktopMediaQuery.matches && logoRow ? logoRow.offsetTop + logoRow.offsetHeight : 0;
+      this.header.style.setProperty('--dsr-sticky-top', `${-offset}px`);
+      this.header.style.setProperty('--dsr-nav-row-top', `${offset}px`);
     }
 
     disconnectedCallback() {
       this.mobileMediaQuery.removeEventListener('change', this.setHeaderHeight);
+      this.desktopMediaQuery.removeEventListener('change', this.setHeaderHeight);
       this.removeEventListener('preventHeaderReveal', this.hideHeaderOnScrollUp);
       window.removeEventListener('scroll', this.onScrollHandler);
     }
@@ -590,10 +643,31 @@
         {
           "value": "reduce-logo-size",
           "label": "t:sections.header.settings.sticky_header_type.options__4.label"
+        },
+        {
+          "value": "compact",
+          "label": "Always, compact (logo row scrolls away)"
         }
       ],
       "default": "on-scroll-up",
       "label": "t:sections.header.settings.sticky_header_type.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "transparent_on_homepage",
+      "default": false,
+      "label": "Transparent over homepage hero",
+      "info": "Desktop only. The header turns solid once the page is scrolled or a menu opens."
+    },
+    {
+      "type": "range",
+      "id": "mobile_logo_width",
+      "min": 60,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "label": "Mobile logo width",
+      "default": 100
     },
     {
       "type": "checkbox",

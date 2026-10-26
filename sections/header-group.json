@@ -70,25 +70,27 @@
     },
     "header": {
       "type": "header",
-      "disabled": true,
       "settings": {
         "logo_position": "top-center",
         "mobile_logo_position": "center",
         "menu": "main-menu",
         "menu_type_desktop": "dropdown",
-        "sticky_header_type": "on-scroll-up",
-        "show_line_separator": false,
+        "sticky_header_type": "compact",
+        "transparent_on_homepage": true,
+        "mobile_logo_width": 100,
+        "show_line_separator": true,
         "color_scheme": "scheme-3",
-        "menu_color_scheme": "scheme-3",
-        "enable_country_selector": true,
-        "enable_language_selector": true,
+        "menu_color_scheme": "scheme-1",
+        "enable_country_selector": false,
+        "enable_language_selector": false,
         "margin_bottom": 0,
-        "padding_top": 20,
-        "padding_bottom": 20
+        "padding_top": 16,
+        "padding_bottom": 4
       }
     },
     "178387093978949043": {
       "type": "_blocks",
+      "disabled": true,
       "blocks": {
         "ai_gen_block_0c61721_Ea3dHf": {
           "type": "ai_gen_block_0c61721",

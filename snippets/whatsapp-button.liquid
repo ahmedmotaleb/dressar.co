@@ -98,5 +98,8 @@
     .dsr-wa::after{ display: none; animation: none; }
   }
   @media print{ .dsr-wa{ display: none; } }
+
+  /* Out of the way while the menu, search or a drawer has locked the page. */
+  body:is(.overflow-hidden, .overflow-hidden-tablet, .overflow-hidden-mobile) .dsr-wa{ visibility: hidden; }
 {%- endstyle -%}
 

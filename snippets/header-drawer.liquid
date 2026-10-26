@@ -60,6 +60,13 @@
                             {{ link.title | escape }}
                           </button>
                           <ul class="menu-drawer__menu list-menu" role="list" tabindex="-1">
+                            {%- assign dsr_view_all_id = 'HeaderDrawer-view-all-' | append: forloop.index -%}
+                            {%- render 'dsr-menu-view-all',
+                              link: link,
+                              id: dsr_view_all_id,
+                              class: 'menu-drawer__menu-item link link--text list-menu__item focus-inset',
+                              active_class: 'menu-drawer__menu-item--active'
+                            -%}
                             {%- for childlink in link.links -%}
                               <li>
                                 {%- if childlink.links == blank -%}
@@ -105,6 +112,17 @@
                                         role="list"
                                         tabindex="-1"
                                       >
+                                        {%- assign dsr_view_all_id = 'HeaderDrawer-view-all-'
+                                          | append: link.handle
+                                          | append: '-'
+                                          | append: childlink.handle
+                                        -%}
+                                        {%- render 'dsr-menu-view-all',
+                                          link: childlink,
+                                          id: dsr_view_all_id,
+                                          class: 'menu-drawer__menu-item link link--text list-menu__item focus-inset',
+                                          active_class: 'menu-drawer__menu-item--active'
+                                        -%}
                                         {%- for grandchildlink in childlink.links -%}
                                           <li>
                                             <a

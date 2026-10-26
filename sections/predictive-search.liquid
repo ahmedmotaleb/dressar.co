@@ -162,6 +162,11 @@
                         {%- if settings.predictive_search_show_price -%}
                           {% render 'price', product: product, use_variant: true, show_badges: false %}
                         {%- endif -%}
+                        {%- unless product.available -%}
+                          <span class="predictive-search__item-sold-out caption-with-letter-spacing">
+                            {{- 'products.product.sold_out' | t -}}
+                          </span>
+                        {%- endunless -%}
                       </div>
                     </a>
                   </product-component>
@@ -222,6 +227,13 @@
     {%- endif -%}
 
     {%- render 'loading-spinner', class: 'predictive-search__loading-state' -%}
+
+    {%- comment -%} Dressar: say so visibly, not only to screen readers. {%- endcomment -%}
+    {%- if first_column_results_size == 0 and predictive_search.resources.products.size == 0 -%}
+      <p class="predictive-search__no-results">
+        {{- 'templates.search.no_results' | t: terms: predictive_search.terms -}}
+      </p>
+    {%- endif -%}
 
     <div id="predictive-search-option-search-keywords" class="predictive-search__search-for-button">
       <button

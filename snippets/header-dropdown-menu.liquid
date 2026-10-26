@@ -33,6 +33,13 @@
                 role="list"
                 tabindex="-1"
               >
+                {%- assign dsr_view_all_id = 'HeaderMenu-view-all-' | append: forloop.index -%}
+                {%- render 'dsr-menu-view-all',
+                  link: link,
+                  id: dsr_view_all_id,
+                  class: 'header__menu-item list-menu__item link link--text focus-inset caption-large',
+                  active_class: 'list-menu__item--active'
+                -%}
                 {%- for childlink in link.links -%}
                   <li>
                     {%- if childlink.links == blank -%}
@@ -59,6 +66,17 @@
                           id="HeaderMenu-SubMenuList-{{ link.handle }}-{{ childlink.handle }}-"
                           class="header__submenu list-menu motion-reduce"
                         >
+                          {%- assign dsr_view_all_id = 'HeaderMenu-view-all-'
+                            | append: link.handle
+                            | append: '-'
+                            | append: childlink.handle
+                          -%}
+                          {%- render 'dsr-menu-view-all',
+                            link: childlink,
+                            id: dsr_view_all_id,
+                            class: 'header__menu-item list-menu__item link link--text focus-inset caption-large',
+                            active_class: 'list-menu__item--active'
+                          -%}
                           {%- for grandchildlink in childlink.links -%}
                             <li>
                               <a

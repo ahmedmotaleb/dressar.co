@@ -8,8 +8,9 @@
     inventory line;
   - a sticky "add to cart" bar for phones and tablets (below 990px), where
     96% of sessions happen. It is the only sticky bar in the theme; it hides
-    itself whenever a drawer or modal has locked the page (Dawn adds
-    body.overflow-hidden), so it never sits on top of a dialog.
+    itself whenever a drawer, the menu or a modal has locked the page (Dawn
+    adds body.overflow-hidden / -tablet / -mobile), so it never sits on top
+    of a dialog.
 
   The sticky bar never adds to cart on its own. It presses the main product
   form's own button, so the chosen variant, the cart drawer, the free-shipping
@@ -122,7 +123,7 @@
       visibility: visible;
       transition: transform 0.25s ease, visibility 0s;
     }
-    body.overflow-hidden .dsr-sticky-atc.is-visible {
+    body:is(.overflow-hidden, .overflow-hidden-tablet, .overflow-hidden-mobile) .dsr-sticky-atc.is-visible {
       transform: translateY(110%);
       visibility: hidden;
       transition: transform 0.25s ease, visibility 0s linear 0.25s;

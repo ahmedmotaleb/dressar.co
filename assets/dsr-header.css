@@ -1,0 +1,264 @@
+/* ==========================================================================
+   Dressar header (Stage 3, docs/stages/stage-3.md)
+
+   A styling layer on Dawn's own header section. Dawn provides the structure and
+   behaviour (dropdowns, mobile drawer, predictive search, cart bubble, sticky
+   header); nothing here replaces its markup or JavaScript.
+
+   Desktop (990px+), "Logo position: Top center":
+     row 1   logo, centred
+     row 2   search · menu (centred) · account / cart
+   With "Sticky header: Always, compact", row 1 scrolls away and row 2 stays
+   pinned (see StickyHeader.setCompactOffset in sections/header.liquid).
+
+   Mobile and tablet: one row  menu · search · logo · account · cart.
+
+   Uppercase and letter-spacing are switched off for Arabic: any
+   letter-spacing breaks Arabic letter joining.
+   ========================================================================== */
+
+/* ---------- Typography ---------- */
+
+.dsr-header .header__inline-menu,
+.dsr-header .header__submenu,
+.dsr-header .menu-drawer {
+  font-family: 'Dressar UI', var(--font-body-family);
+}
+
+/* Sized so the current 8-item menu fits on one line from about 1220px; narrower
+   desktops wrap it onto a second centred line. */
+.dsr-header .header__inline-menu .header__menu-item {
+  font-size: 1.15rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.4;
+  padding-block: 1.4rem;
+  padding-inline: 0.8rem;
+  color: rgba(var(--color-foreground), 0.82);
+}
+
+.dsr-header .header__inline-menu summary.header__menu-item {
+  padding-inline-end: 2.3rem;
+}
+
+.dsr-header .header__inline-menu .header__menu-item:hover,
+.dsr-header .header__inline-menu details[open] > .header__menu-item {
+  color: rgb(var(--color-foreground));
+}
+
+.dsr-header .header__menu-item span,
+.dsr-header .header__active-menu-item {
+  text-underline-offset: 0.6rem;
+}
+
+.dsr-header .header__menu-item .icon-caret {
+  width: 0.9rem;
+  right: 0.8rem;
+}
+
+/* ---------- Desktop layout ---------- */
+
+@media screen and (min-width: 990px) {
+  .dsr-header.header--top-center {
+    grid-template-areas:
+      'heading heading heading'
+      'left-icons navigation icons';
+    grid-template-columns: 1fr auto 1fr;
+    row-gap: 0.4rem;
+  }
+
+  .dsr-header.header--top-center .header__inline-menu {
+    margin-top: 0;
+  }
+
+  /* Search sits at the start of the navigation row, account and cart at its end. */
+  .dsr-header.header--top-center > .header__search {
+    display: inline-flex;
+    grid-area: left-icons;
+    justify-self: start;
+    margin-inline-start: -1.2rem;
+  }
+
+  .dsr-header.header--top-center .header__icons > .header__search {
+    display: none;
+  }
+
+  .dsr-header .header__heading-link {
+    padding: 0.4rem;
+  }
+}
+
+/* ---------- Dropdown ---------- */
+
+.dsr-header .header__submenu.list-menu--disclosure {
+  width: max-content;
+  min-width: 22rem;
+  max-width: min(32rem, calc(100vw - 4rem));
+  max-height: calc(100vh - 16rem);
+  overflow-y: auto;
+  padding-block: 1.2rem;
+  border: 0.1rem solid rgba(var(--color-foreground), 0.08);
+  box-shadow: 0 1.6rem 3.2rem rgba(var(--color-shadow), 0.08);
+}
+
+/* Keep the last items' dropdowns inside the viewport. */
+.dsr-header .header__inline-menu > .list-menu > li:nth-last-child(-n + 2) .header__submenu.list-menu--disclosure {
+  left: auto;
+  right: 0;
+}
+
+.dsr-header .header__submenu .header__menu-item {
+  font-size: 1.35rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  line-height: 1.4;
+  padding: 0.9rem 2.4rem;
+  color: rgba(var(--color-foreground), 0.8);
+}
+
+.dsr-header .header__submenu .header__menu-item:hover {
+  color: rgb(var(--color-foreground));
+}
+
+/* ---------- "View all" item (snippets/dsr-menu-view-all.liquid) ---------- */
+
+.dsr-header .header__submenu .dsr-menu-view-all > .header__menu-item {
+  font-size: 1.1rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgb(var(--color-foreground));
+}
+
+.dsr-header .header__submenu .dsr-menu-view-all {
+  margin-bottom: 0.6rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 0.1rem solid rgba(var(--color-foreground), 0.08);
+}
+
+/* ---------- Mobile drawer ---------- */
+
+.dsr-header .menu-drawer__menu-item {
+  font-size: 1.4rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1.4;
+  padding-block: 1.4rem;
+}
+
+.dsr-header .menu-drawer__submenu .menu-drawer__menu-item {
+  font-size: 1.5rem;
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+.dsr-header .menu-drawer__submenu .dsr-menu-view-all > .menu-drawer__menu-item {
+  font-size: 1.2rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.dsr-header .menu-drawer__close-button {
+  font-family: 'Dressar UI', var(--font-body-family);
+  font-size: 1.2rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.dsr-header .menu-drawer__navigation > .menu-drawer__menu > li + li {
+  border-top: 0.1rem solid rgba(var(--color-foreground), 0.06);
+}
+
+/* ---------- Mobile header row ---------- */
+
+@media screen and (max-width: 989px) {
+  .dsr-header.header {
+    padding-inline: 1.5rem;
+  }
+
+  .dsr-header .header__heading-logo-wrapper {
+    width: var(--dsr-logo-width-mobile, 100px);
+  }
+
+  .dsr-header .header__heading-link {
+    padding: 0.4rem;
+  }
+}
+
+/* ---------- Sticky: "Always, compact" ---------- */
+
+.section-header.shopify-section-header-sticky {
+  top: var(--dsr-sticky-top, 0px);
+}
+
+@media screen and (min-width: 990px) {
+  /* The search overlay covers the navigation row only, so it stays on screen
+     when the logo row has scrolled away. */
+  sticky-header[data-sticky-type='compact'] .search-modal {
+    top: var(--dsr-nav-row-top, 0px);
+  }
+}
+
+/* ---------- Transparent over the homepage hero (desktop) ---------- */
+
+@media screen and (min-width: 990px) {
+  /* Out of the flow, so the hero starts under it with nothing to measure. */
+  .header-wrapper--transparent {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+  }
+
+  .section-header:not(.scrolled-past-header) > .header-wrapper--transparent:not(:has(details[open])) {
+    background: transparent;
+    border-bottom-color: transparent;
+  }
+}
+
+/* ---------- Predictive search ---------- */
+
+@media screen and (max-width: 749px) {
+  /* Products first on phones (Dawn lists suggestions first). */
+  .predictive-search__results-groups-wrapper > .predictive-search__result-group:last-child {
+    order: -1;
+  }
+}
+
+.predictive-search__item-heading {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+
+.predictive-search__item-sold-out {
+  display: block;
+  margin-top: 0.4rem;
+  color: rgba(var(--color-foreground), 0.6);
+}
+
+.predictive-search__no-results {
+  margin: 0;
+  padding: 1.6rem 2rem 0;
+  color: rgba(var(--color-foreground), 0.75);
+}
+
+/* ---------- Arabic ---------- */
+
+:lang(ar) .dsr-header .header__menu-item,
+:lang(ar) .dsr-header .menu-drawer__menu-item,
+:lang(ar) .dsr-header .menu-drawer__close-button,
+:lang(ar) .dsr-header .dsr-menu-view-all > a {
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+:lang(ar) .dsr-header .header__inline-menu .header__menu-item,
+:lang(ar) .dsr-header .menu-drawer__menu-item {
+  font-size: 1.5rem;
+}
