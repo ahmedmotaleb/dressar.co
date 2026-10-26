@@ -4,8 +4,15 @@
 |---|---|
 | Live theme (never written) | `#167717929191` "Updated copy of DRESSAR — Sales Optimized (DRAFT for review)" |
 | Dev theme | `#167837270247` "DRESSAR DEV (Claude) — from live 2026-10-26", unpublished, duplicated from live on 2026-10-26 |
-| Last synced commit | `33ecaf7` (Stage 2 + Arabic locale groundwork) |
-| Sync check | All code files byte-identical to the repo. All non-locale JSON semantically identical. |
+| Last synced commit | `8ef021d` (Stage 3: header, navigation, predictive search) |
+| Sync check | The 9 Stage 3 files are byte-identical to the commit (MD5). Before the upload, the dev theme's copies still matched the previous sync, so no theme-editor change was overwritten. Live theme `updatedAt` unchanged (2026-10-26 18:16 UTC). |
+
+Sync history:
+
+| Commit | Files | Date |
+|---|---|---|
+| `33ecaf7` | Stage 2 + locale files (full-theme parity check) | 2026-10-26 |
+| `8ef021d` | `assets/dsr-header.css`, `snippets/dsr-menu-view-all.liquid`, `sections/header.liquid`, `sections/header-group.json`, `snippets/header-dropdown-menu.liquid`, `snippets/header-drawer.liquid`, `sections/predictive-search.liquid`, `sections/dsr-product-boost.liquid`, `snippets/whatsapp-button.liquid` | 2026-10-26 |
 
 ## How changes reach the dev theme today
 
