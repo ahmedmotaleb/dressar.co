@@ -4,15 +4,16 @@
 |---|---|
 | Live theme (never written) | `#167717929191` "Updated copy of DRESSAR — Sales Optimized (DRAFT for review)" |
 | Dev theme | `#167837270247` "DRESSAR DEV (Claude) — from live 2026-10-26", unpublished, duplicated from live on 2026-10-26 |
-| Last synced commit | `8ef021d` (Stage 3: header, navigation, predictive search) |
-| Sync check | The 9 Stage 3 files are byte-identical to the commit (MD5). Before the upload, the dev theme's copies still matched the previous sync, so no theme-editor change was overwritten. Live theme `updatedAt` unchanged (2026-10-26 18:16 UTC). |
+| Last synced commit | `049423e` (Stage 4: collection page and product cards) |
+| Sync check | The 53 Stage 4 files are byte-identical to the commit (MD5), except `config/settings_data.json`, which Shopify re-serialises; its changed values (sale badge colour scheme, badge radius) were checked in the dev theme's copy. The dev theme had not been edited since the previous sync. Live theme `updatedAt` unchanged (2026-10-26 18:16 UTC). |
 
 Sync history:
 
 | Commit | Files | Date |
 |---|---|---|
 | `33ecaf7` | Stage 2 + locale files (full-theme parity check) | 2026-10-26 |
-| `8ef021d` | `assets/dsr-header.css`, `snippets/dsr-menu-view-all.liquid`, `sections/header.liquid`, `sections/header-group.json`, `snippets/header-dropdown-menu.liquid`, `snippets/header-drawer.liquid`, `sections/predictive-search.liquid`, `sections/dsr-product-boost.liquid`, `snippets/whatsapp-button.liquid` | 2026-10-26 |
+| `8ef021d` | Stage 3: `assets/dsr-header.css`, `snippets/dsr-menu-view-all.liquid`, `sections/header.liquid`, `sections/header-group.json`, `snippets/header-dropdown-menu.liquid`, `snippets/header-drawer.liquid`, `sections/predictive-search.liquid`, `sections/dsr-product-boost.liquid`, `snippets/whatsapp-button.liquid` | 2026-10-26 |
+| `049423e` | Stage 4: 21 theme files (cards, collection, swatch CSS, settings, templates) and 32 locale files | 2026-10-26 |
 
 ## How changes reach the dev theme today
 
