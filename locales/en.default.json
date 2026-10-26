@@ -37,7 +37,7 @@
         "tiktok": "TikTok"
       }
     },
-    "continue_shopping": "كمّلي تسوق",
+    "continue_shopping": "Continue shopping",
     "pagination": {
       "label": "Pagination",
       "page": "Page {{ number }}",
@@ -49,9 +49,9 @@
       "reset": "Clear search term"
     },
     "cart": {
-      "view": "اعرضي السلة ({{ count }})",
-      "view_empty_cart": "اعرضي السلة",
-      "item_added": "اتضافت للسلة ✓"
+      "view": "View cart ({{ count }})",
+      "view_empty_cart": "View cart",
+      "item_added": "Item added to your cart"
     },
     "share": {
       "close": "Close share",
@@ -115,18 +115,18 @@
   },
   "products": {
     "product": {
-      "add_to_cart": "أضيفي للسلة",
-      "choose_options": "اختاري المقاس",
+      "add_to_cart": "Add to cart",
+      "choose_options": "Choose options",
       "choose_product_options": "Choose options for {{ product_name }}",
       "description": "Description",
-      "inventory_in_stock": "متوفر",
-      "inventory_in_stock_show_count": "متوفر",
-      "inventory_low_stock": "الكمية قربت تخلص",
-      "inventory_low_stock_show_count": "الكمية قربت تخلص — باقي {{ quantity }} بس",
-      "inventory_out_of_stock": "المقاس ده خلص",
-      "inventory_out_of_stock_continue_selling": "متوفر",
+      "inventory_in_stock": "In stock",
+      "inventory_in_stock_show_count": "{{ quantity }} in stock",
+      "inventory_low_stock": "Low stock",
+      "inventory_low_stock_show_count": "Low stock: {{ quantity }} left",
+      "inventory_out_of_stock": "Out of stock",
+      "inventory_out_of_stock_continue_selling": "In stock",
       "sku": "SKU",
-      "on_sale": "خصم",
+      "on_sale": "Sale",
       "product_variants": "Product variants",
       "media": {
         "gallery_viewer": "Gallery Viewer",
@@ -140,7 +140,7 @@
       },
       "nested_label": "{{ title }} for {{ parent_title }}",
       "quantity": {
-        "label": "الكمية",
+        "label": "Quantity",
         "input_label": "Quantity for {{ product }}",
         "increase": "Increase quantity for {{ product }}",
         "decrease": "Decrease quantity for {{ product }}",
@@ -170,17 +170,17 @@
         "refresh": "Refresh"
       },
       "price": {
-        "from_price_html": "من {{ price }}",
+        "from_price_html": "From {{ price }}",
         "regular_price": "Regular price",
         "sale_price": "Sale price",
         "unit_price": "Unit price"
       },
       "share": "Share this product",
-      "sold_out": "نفذت الكمية",
-      "unavailable": "غير متاح",
+      "sold_out": "Sold out",
+      "unavailable": "Unavailable",
       "vendor": "Vendor",
       "value_unavailable": "{{ option_value }} - Unavailable",
-      "variant_sold_out_or_unavailable": "المقاس ده خلص",
+      "variant_sold_out_or_unavailable": "Variant sold out or unavailable",
       "video_exit_message": "{{ title }} opens full screen video in same window.",
       "view_full_details": "View full details",
       "xr_button": "View in your space",
@@ -188,20 +188,20 @@
       "taxes_included": "Taxes included.",
       "duties_included": "Duties included.",
       "duties_and_taxes_included": "Duties and taxes included.",
-      "shipping_policy_html": "🚚 شحن مجاني للطلبات من 1500 جنيه — <a href=\"{{ link }}\">تفاصيل الشحن</a>"
+      "shipping_policy_html": "<a href=\"{{ link }}\">Shipping</a> calculated at checkout."
     },
     "modal": {
       "label": "Media gallery"
     },
     "facets": {
       "filter_and_operator_subtitle": "Match all",
-      "apply": "تطبيق",
-      "clear": "مسح",
-      "clear_all": "مسح الكل",
+      "apply": "Apply",
+      "clear": "Clear",
+      "clear_all": "Remove all",
       "from": "From",
-      "filter_and_sort": "فلترة وترتيب",
+      "filter_and_sort": "Filter and sort",
       "filter_by_label": "Filter:",
-      "filter_button": "فلترة",
+      "filter_button": "Filter",
       "filters_selected": {
         "one": "{{ count }} selected",
         "other": "{{ count }} selected"
@@ -219,8 +219,8 @@
         "other": "{{ count }} products"
       },
       "reset": "Reset",
-      "sort_button": "ترتيب",
-      "sort_by_label": "ترتيب حسب:",
+      "sort_button": "Sort",
+      "sort_by_label": "Sort by:",
       "to": "To",
       "clear_filter": "Remove filter"
     }
@@ -256,7 +256,7 @@
       "pages": "Pages"
     },
     "cart": {
-      "cart": "السلة"
+      "cart": "Cart"
     },
     "contact": {
       "form": {
@@ -292,31 +292,31 @@
       }
     },
     "cart": {
-      "title": "سلة التسوق",
+      "title": "Your cart",
       "caption": "Cart items",
       "remove_title": "Remove {{ title }}",
-      "estimated_total": "الإجمالي",
-      "new_estimated_total": "الإجمالي الجديد",
-      "note": "ملاحظات على الطلب",
-      "checkout": "إتمام الطلب",
-      "empty": "سلتك فاضية",
+      "estimated_total": "Estimated total",
+      "new_estimated_total": "New estimated total",
+      "note": "Order special instructions",
+      "checkout": "Check out",
+      "empty": "Your cart is empty",
       "product_disclosure": "Product disclosure",
       "product_disclosures": "Product disclosures",
       "cart_error": "There was an error while updating your cart. Please try again.",
       "cart_quantity_error_html": "You can only add {{ quantity }} of this item to your cart.",
       "duties_and_taxes_included_shipping_at_checkout_with_policy_html": "Duties and taxes included. Discounts and <a href=\"{{ link }}\">shipping</a> calculated at checkout.",
       "duties_and_taxes_included_shipping_at_checkout_without_policy": "Duties and taxes included. Discounts and shipping calculated at checkout.",
-      "taxes_included_shipping_at_checkout_with_policy_html": "💵 الدفع عند الاستلام • 👀 معاينة قبل ما تدفعي • الخصومات و<a href=\"{{ link }}\">الشحن</a> بتتحسب في صفحة الدفع",
-      "taxes_included_shipping_at_checkout_without_policy": "💵 الدفع عند الاستلام • 👀 معاينة قبل ما تدفعي • الخصومات والشحن بتتحسب في صفحة الدفع",
+      "taxes_included_shipping_at_checkout_with_policy_html": "Taxes included. Discounts and <a href=\"{{ link }}\">shipping</a> calculated at checkout.",
+      "taxes_included_shipping_at_checkout_without_policy": "Taxes included. Discounts and shipping calculated at checkout.",
       "duties_included_taxes_at_checkout_shipping_at_checkout_with_policy_html": "Duties included. Taxes, discounts and <a href=\"{{ link }}\">shipping</a> calculated at checkout.",
       "duties_included_taxes_at_checkout_shipping_at_checkout_without_policy": "Duties included. Taxes, discounts and shipping calculated at checkout.",
-      "taxes_at_checkout_shipping_at_checkout_with_policy_html": "💵 الدفع عند الاستلام • 👀 معاينة قبل ما تدفعي • الخصومات و<a href=\"{{ link }}\">الشحن</a> بتتحسب في صفحة الدفع",
-      "taxes_at_checkout_shipping_at_checkout_without_policy": "💵 الدفع عند الاستلام • 👀 معاينة قبل ما تدفعي • الخصومات والشحن بتتحسب في صفحة الدفع",
+      "taxes_at_checkout_shipping_at_checkout_with_policy_html": "Taxes, discounts and <a href=\"{{ link }}\">shipping</a> calculated at checkout.",
+      "taxes_at_checkout_shipping_at_checkout_without_policy": "Taxes, discounts and shipping calculated at checkout.",
       "headings": {
-        "product": "المنتج",
-        "price": "السعر",
-        "total": "الإجمالي",
-        "quantity": "الكمية",
+        "product": "Product",
+        "price": "Price",
+        "total": "Total",
+        "quantity": "Quantity",
         "image": "Product image"
       },
       "update": "Update",
@@ -539,16 +539,16 @@
   },
   "dressar": {
     "card": {
-      "sale_percent": "خصم {{ percent }}%"
+      "sale_percent": "{{ percent }}% off"
     },
     "product": {
-      "model_size": "البنت اللي في الصورة لابسة مقاس {{ size }}",
-      "pick_size": "اختاري مقاسك"
+      "model_size": "The model is wearing size {{ size }}",
+      "pick_size": "Choose your size"
     },
     "whatsapp": {
-      "label": "كلمنا على واتساب",
-      "message_product": "السلام عليكم، حابب أستفسر عن: {{ title }}",
-      "message_general": "السلام عليكم، حابب أستفسر عن منتجات {{ shop }}"
+      "label": "Chat with us on WhatsApp",
+      "message_product": "Hello, I'd like to ask about: {{ title }}",
+      "message_general": "Hello, I'd like to ask about {{ shop }} products"
     }
   }
 }

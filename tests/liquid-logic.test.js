@@ -6,7 +6,10 @@ const path = require('path');
 const { Liquid } = require('liquidjs');
 const root = process.argv[2] || path.join(__dirname, '..');
 const read = (p) => fs.readFileSync(path.join(root, p), 'utf8');
-const locale = JSON.parse(read('locales/en.default.json').replace(/^\s*\/\*[\s\S]*?\*\//, ''));
+const loadLocale = (file) => JSON.parse(read(file).replace(/^\s*\/\*[\s\S]*?\*\//, ''));
+// Arabic is the storefront's main language; English is checked separately below.
+const locales = { ar: loadLocale('locales/ar.json'), en: loadLocale('locales/en.default.json') };
+let locale = locales.ar;
 
 const engine = new Liquid({ root: [path.join(root, 'snippets')], extname: '.liquid' });
 for (const tag of ['doc', 'stylesheet', 'comment']) {
@@ -55,6 +58,13 @@ const test = async (name, tpl, ctx, assert) => {
     (o) => o.includes('>خصم<') && !o.includes('%'));
   await test('badge never reads the page-level product', tpl, { product: { compare_at_price: 999900, price: 100 }, card_product: { compare_at_price: 49900, price: 39900, id: 1 }, settings: { sale_badge_color_scheme: 'scheme-4' }, section_id: 's' },
     (o) => o.includes('خصم 20%'));
+
+  locale = locales.en;
+  await test('English storefront: badge reads "52% off"', tpl, { card_product: { compare_at_price: 114900, price: 54900, id: 1 }, settings: { sale_badge_color_scheme: 'scheme-4' }, section_id: 's' },
+    (o) => o.includes('>52% off<'));
+  await test('English storefront: model size sentence', "{% render 'dsr-model-size', product: p %}", { p: { metafields: { custom: { model_size: { value: 'L' } } } } },
+    (o) => o.includes('The model is wearing size L'));
+  locale = locales.ar;
 
   let failed = 0;
   for (const c of cases) { if (!c.ok) failed++; console.log(`${c.ok ? 'PASS' : 'FAIL'}  ${c.name}${c.ok ? '' : '\n      got: ' + c.out}`); }
