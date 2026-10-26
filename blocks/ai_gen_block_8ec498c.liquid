@@ -290,13 +290,19 @@
     </div>
   {% endif %}
 
-  <div class="ai-product-grid__container-{{ ai_gen_id }}" data-product-container>
-    {% assign source_collection = collection %}
-    
-    {% if block.settings.collection != blank %}
-      {% assign source_collection = block.settings.collection %}
-    {% endif %}
+  {% assign source_collection = collection %}
 
+  {% if block.settings.collection != blank %}
+    {% assign source_collection = block.settings.collection %}
+  {% endif %}
+
+  {% comment %}
+    Dressar: without paginate, Shopify hands a loop at most 50 products, so
+    larger collections were cut off. Server-side pages of products_per_page
+    each; the client-side pager below then has a single page and hides itself.
+  {% endcomment %}
+  {% if source_collection %}{% paginate source_collection.products by block.settings.products_per_page %}
+  <div class="ai-product-grid__container-{{ ai_gen_id }}" data-product-container>
     {% if source_collection and source_collection.products.size > 0 %}
       {% for product in source_collection.products %}
         {% assign on_sale = false %}
@@ -477,6 +483,9 @@
       </div>
     {% endif %}
   </div>
+
+  {% render 'pagination', paginate: paginate, anchor: '' %}
+  {% endpaginate %}{% endif %}
 
   {% if source_collection and source_collection.products.size > 0 %}
     <div class="ai-product-grid__pagination-{{ ai_gen_id }}" data-pagination style="display: none;">

@@ -562,12 +562,21 @@
                 {{- 'products.product.sold_out' | t -}}
               </span>
             {%- elsif card_product.compare_at_price > card_product.price and card_product.available -%}
+              {%- liquid
+                # Dressar: the badge states the markdown shown on the card itself
+                # (lowest price vs. lowest compare-at price), never a guess.
+                assign sale_savings = card_product.compare_at_price | minus: card_product.price
+                assign sale_percent = sale_savings | times: 100.0 | divided_by: card_product.compare_at_price | floor
+              -%}
               <span
                 id="Badge-{{ section_id }}-{{ card_product.id }}"
-                class="badge badge--bottom-left color-{% assign discount = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price %}
-<span style="color: red;">Save {{ discount }}%</span>
+                class="badge badge--bottom-left color-{{ settings.sale_badge_color_scheme }}"
               >
-                {{- 'products.product.on_sale' | t -}}
+                {%- if sale_percent >= 1 -%}
+                  {{- 'dressar.card.sale_percent' | t: percent: sale_percent -}}
+                {%- else -%}
+                  {{- 'products.product.on_sale' | t -}}
+                {%- endif -%}
               </span>
             {%- endif -%}
           </div>

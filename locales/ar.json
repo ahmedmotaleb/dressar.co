@@ -1913,5 +1913,19 @@
     "form": {
       "email": "بريد إلكتروني"
     }
+  },
+  "dressar": {
+    "card": {
+      "sale_percent": "خصم {{ percent }}%"
+    },
+    "product": {
+      "model_size": "البنت اللي في الصورة لابسة مقاس {{ size }}",
+      "pick_size": "اختاري مقاسك"
+    },
+    "whatsapp": {
+      "label": "كلمنا على واتساب",
+      "message_product": "السلام عليكم، حابب أستفسر عن: {{ title }}",
+      "message_general": "السلام عليكم، حابب أستفسر عن منتجات {{ shop }}"
+    }
   }
 }

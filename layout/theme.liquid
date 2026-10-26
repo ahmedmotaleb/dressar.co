@@ -401,6 +401,13 @@
     {%- if settings.cart_type == 'drawer' -%}
       <script src="{{ 'cart-drawer.js' | asset_url }}" defer="defer"></script>
     {%- endif -%}
-  {% render 'whatsapp-button' %}
+
+    {%- if settings.sympl_enabled and settings.sympl_store_code != blank -%}
+      <script src="https://assets.sympl.ai/widgets/ecom-prod-dtls/widget.min.js" defer="defer"></script>
+    {%- endif -%}
+
+    {%- if settings.whatsapp_button_enabled and settings.whatsapp_number != blank -%}
+      {%- render 'whatsapp-button' -%}
+    {%- endif -%}
   </body>
 </html>

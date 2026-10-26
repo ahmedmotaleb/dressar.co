@@ -536,5 +536,19 @@
       "send_on": "YYYY-MM-DD",
       "send_on_label": "Send on (optional)"
     }
+  },
+  "dressar": {
+    "card": {
+      "sale_percent": "خصم {{ percent }}%"
+    },
+    "product": {
+      "model_size": "البنت اللي في الصورة لابسة مقاس {{ size }}",
+      "pick_size": "اختاري مقاسك"
+    },
+    "whatsapp": {
+      "label": "كلمنا على واتساب",
+      "message_product": "السلام عليكم، حابب أستفسر عن: {{ title }}",
+      "message_general": "السلام عليكم، حابب أستفسر عن منتجات {{ shop }}"
+    }
   }
 }

@@ -3,27 +3,24 @@
   زرار واتساب عائم — Dressar
   بيظهر في كل صفحات الموقع. من غير جافاسكريبت ومن غير أي أب.
 
-  الاستدعاء موجود في layout/theme.liquid قبل </body> مباشرة:
-      {% render 'whatsapp-button' %}
-
-  عايز تغيّر الرقم؟ السطر اللي تحت على طول، وبس.
+  الاستدعاء موجود في layout/theme.liquid قبل </body> مباشرة.
+  الرقم والمكان من: Theme settings > Dressar > WhatsApp
+  الكلام من ملفات اللغة: dressar.whatsapp.*
   ============================================================
 {%- endcomment -%}
 
 {%- liquid
-  assign wa_number = '201035612069'
-  assign wa_side = 'right'
-  assign wa_label = 'كلمنا على واتساب'
-  assign wa_greeting = 'السلام عليكم، حابب أستفسر عن'
-  assign wa_subject = 'منتجات Dressar'
+  assign wa_number = settings.whatsapp_number | remove: '+' | remove: ' ' | remove: '-'
+  assign wa_side = settings.whatsapp_button_position | default: 'right'
+  assign wa_label = 'dressar.whatsapp.label' | t
 -%}
 
 {%- capture wa_text -%}
 {%- if template.name == 'product' and product != blank -%}
-{{ wa_greeting }}: {{ product.title }}
+{{ 'dressar.whatsapp.message_product' | t: title: product.title }}
 {{ shop.url }}{{ product.url }}
 {%- else -%}
-{{ wa_greeting }} {{ wa_subject }}
+{{ 'dressar.whatsapp.message_general' | t: shop: shop.name }}
 {%- endif -%}
 {%- endcapture -%}
 

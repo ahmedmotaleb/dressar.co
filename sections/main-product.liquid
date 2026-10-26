@@ -115,6 +115,11 @@
                       price_class: 'price--large'
                     -%}
                   </div>
+                  {%- render 'sympl-widget',
+                    amount: product.selected_or_first_available_variant.price,
+                    sympl_product: product,
+                    id: section.id
+                  -%}
                   {%- if product.quantity_price_breaks_configured? -%}
                     <div class="volume-pricing-note" id="Volume-Note-{{ section.id }}">
                       <span>{{ 'products.product.volume_pricing.note' | t }}</span>

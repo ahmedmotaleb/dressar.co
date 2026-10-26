@@ -530,10 +530,7 @@
             <h2 class="totals__total">{{ 'sections.cart.estimated_total' | t }}</h2>
             <p class="totals__total-value">{{ cart.total_price | money_with_currency }}</p>
           </div>
-<script src="https://assets.sympl.ai/widgets/ecom-prod-dtls/widget.min.js" defer></script>
-          <div style="margin-top:2rem;">
-            <sympl-widget productprice="{{cartTotalAmount}}" storecode="STR-983" isCart="true"></sympl-widget>
-          </div>
+          {%- render 'sympl-widget', amount: cart.total_price, is_cart: true -%}
           <small class="tax-note caption-large rte">
             {%- if cart.duties_included and cart.taxes_included -%}
               {%- if shop.shipping_policy.body == blank -%}

@@ -1466,5 +1466,64 @@
         "label": "t:settings_schema.customer_accounts.settings.customer_account_menu.label"
       }
     ]
+  },
+  {
+    "name": "Dressar",
+    "settings": [
+      {
+        "type": "header",
+        "content": "WhatsApp"
+      },
+      {
+        "type": "text",
+        "id": "whatsapp_number",
+        "label": "WhatsApp number",
+        "info": "International format, digits only, e.g. 201020676173. Used by the floating WhatsApp button.",
+        "default": "201020676173"
+      },
+      {
+        "type": "checkbox",
+        "id": "whatsapp_button_enabled",
+        "label": "Show floating WhatsApp button",
+        "info": "Turn off if a WhatsApp app embed already shows its own floating button.",
+        "default": true
+      },
+      {
+        "type": "select",
+        "id": "whatsapp_button_position",
+        "label": "Button position",
+        "options": [
+          {
+            "value": "right",
+            "label": "Right"
+          },
+          {
+            "value": "left",
+            "label": "Left"
+          }
+        ],
+        "default": "right"
+      },
+      {
+        "type": "header",
+        "content": "Sympl instalments"
+      },
+      {
+        "type": "paragraph",
+        "content": "Shows the Sympl instalment widget under the product price, in the cart drawer and on the cart page. Sympl at checkout is a payment method: add it in Shopify admin under Settings > Payments."
+      },
+      {
+        "type": "checkbox",
+        "id": "sympl_enabled",
+        "label": "Show Sympl widget",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "sympl_store_code",
+        "label": "Sympl store code",
+        "default": "STR-983"
+      }
+    ]
   }
 ]

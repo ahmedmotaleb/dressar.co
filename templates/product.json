@@ -65,12 +65,6 @@
           "type": "price",
           "settings": {}
         },
-        "custom_liquid_ppFBmA": {
-          "type": "custom_liquid",
-          "settings": {
-            "custom_liquid": "<script src=\"https://assets.sympl.ai/widgets/ecom-prod-dtls/widget.min.js\" defer></script><sympl-widget productprice=\"{{productPrice}}\" storecode=\"STR-983\"></sympl-widget>"
-          }
-        },
         "sku_r8AL6g": {
           "type": "sku",
           "disabled": true,
@@ -113,11 +107,10 @@
           "type": "description",
           "settings": {}
         },
-        "text_BKGPDg": {
-          "type": "text",
+        "dsr_model_size": {
+          "type": "custom_liquid",
           "settings": {
-            "text": "البنت اللي في الصورة مقاسها لارج",
-            "text_style": "body"
+            "custom_liquid": "{%- render 'dsr-model-size', product: product -%}"
           }
         },
         "collapsible_tab_RC7gzi": {
@@ -166,7 +159,6 @@
         "title",
         "judge_me_reviews_preview_badge_amPJgp",
         "price",
-        "custom_liquid_ppFBmA",
         "sku_r8AL6g",
         "rating_izydnW",
         "variant_picker",
@@ -176,7 +168,7 @@
         "dsr_trust",
         "cod_note",
         "description",
-        "text_BKGPDg",
+        "dsr_model_size",
         "collapsible_tab_RC7gzi",
         "collapsible_tab_CYGWxM",
         "collapsible_tab_qDAwhz",
