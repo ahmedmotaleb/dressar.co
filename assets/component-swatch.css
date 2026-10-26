@@ -1,0 +1,137 @@
+.swatch {
+  --swatch-input--size: 4rem;
+  --swatch--border-radius: 50%;
+
+  display: block;
+  width: var(--swatch-input--size);
+  height: var(--swatch-input--size);
+  border-radius: var(--swatch--border-radius);
+  background: var(--swatch--background);
+  background-position: center center;
+  background-size: cover;
+  box-shadow: 0 0 0 0.1rem rgba(var(--color-foreground), 0.2);
+}
+
+.swatch--square {
+  --swatch--border-radius: 0.2rem;
+}
+
+.swatch--unavailable {
+  clip-path: polygon(
+    0 0,
+    2% 0,
+    100% 96%,
+    100% 100%,
+    98% 100%,
+    0 4%
+  );
+}
+
+/* ==========================================================================
+   Dressar - colour swatch map for the AI product-grid blocks
+
+   Those blocks print the raw option value straight into the style attribute -
+   style="background-color: baby blue". Only 11 of the 31 colour names in this
+   catalogue are valid CSS colours, so the other 20 rendered as an empty box.
+   A single space is enough to break one: `darkred` is a real CSS colour,
+   `dark red` is not.
+
+   These have to beat an inline style attribute, hence !important.
+
+   VERIFY THESE: coffe, Genzari, kashmir, patrol and camel were inferred from
+   how they sit alongside other colours in the catalogue, not from the actual
+   garments. Adjust any that look wrong.
+
+   Already valid, left alone: Black White Beige Brown Navy Green Blue Pink
+   Purple Gray olive
+   ========================================================================== */
+
+[data-color-swatch][data-color='coffe' i] {
+  background-color: #6f4e37 !important;
+}
+
+[data-color-swatch][data-color='Off white' i] {
+  background-color: #f3efe9 !important;
+}
+
+[data-color-swatch][data-color='creamy' i] {
+  background-color: #f5ecd9 !important;
+}
+
+[data-color-swatch][data-color='dark red' i] {
+  background-color: #7b1f24 !important;
+}
+
+[data-color-swatch][data-color='dark green' i] {
+  background-color: #1e3d2f !important;
+}
+
+[data-color-swatch][data-color='dark brown' i] {
+  background-color: #4a3126 !important;
+}
+
+[data-color-swatch][data-color='dark blue' i] {
+  background-color: #1c2b4a !important;
+}
+
+[data-color-swatch][data-color='baby blue' i] {
+  background-color: #a7c7e7 !important;
+}
+
+[data-color-swatch][data-color='Sky blue' i] {
+  background-color: #87ceeb !important;
+}
+
+[data-color-swatch][data-color='mint green' i] {
+  background-color: #a8d5ba !important;
+}
+
+[data-color-swatch][data-color='Blue metallic' i] {
+  background-color: #4a6fa5 !important;
+}
+
+[data-color-swatch][data-color='camel' i] {
+  background-color: #c19a6b !important;
+}
+
+[data-color-swatch][data-color='lemon' i] {
+  background-color: #f2e07a !important;
+}
+
+[data-color-swatch][data-color='patrol' i] {
+  background-color: #24505a !important;
+}
+
+[data-color-swatch][data-color='Genzari' i] {
+  background-color: #6b7c5e !important;
+}
+
+[data-color-swatch][data-color='kashmir' i] {
+  background-color: #d9cbb8 !important;
+}
+
+/* Patterns are not a single colour. A flat fill would be a lie, so they get a
+   woven-looking texture that reads as "patterned" rather than as a blank chip. */
+[data-color-swatch][data-color='Floral' i],
+[data-color-swatch][data-color='Striped' i],
+[data-color-swatch][data-color='Plaid' i],
+[data-color-swatch][data-color='Checkered' i],
+[data-color-swatch][data-color='Geometric' i] {
+  background-image: repeating-linear-gradient(
+    45deg,
+    #cfc4b4 0,
+    #cfc4b4 3px,
+    #f3efe9 3px,
+    #f3efe9 6px
+  ) !important;
+  background-color: #f3efe9 !important;
+}
+
+/* Pale swatches need a visible edge or they disappear against a white card. */
+[data-color-swatch][data-color='White' i],
+[data-color-swatch][data-color='Off white' i],
+[data-color-swatch][data-color='creamy' i],
+[data-color-swatch][data-color='lemon' i],
+[data-color-swatch][data-color='kashmir' i] {
+  border-color: rgba(18, 18, 18, 0.25) !important;
+}

@@ -1,0 +1,450 @@
+{% doc %}
+  @prompt
+    Create a product price display enhancement that shows:
+    1. A "Save X%" badge on top of the product card when a discount exists (compare-at price is higher than the actual price), showing the percentage saved
+    2. The original/compare-at price (before discount) displayed in red color
+    3. The "Save" word/label also displayed in red color
+    This should work on product cards in collection pages and on the product detail page. The badge should automatically calculate and display the discount percentage when a product has a compare-at price set.
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% liquid
+  if product.compare_at_price > product.price
+    assign has_discount = true
+    assign discount_amount = product.compare_at_price | minus: product.price
+    assign discount_percentage = discount_amount | times: 100.0 | divided_by: product.compare_at_price | round
+  else
+    assign has_discount = false
+  endif
+%}
+
+{% style %}
+  .ai-price-display-{{ ai_gen_id }} {
+    position: relative;
+    display: block;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+  }
+
+  .ai-price-display-wrapper-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: {{ block.settings.spacing }}px;
+  }
+
+  .ai-discount-badge-{{ ai_gen_id }} {
+    position: absolute;
+    top: {{ block.settings.badge_top_position }}px;
+    left: {{ block.settings.badge_left_position }}px;
+    background-color: {{ block.settings.badge_background_color }};
+    color: {{ block.settings.badge_text_color }};
+    padding: {{ block.settings.badge_padding_vertical }}px {{ block.settings.badge_padding_horizontal }}px;
+    border-radius: {{ block.settings.badge_border_radius }}px;
+    font-size: {{ block.settings.badge_font_size }}px;
+    font-weight: {{ block.settings.badge_font_weight }};
+    z-index: 10;
+    display: inline-block;
+  }
+
+  .ai-price-container-{{ ai_gen_id }} {
+    display: flex;
+    align-items: {{ block.settings.price_alignment }};
+    gap: {{ block.settings.price_gap }}px;
+    flex-wrap: wrap;
+  }
+
+  .ai-current-price-{{ ai_gen_id }} {
+    font-size: {{ block.settings.current_price_size }}px;
+    font-weight: {{ block.settings.current_price_weight }};
+    color: {{ block.settings.current_price_color }};
+  }
+
+  .ai-compare-price-{{ ai_gen_id }} {
+    font-size: {{ block.settings.compare_price_size }}px;
+    font-weight: {{ block.settings.compare_price_weight }};
+    color: {{ block.settings.compare_price_color }};
+    text-decoration: line-through;
+  }
+
+  .ai-save-label-{{ ai_gen_id }} {
+    font-size: {{ block.settings.save_label_size }}px;
+    font-weight: {{ block.settings.save_label_weight }};
+    color: {{ block.settings.save_label_color }};
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-discount-badge-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.badge_font_size }}px * 0.9);
+      padding: calc({{ block.settings.badge_padding_vertical }}px * 0.8) calc({{ block.settings.badge_padding_horizontal }}px * 0.8);
+    }
+
+    .ai-current-price-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.current_price_size }}px * 0.9);
+    }
+
+    .ai-compare-price-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.compare_price_size }}px * 0.9);
+    }
+
+    .ai-save-label-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.save_label_size }}px * 0.9);
+    }
+  }
+{% endstyle %}
+
+<div class="ai-price-display-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  {% if has_discount and block.settings.show_badge %}
+    <div class="ai-discount-badge-{{ ai_gen_id }}">
+      {{ block.settings.badge_text }} {{ discount_percentage }}%
+    </div>
+  {% endif %}
+
+  <div class="ai-price-display-wrapper-{{ ai_gen_id }}">
+    <div class="ai-price-container-{{ ai_gen_id }}">
+      <span class="ai-current-price-{{ ai_gen_id }}">
+        {{ product.price | money }}
+      </span>
+
+      {% if has_discount and block.settings.show_compare_price %}
+        <span class="ai-compare-price-{{ ai_gen_id }}">
+          {{ product.compare_at_price | money }}
+        </span>
+      {% endif %}
+    </div>
+
+    {% if has_discount and block.settings.show_save_label %}
+      <div class="ai-save-label-{{ ai_gen_id }}">
+        {{ block.settings.save_text }} {{ discount_amount | money }}
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Discount price display",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Discount badge"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_badge",
+      "label": "Show discount badge",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "Badge text",
+      "default": "Save"
+    },
+    {
+      "type": "color",
+      "id": "badge_background_color",
+      "label": "Background color",
+      "default": "#ff0000"
+    },
+    {
+      "type": "color",
+      "id": "badge_text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "badge_font_size",
+      "label": "Font size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "badge_font_weight",
+      "label": "Font weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi-bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "range",
+      "id": "badge_padding_vertical",
+      "label": "Vertical padding",
+      "min": 2,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "badge_padding_horizontal",
+      "label": "Horizontal padding",
+      "min": 4,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "badge_border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "badge_top_position",
+      "label": "Top position",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "badge_left_position",
+      "label": "Left position",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "header",
+      "content": "Current price"
+    },
+    {
+      "type": "range",
+      "id": "current_price_size",
+      "label": "Font size",
+      "min": 12,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "select",
+      "id": "current_price_weight",
+      "label": "Font weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi-bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "color",
+      "id": "current_price_color",
+      "label": "Color",
+      "default": "#121212"
+    },
+    {
+      "type": "header",
+      "content": "Compare at price"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_compare_price",
+      "label": "Show compare at price",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "compare_price_size",
+      "label": "Font size",
+      "min": 10,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "select",
+      "id": "compare_price_weight",
+      "label": "Font weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi-bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "color",
+      "id": "compare_price_color",
+      "label": "Color",
+      "default": "#ff0000"
+    },
+    {
+      "type": "header",
+      "content": "Save label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_save_label",
+      "label": "Show save amount",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "save_text",
+      "label": "Save text",
+      "default": "Save"
+    },
+    {
+      "type": "range",
+      "id": "save_label_size",
+      "label": "Font size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "save_label_weight",
+      "label": "Font weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi-bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "color",
+      "id": "save_label_color",
+      "label": "Color",
+      "default": "#ff0000"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "select",
+      "id": "price_alignment",
+      "label": "Price alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "baseline",
+          "label": "Baseline"
+        }
+      ],
+      "default": "baseline"
+    },
+    {
+      "type": "range",
+      "id": "price_gap",
+      "label": "Price gap",
+      "min": 4,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "spacing",
+      "label": "Spacing",
+      "min": 4,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    }
+  ],
+  "presets": [
+    {
+      "name": "Discount price display"
+    }
+  ]
+}
+{% endschema %}

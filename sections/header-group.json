@@ -1,0 +1,153 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "name": "t:sections.header.name",
+  "type": "header",
+  "sections": {
+    "announcement_bar_MhMBhD": {
+      "type": "announcement-bar",
+      "blocks": {
+        "announcement_white_friday": {
+          "type": "announcement",
+          "settings": {
+            "text": "عروض الوايت فرايدي بدأت 🖤",
+            "link": "shopify://collections/white-friday-sale"
+          }
+        },
+        "announcement_free_shipping": {
+          "type": "announcement",
+          "settings": {
+            "text": "شحن مجاني على الطلبات من 1500 جنيه 🚚",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "announcement_white_friday",
+        "announcement_free_shipping"
+      ],
+      "name": "t:sections.announcement-bar.presets.name",
+      "settings": {
+        "auto_rotate": true,
+        "change_slides_speed": 5,
+        "color_scheme": "scheme-3",
+        "show_line_separator": true,
+        "show_social": false,
+        "enable_country_selector": false,
+        "enable_language_selector": false
+      }
+    },
+    "17839390500bb62f2e": {
+      "type": "_blocks",
+      "blocks": {
+        "ai_gen_block_0f087b7_jrUWRb": {
+          "type": "ai_gen_block_0f087b7",
+          "disabled": true,
+          "settings": {
+            "text": "Buy 2 get free shipping",
+            "link": "",
+            "desktop_width": 1200,
+            "background_color": "#121212",
+            "text_color": "#ffffff",
+            "font_size": 14,
+            "font_weight": "400",
+            "padding_vertical": 5
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "ai_gen_block_0f087b7_jrUWRb"
+      ],
+      "settings": {}
+    },
+    "header": {
+      "type": "header",
+      "disabled": true,
+      "settings": {
+        "logo_position": "top-center",
+        "mobile_logo_position": "center",
+        "menu": "main-menu",
+        "menu_type_desktop": "dropdown",
+        "sticky_header_type": "on-scroll-up",
+        "show_line_separator": false,
+        "color_scheme": "scheme-3",
+        "menu_color_scheme": "scheme-3",
+        "enable_country_selector": true,
+        "enable_language_selector": true,
+        "margin_bottom": 0,
+        "padding_top": 20,
+        "padding_bottom": 20
+      }
+    },
+    "178387093978949043": {
+      "type": "_blocks",
+      "blocks": {
+        "ai_gen_block_0c61721_Ea3dHf": {
+          "type": "ai_gen_block_0c61721",
+          "settings": {
+            "enable_logo_video": false,
+            "logo_width": 180,
+            "mobile_logo_width": 90,
+            "logo_position": "top_center",
+            "mobile_logo_position": "center",
+            "enable_background_video": false,
+            "video_opacity": 0.5,
+            "video_overlay_color": "#000000",
+            "video_overlay_opacity": 0.3,
+            "menu": "main-menu",
+            "menu_type": "dropdown",
+            "menu_max_width": 950,
+            "menu_spacing": 15,
+            "menu_font_size": 16,
+            "menu_font_weight": "500",
+            "header_background_color": "#000000",
+            "menu_text_color": "#fbfaf8",
+            "menu_hover_color": "#000000",
+            "utility_icon_color": "#f0f0f0",
+            "utility_icon_hover_color": "#f0f0f0",
+            "dropdown_background_color": "#ffffff",
+            "dropdown_text_color": "#121212",
+            "dropdown_hover_background": "#f0f0f0",
+            "dropdown_hover_text": "#ffffff",
+            "mobile_menu_background": "#000000",
+            "mobile_menu_text_color": "#f0f0f0",
+            "transparent_header": true,
+            "transparent_on_home": true,
+            "transparent_on_collection": false,
+            "transparent_on_product": false,
+            "transparent_on_page": false,
+            "sticky_header": "always",
+            "show_separator": false,
+            "separator_color": "#e0e0e0",
+            "show_country_selector": false,
+            "show_language_selector": false,
+            "show_customer_avatar": true,
+            "section_gap": 40,
+            "bottom_margin": 0,
+            "padding_top": 36,
+            "padding_bottom": 36
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "ai_gen_block_0c61721_Ea3dHf"
+      ],
+      "settings": {}
+    }
+  },
+  "order": [
+    "announcement_bar_MhMBhD",
+    "17839390500bb62f2e",
+    "header",
+    "178387093978949043"
+  ]
+}

@@ -1,0 +1,791 @@
+{% doc %}
+  @prompt
+    icons with texts
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-icon-text-container-{{ ai_gen_id }} {
+    display: block;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    padding: {{ block.settings.section_padding }}px 0;
+  }
+
+  .ai-icon-text-grid-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat({{ block.settings.columns_desktop }}, 1fr);
+    gap: {{ block.settings.spacing }}px;
+    max-width: 100%;
+  }
+
+  .ai-icon-text-item-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: {{ block.settings.layout }};
+    align-items: {{ block.settings.alignment }};
+    text-align: {% if block.settings.alignment == 'center' %}center{% elsif block.settings.alignment == 'flex-end' %}right{% else %}left{% endif %};
+    gap: {{ block.settings.icon_text_gap }}px;
+    padding: {{ block.settings.item_padding }}px;
+    background-color: {{ block.settings.item_background_color }};
+    border-radius: {{ block.settings.item_border_radius }}px;
+  }
+
+  .ai-icon-text-icon-wrapper-{{ ai_gen_id }} {
+    flex-shrink: 0;
+    width: {{ block.settings.icon_size }}px;
+    height: {{ block.settings.icon_size }}px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: {{ block.settings.icon_background_color }};
+    border-radius: {{ block.settings.icon_border_radius }}px;
+  }
+
+  .ai-icon-text-icon-wrapper-{{ ai_gen_id }} svg {
+    width: calc({{ block.settings.icon_size }}px * 0.6);
+    height: calc({{ block.settings.icon_size }}px * 0.6);
+    color: {{ block.settings.icon_color }};
+  }
+
+  .ai-icon-text-content-{{ ai_gen_id }} {
+    flex: 1;
+  }
+
+  .ai-icon-text-title-{{ ai_gen_id }} {
+    margin: 0 0 {{ block.settings.title_spacing }}px;
+    font-size: {{ block.settings.title_size }}px;
+    font-weight: {{ block.settings.title_weight }};
+    color: {{ block.settings.title_color }};
+  }
+
+  .ai-icon-text-description-{{ ai_gen_id }} {
+    margin: 0;
+    font-size: {{ block.settings.description_size }}px;
+    color: {{ block.settings.description_color }};
+    line-height: 1.5;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-icon-text-grid-{{ ai_gen_id }} {
+      grid-template-columns: repeat({{ block.settings.columns_mobile }}, 1fr);
+    }
+
+    .ai-icon-text-item-{{ ai_gen_id }} {
+      {% if block.settings.stack_on_mobile %}
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      {% endif %}
+    }
+  }
+{% endstyle %}
+
+<icon-text-block-{{ ai_gen_id }} class="ai-icon-text-container-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-icon-text-grid-{{ ai_gen_id }}">
+    {% for i in (1..6) %}
+      {% liquid
+        assign icon_key = 'icon_' | append: i
+        assign title_key = 'title_' | append: i
+        assign description_key = 'description_' | append: i
+        assign enabled_key = 'item_' | append: i | append: '_enabled'
+
+        assign icon_type = block.settings[icon_key]
+        assign title = block.settings[title_key]
+        assign description = block.settings[description_key]
+        assign enabled = block.settings[enabled_key]
+      %}
+
+      {% if enabled %}
+        <div class="ai-icon-text-item-{{ ai_gen_id }}">
+          <div class="ai-icon-text-icon-wrapper-{{ ai_gen_id }}">
+            {% case icon_type %}
+              {% when 'shipping' %}
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
+                </svg>
+              {% when 'returns' %}
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                </svg>
+              {% when 'secure' %}
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              {% when 'support' %}
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+              {% when 'quality' %}
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                </svg>
+              {% when 'gift' %}
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+                </svg>
+              {% when 'star' %}
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                </svg>
+              {% when 'heart' %}
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+            {% endcase %}
+          </div>
+          <div class="ai-icon-text-content-{{ ai_gen_id }}">
+            {% if title != blank %}
+              <h3 class="ai-icon-text-title-{{ ai_gen_id }}">{{ title }}</h3>
+            {% endif %}
+            {% if description != blank %}
+              <p class="ai-icon-text-description-{{ ai_gen_id }}">{{ description }}</p>
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</icon-text-block-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class IconTextBlock{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+    }
+    customElements.define('icon-text-block-{{ ai_gen_id }}', IconTextBlock{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Icons with text",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns on desktop",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Columns on mobile",
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout direction",
+      "options": [
+        {
+          "value": "row",
+          "label": "Horizontal"
+        },
+        {
+          "value": "column",
+          "label": "Vertical"
+        }
+      ],
+      "default": "row"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "flex-end",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "checkbox",
+      "id": "stack_on_mobile",
+      "label": "Stack vertically on mobile",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "spacing",
+      "label": "Spacing between items",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Section padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Item style"
+    },
+    {
+      "type": "range",
+      "id": "item_padding",
+      "label": "Item padding",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "item_background_color",
+      "label": "Item background",
+      "default": "rgba(0,0,0,0)"
+    },
+    {
+      "type": "range",
+      "id": "item_border_radius",
+      "label": "Item border radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "icon_text_gap",
+      "label": "Gap between icon and text",
+      "min": 4,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Icon style"
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Icon size",
+      "min": 20,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon color",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "icon_background_color",
+      "label": "Icon background",
+      "default": "rgba(0,0,0,0)"
+    },
+    {
+      "type": "range",
+      "id": "icon_border_radius",
+      "label": "Icon border radius",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Text style"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Title size",
+      "min": 12,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "select",
+      "id": "title_weight",
+      "label": "Title weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semibold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title color",
+      "default": "#121212"
+    },
+    {
+      "type": "range",
+      "id": "title_spacing",
+      "label": "Title spacing",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "description_size",
+      "label": "Description size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "Description color",
+      "default": "#666666"
+    },
+    {
+      "type": "header",
+      "content": "Item 1"
+    },
+    {
+      "type": "checkbox",
+      "id": "item_1_enabled",
+      "label": "Enable item 1",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "icon_1",
+      "label": "Icon",
+      "options": [
+        {
+          "value": "shipping",
+          "label": "Shipping"
+        },
+        {
+          "value": "returns",
+          "label": "Returns"
+        },
+        {
+          "value": "secure",
+          "label": "Secure"
+        },
+        {
+          "value": "support",
+          "label": "Support"
+        },
+        {
+          "value": "quality",
+          "label": "Quality"
+        },
+        {
+          "value": "gift",
+          "label": "Gift"
+        },
+        {
+          "value": "star",
+          "label": "Star"
+        },
+        {
+          "value": "heart",
+          "label": "Heart"
+        }
+      ],
+      "default": "shipping"
+    },
+    {
+      "type": "text",
+      "id": "title_1",
+      "label": "Title",
+      "default": "Free shipping"
+    },
+    {
+      "type": "textarea",
+      "id": "description_1",
+      "label": "Description",
+      "default": "On orders over $50"
+    },
+    {
+      "type": "header",
+      "content": "Item 2"
+    },
+    {
+      "type": "checkbox",
+      "id": "item_2_enabled",
+      "label": "Enable item 2",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "icon_2",
+      "label": "Icon",
+      "options": [
+        {
+          "value": "shipping",
+          "label": "Shipping"
+        },
+        {
+          "value": "returns",
+          "label": "Returns"
+        },
+        {
+          "value": "secure",
+          "label": "Secure"
+        },
+        {
+          "value": "support",
+          "label": "Support"
+        },
+        {
+          "value": "quality",
+          "label": "Quality"
+        },
+        {
+          "value": "gift",
+          "label": "Gift"
+        },
+        {
+          "value": "star",
+          "label": "Star"
+        },
+        {
+          "value": "heart",
+          "label": "Heart"
+        }
+      ],
+      "default": "returns"
+    },
+    {
+      "type": "text",
+      "id": "title_2",
+      "label": "Title",
+      "default": "Easy returns"
+    },
+    {
+      "type": "textarea",
+      "id": "description_2",
+      "label": "Description",
+      "default": "30-day return policy"
+    },
+    {
+      "type": "header",
+      "content": "Item 3"
+    },
+    {
+      "type": "checkbox",
+      "id": "item_3_enabled",
+      "label": "Enable item 3",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "icon_3",
+      "label": "Icon",
+      "options": [
+        {
+          "value": "shipping",
+          "label": "Shipping"
+        },
+        {
+          "value": "returns",
+          "label": "Returns"
+        },
+        {
+          "value": "secure",
+          "label": "Secure"
+        },
+        {
+          "value": "support",
+          "label": "Support"
+        },
+        {
+          "value": "quality",
+          "label": "Quality"
+        },
+        {
+          "value": "gift",
+          "label": "Gift"
+        },
+        {
+          "value": "star",
+          "label": "Star"
+        },
+        {
+          "value": "heart",
+          "label": "Heart"
+        }
+      ],
+      "default": "secure"
+    },
+    {
+      "type": "text",
+      "id": "title_3",
+      "label": "Title",
+      "default": "Secure checkout"
+    },
+    {
+      "type": "textarea",
+      "id": "description_3",
+      "label": "Description",
+      "default": "100% secure payment"
+    },
+    {
+      "type": "header",
+      "content": "Item 4"
+    },
+    {
+      "type": "checkbox",
+      "id": "item_4_enabled",
+      "label": "Enable item 4",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "icon_4",
+      "label": "Icon",
+      "options": [
+        {
+          "value": "shipping",
+          "label": "Shipping"
+        },
+        {
+          "value": "returns",
+          "label": "Returns"
+        },
+        {
+          "value": "secure",
+          "label": "Secure"
+        },
+        {
+          "value": "support",
+          "label": "Support"
+        },
+        {
+          "value": "quality",
+          "label": "Quality"
+        },
+        {
+          "value": "gift",
+          "label": "Gift"
+        },
+        {
+          "value": "star",
+          "label": "Star"
+        },
+        {
+          "value": "heart",
+          "label": "Heart"
+        }
+      ],
+      "default": "support"
+    },
+    {
+      "type": "text",
+      "id": "title_4",
+      "label": "Title",
+      "default": "24/7 support"
+    },
+    {
+      "type": "textarea",
+      "id": "description_4",
+      "label": "Description",
+      "default": "Always here to help"
+    },
+    {
+      "type": "header",
+      "content": "Item 5"
+    },
+    {
+      "type": "checkbox",
+      "id": "item_5_enabled",
+      "label": "Enable item 5",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "icon_5",
+      "label": "Icon",
+      "options": [
+        {
+          "value": "shipping",
+          "label": "Shipping"
+        },
+        {
+          "value": "returns",
+          "label": "Returns"
+        },
+        {
+          "value": "secure",
+          "label": "Secure"
+        },
+        {
+          "value": "support",
+          "label": "Support"
+        },
+        {
+          "value": "quality",
+          "label": "Quality"
+        },
+        {
+          "value": "gift",
+          "label": "Gift"
+        },
+        {
+          "value": "star",
+          "label": "Star"
+        },
+        {
+          "value": "heart",
+          "label": "Heart"
+        }
+      ],
+      "default": "quality"
+    },
+    {
+      "type": "text",
+      "id": "title_5",
+      "label": "Title",
+      "default": "Premium quality"
+    },
+    {
+      "type": "textarea",
+      "id": "description_5",
+      "label": "Description",
+      "default": "Guaranteed satisfaction"
+    },
+    {
+      "type": "header",
+      "content": "Item 6"
+    },
+    {
+      "type": "checkbox",
+      "id": "item_6_enabled",
+      "label": "Enable item 6",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "icon_6",
+      "label": "Icon",
+      "options": [
+        {
+          "value": "shipping",
+          "label": "Shipping"
+        },
+        {
+          "value": "returns",
+          "label": "Returns"
+        },
+        {
+          "value": "secure",
+          "label": "Secure"
+        },
+        {
+          "value": "support",
+          "label": "Support"
+        },
+        {
+          "value": "quality",
+          "label": "Quality"
+        },
+        {
+          "value": "gift",
+          "label": "Gift"
+        },
+        {
+          "value": "star",
+          "label": "Star"
+        },
+        {
+          "value": "heart",
+          "label": "Heart"
+        }
+      ],
+      "default": "gift"
+    },
+    {
+      "type": "text",
+      "id": "title_6",
+      "label": "Title",
+      "default": "Gift wrapping"
+    },
+    {
+      "type": "textarea",
+      "id": "description_6",
+      "label": "Description",
+      "default": "Available on request"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Icons with text"
+    }
+  ]
+}
+{% endschema %}

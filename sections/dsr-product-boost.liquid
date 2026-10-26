@@ -1,0 +1,285 @@
+{%- comment -%}
+  Dressar - product page boosts (sales-optimized draft, Oct 2026)
+
+  One place for the product-page additions that are not regular theme blocks:
+  - styles for the trust list and the size-help link (the "dsr_trust" custom
+    liquid block in templates/product.json), for the sale badge that
+    snippets/price.liquid now fills with the amount saved, and for the
+    inventory line;
+  - a sticky "add to cart" bar for phones, where 96% of sessions happen.
+
+  The sticky bar never adds to cart on its own. It presses the main product
+  form's own button, so the chosen variant, the cart drawer, the free-shipping
+  bar and every app hook keep working unchanged. Until the customer has picked
+  an option herself it scrolls her to the picker instead, so nobody orders the
+  pre-selected first size by accident.
+{%- endcomment -%}
+
+{%- if product -%}
+  <div class="dsr-sticky-atc" data-dsr-sticky-atc hidden>
+    <div class="dsr-sticky-atc__info">
+      <span class="dsr-sticky-atc__price" data-dsr-sticky-price></span>
+      <span class="dsr-sticky-atc__meta" data-dsr-sticky-meta></span>
+    </div>
+    <button type="button" class="button dsr-sticky-atc__btn" data-dsr-sticky-btn>
+      {{ 'products.product.add_to_cart' | t }}
+    </button>
+  </div>
+{%- endif -%}
+
+{% style %}
+  .dsr-trust {
+    margin: 1.6rem 0 0.4rem;
+  }
+  .dsr-trust__list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .dsr-trust__list li {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 1rem 1.2rem;
+    border-radius: 8px;
+    background: #f6f2f0;
+    color: #121212;
+    font-size: 1.3rem;
+    line-height: 1.4;
+  }
+  .dsr-trust__list li span {
+    font-size: 1.6rem;
+    line-height: 1;
+  }
+  .dsr-trust__help {
+    display: block;
+    margin-top: 1rem;
+    padding: 1.1rem 1.2rem;
+    border: 1px solid #25d366;
+    border-radius: 8px;
+    color: #11753f;
+    font-size: 1.35rem;
+    text-align: center;
+    text-decoration: none;
+  }
+  .dsr-trust__help:hover {
+    background: #effaf3;
+  }
+
+  .product__info-container .price--on-sale .price__badge-sale {
+    border-color: #910505;
+    background: #910505;
+    color: #fff;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+  .product__info-container .product__inventory {
+    font-size: 1.4rem;
+  }
+
+  variant-selects.dsr-pick-hint {
+    animation: dsr-pick-hint 0.5s ease 2;
+    border-radius: 8px;
+  }
+  @keyframes dsr-pick-hint {
+    50% {
+      box-shadow: 0 0 0 3px rgba(145, 5, 5, 0.35);
+    }
+  }
+
+  .dsr-sticky-atc {
+    display: none;
+  }
+  @media screen and (max-width: 749px) {
+    .dsr-sticky-atc {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 899;
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      padding: 1rem 1.6rem calc(1rem + env(safe-area-inset-bottom, 0px));
+      border-top: 1px solid rgba(18, 18, 18, 0.08);
+      background: #fff;
+      box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.08);
+      transform: translateY(110%);
+      transition: transform 0.25s ease;
+    }
+    .dsr-sticky-atc[hidden] {
+      display: none;
+    }
+    .dsr-sticky-atc.is-visible {
+      transform: translateY(0);
+    }
+    .dsr-sticky-atc__info {
+      display: flex;
+      flex: 1 1 auto;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .dsr-sticky-atc__price {
+      color: #121212;
+      font-size: 1.6rem;
+      font-weight: 700;
+    }
+    .dsr-sticky-atc__meta {
+      overflow: hidden;
+      color: rgba(18, 18, 18, 0.65);
+      font-size: 1.2rem;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .dsr-sticky-atc__btn {
+      flex: 0 0 auto;
+      min-height: 4.6rem;
+      margin: 0;
+      padding: 0 2.4rem;
+    }
+    body.dsr-has-sticky {
+      padding-bottom: 7.6rem;
+    }
+    body.dsr-sticky-on .dsr-wa {
+      bottom: calc(8.6rem + env(safe-area-inset-bottom, 0px));
+    }
+  }
+{% endstyle %}
+
+<script>
+  (function () {
+    var bar = document.querySelector('[data-dsr-sticky-atc]');
+    var info = document.querySelector('product-info[id^="MainProduct-"]');
+    if (!bar || !info) return;
+
+    var priceEl = bar.querySelector('[data-dsr-sticky-price]');
+    var metaEl = bar.querySelector('[data-dsr-sticky-meta]');
+    var stickyBtn = bar.querySelector('[data-dsr-sticky-btn]');
+    var pickLabel = 'اختاري مقاسك';
+
+    function mainButton() {
+      return info.querySelector('product-form .product-form__submit');
+    }
+
+    function picker() {
+      return info.querySelector('variant-selects');
+    }
+
+    // Options with a single value (one colour, one fabric) are not a choice.
+    function choiceGroups() {
+      var groups = [];
+      info.querySelectorAll('variant-selects fieldset').forEach(function (fieldset) {
+        var radios = fieldset.querySelectorAll('input[type="radio"]');
+        if (radios.length > 1) groups.push({ radios: radios });
+      });
+      info.querySelectorAll('variant-selects select').forEach(function (select) {
+        if (select.options.length > 1) groups.push({ select: select });
+      });
+      return groups;
+    }
+
+    function chosenValues() {
+      return choiceGroups()
+        .map(function (group) {
+          if (group.select) return group.select.value;
+          var checked = Array.prototype.filter.call(group.radios, function (radio) {
+            return radio.checked;
+          })[0];
+          return checked ? checked.value : '';
+        })
+        .filter(Boolean)
+        .join(' · ');
+    }
+
+    // A size counts as chosen once she touches the picker, or when the link
+    // already named a variant (an ad pointing at one size, for example).
+    var picked = choiceGroups().length === 0 || /[?&]variant=/.test(window.location.search);
+
+    function sync() {
+      var price = info.querySelector('.price');
+      if (price) {
+        var current = price.classList.contains('price--on-sale')
+          ? price.querySelector('.price__sale .price-item--last')
+          : price.querySelector('.price__regular .price-item--regular');
+        if (current) priceEl.textContent = current.textContent.trim();
+      }
+
+      metaEl.textContent = picked ? chosenValues() : '';
+
+      var btn = mainButton();
+      if (!btn) return;
+      var label = btn.querySelector('span');
+      stickyBtn.textContent = picked ? (label || btn).textContent.trim() : pickLabel;
+    }
+
+    var queued = false;
+    function schedule() {
+      if (queued) return;
+      queued = true;
+      window.requestAnimationFrame(function () {
+        queued = false;
+        sync();
+      });
+    }
+
+    info.addEventListener('change', function (event) {
+      if (event.target.closest && event.target.closest('variant-selects')) {
+        picked = true;
+        schedule();
+      }
+    });
+
+    stickyBtn.addEventListener('click', function () {
+      var btn = mainButton();
+      if (picked && btn && !btn.disabled) {
+        btn.click();
+        return;
+      }
+      var target = picker() || btn;
+      if (!target) return;
+      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (target.tagName === 'VARIANT-SELECTS') {
+        target.classList.add('dsr-pick-hint');
+        window.setTimeout(function () {
+          var current = picker();
+          if (current) current.classList.remove('dsr-pick-hint');
+        }, 1200);
+      }
+    });
+
+    new MutationObserver(schedule).observe(info, {
+      subtree: true,
+      childList: true,
+      attributes: true,
+      attributeFilter: ['disabled'],
+    });
+
+    var anchor = info.querySelector('product-form') || mainButton();
+    function setVisible(show) {
+      bar.classList.toggle('is-visible', show);
+      document.body.classList.toggle('dsr-sticky-on', show);
+    }
+
+    bar.hidden = false;
+    document.body.classList.add('dsr-has-sticky');
+    sync();
+
+    if ('IntersectionObserver' in window && anchor) {
+      new IntersectionObserver(function (entries) {
+        setVisible(!entries[0].isIntersecting);
+      }).observe(anchor);
+    } else {
+      setVisible(true);
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Dressar product boosts",
+  "settings": []
+}
+{% endschema %}

@@ -1,0 +1,18 @@
+/* ==========================================================================
+   Dressar - colour swatch map
+
+   NOT LOADED ON ITS OWN. These rules are copied into the bottom of
+   component-card.css, which the theme already loads. Kept here as a readable
+   reference for which colour name maps to which hex.
+
+   Why this is needed: the product grid blocks print the raw option value
+   straight into the style attribute - style="background-color: baby blue".
+   Only 11 of the 31 colour names in this catalogue are valid CSS colours, so
+   the other 20 rendered as an empty box. Note that a space is enough to break
+   one: `darkred` is a real CSS colour, `dark red` is not.
+
+   The mapping has to win over an inline style attribute, hence !important.
+
+   VERIFY THESE: coffe, Genzari, kashmir, patrol and camel were guessed from
+   how they are used alongside other colours. Adjust any that look wrong.
+   ========================================================================== */

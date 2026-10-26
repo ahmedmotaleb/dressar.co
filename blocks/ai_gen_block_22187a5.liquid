@@ -1,0 +1,128 @@
+{% doc %}
+  @prompt
+    Add custom CSS to make the Country/region selector, Language selector, and Customer account avatar smaller on mobile (max-width: 749px) in the header. Target the utility icons/buttons in the header on mobile and reduce their size using transform scale or font-size. The theme is a custom theme called "Dressar".
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-header-mobile-utility-css-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+  }
+
+  @media screen and (max-width: 749px) {
+    .header__icons .header__icon--localization,
+    .header__icons .header__icon--account,
+    .header__icons localization-form,
+    .header__icons .localization-selector,
+    .header__icons .disclosure__button,
+    .header__icons .header__icon {
+      transform: scale({{ block.settings.mobile_scale }});
+      transform-origin: center;
+    }
+
+    .header__icons .header__icon svg,
+    .header__icons .localization-selector svg,
+    .header__icons .disclosure__button svg {
+      width: {{ block.settings.icon_size }}px;
+      height: {{ block.settings.icon_size }}px;
+    }
+
+    .header__icons .localization-selector .disclosure__button,
+    .header__icons .header__icon--account {
+      padding: {{ block.settings.icon_padding }}px;
+    }
+
+    {% if block.settings.reduce_spacing %}
+      .header__icons {
+        gap: {{ block.settings.icon_gap }}px;
+      }
+    {% endif %}
+  }
+{% endstyle %}
+
+<div class="ai-header-mobile-utility-css-{{ ai_gen_id }}" {{ block.shopify_attributes }}></div>
+
+{% schema %}
+{
+  "name": "Mobile header utilities",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Mobile icon sizing"
+    },
+    {
+      "type": "paragraph",
+      "content": "Customize the size of country/region selector, language selector, and account icons on mobile devices."
+    },
+    {
+      "type": "range",
+      "id": "mobile_scale",
+      "label": "Scale",
+      "min": 0.5,
+      "max": 1,
+      "step": 0.1,
+      "default": 0.8,
+      "info": "Scales the entire icon button. 1 = original size, 0.5 = half size"
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Icon size",
+      "min": 12,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 18,
+      "info": "Size of the SVG icons inside the buttons"
+    },
+    {
+      "type": "range",
+      "id": "icon_padding",
+      "label": "Icon padding",
+      "min": 4,
+      "max": 16,
+      "step": 2,
+      "unit": "px",
+      "default": 8,
+      "info": "Padding around each icon"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "checkbox",
+      "id": "reduce_spacing",
+      "label": "Reduce spacing between icons",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "icon_gap",
+      "label": "Gap between icons",
+      "min": 4,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "default": 8,
+      "info": "Only applies if 'Reduce spacing between icons' is enabled"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    }
+  ],
+  "presets": [
+    {
+      "name": "Mobile header utilities"
+    }
+  ]
+}
+{% endschema %}
