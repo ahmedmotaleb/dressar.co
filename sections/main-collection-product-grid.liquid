@@ -103,6 +103,7 @@
 
       <div class="{% if section.settings.filter_type == 'vertical' %} facets-vertical page-width{% endif %}">
         {{ 'component-facets.css' | asset_url | stylesheet_tag }}
+        {{ 'dsr-collection.css' | asset_url | stylesheet_tag }}
         <script src="{{ 'facets.js' | asset_url }}" defer="defer"></script>
         {%- if section.settings.enable_filtering or section.settings.enable_sorting -%}
           <aside
@@ -261,6 +262,10 @@
         {
           "value": "portrait",
           "label": "t:sections.main-collection-product-grid.settings.image_ratio.options__2.label"
+        },
+        {
+          "value": "tall",
+          "label": "Tall (3:4)"
         },
         {
           "value": "square",

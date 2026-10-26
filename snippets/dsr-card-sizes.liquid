@@ -1,0 +1,58 @@
+{%- doc -%}
+  The sizes of a product card, in the product's own option order. A size is
+  in stock when any variant with that size is available (in any colour);
+  sizes with no stock are struck through and announced as sold out.
+
+  The size option is found by name: Theme settings > Dressar >
+  "Size option names". Sold-out products show nothing (the card's badge
+  already says so). One pass over the variants, no nested loops.
+
+  @param {product} card_product - The product on the card.
+
+  @example
+  {% render 'dsr-card-sizes', card_product: card_product %}
+{%- enddoc -%}
+
+{%- liquid
+  assign size_option = null
+  assign size_names = settings.card_size_option_names | downcase | split: ','
+
+  for option in card_product.options_with_values
+    assign option_name = option.name | downcase | strip
+    for name in size_names
+      assign wanted = name | strip
+      if wanted != blank and option_name == wanted
+        assign size_option = option
+        break
+      endif
+    endfor
+    if size_option
+      break
+    endif
+  endfor
+-%}
+
+{%- if size_option and card_product.available -%}
+  {%- liquid
+    assign size_key = 'option' | append: size_option.position
+    assign in_stock = '|'
+    for variant in card_product.variants
+      if variant.available
+        assign in_stock = in_stock | append: variant[size_key] | append: '|'
+      endif
+    endfor
+  -%}
+  <ul class="dsr-card-sizes list-unstyled" role="list" aria-label="{{ 'dressar.card.sizes_label' | t }}">
+    {%- for value in size_option.values -%}
+      {%- assign token = '|' | append: value.name | append: '|' -%}
+      {%- if in_stock contains token -%}
+        <li class="dsr-card-sizes__size">{{ value.name | escape }}</li>
+      {%- else -%}
+        <li class="dsr-card-sizes__size dsr-card-sizes__size--unavailable">
+          <span aria-hidden="true">{{ value.name | escape }}</span>
+          <span class="visually-hidden">{{ 'dressar.card.value_sold_out' | t: value: value.name }}</span>
+        </li>
+      {%- endif -%}
+    {%- endfor -%}
+  </ul>
+{%- endif -%}

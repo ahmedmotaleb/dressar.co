@@ -110,6 +110,22 @@ const html = `<!doctype html><html><head><meta name="viewport" content="width=de
     check(`${t} no JS errors`, errors.length === 0, errors.join(' | '));
     await page.close();
   }
+
+  // Arriving from a link that names a variant: an ad link (?variant=) counts as
+  // a size choice; a product card's colour swatch (?variant=&pick=color) does not.
+  for (const [query, expected, what] of [
+    ['?variant=1', 'أضيفي للسلة', 'variant link: size counts as chosen'],
+    ['?variant=1&pick=color', 'اختاري مقاسك', 'colour-swatch link: size still asked for'],
+  ]) {
+    const page = await browser.newPage({ viewport: { width: 390, height: 740 } });
+    await page.route('**/*', (route) => route.fulfill({ body: html, contentType: 'text/html; charset=utf-8' }));
+    await page.goto(`http://dressar.test/products/skirt${query}`);
+    await page.evaluate(() => window.scrollTo(0, 2000));
+    await page.waitForTimeout(400);
+    const label = (await page.locator('[data-dsr-sticky-btn]').textContent()).trim();
+    check(`[390px] ${what}`, label === expected, label);
+    await page.close();
+  }
   await browser.close();
   let failed = 0;
   for (const r of results) { if (!r.ok) failed++; console.log(`${r.ok ? 'PASS' : 'FAIL'}  ${r.name}${r.ok ? '' : '  -> ' + r.detail}`); }

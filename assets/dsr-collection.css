@@ -1,0 +1,142 @@
+/* ==========================================================================
+   Dressar collection page (Stage 4, docs/stages/stage-4.md)
+
+   A styling layer on Dawn's collection banner, product grid and facets
+   (also used by the search page's filters). Dawn keeps doing the work:
+   Shopify's filters and sort, server-side pagination, the mobile filter
+   drawer and the active-filter pills. The banner is kept compact so the
+   first products show without scrolling on a phone.
+   ========================================================================== */
+
+/* ---------- Banner ---------- */
+
+.collection-hero__inner {
+  padding-top: 2.4rem;
+  padding-bottom: 0.4rem;
+}
+
+.collection-hero__title {
+  margin: 0;
+  font-size: calc(var(--font-heading-scale) * 2.4rem);
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+}
+
+.collection-hero__title + .dsr-read-more {
+  margin-top: 1rem;
+}
+
+.collection-hero__description {
+  max-width: 64rem;
+  margin: 0;
+  font-size: 1.4rem;
+  line-height: 1.7;
+  color: rgba(var(--color-foreground), 0.75);
+}
+
+.collection-hero__description > :first-child {
+  margin-top: 0;
+}
+
+.collection-hero__description > :last-child {
+  margin-bottom: 0;
+}
+
+.dsr-read-more[data-collapsed] .collection-hero__description {
+  max-height: 5.1em;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent);
+  mask-image: linear-gradient(to bottom, #000 55%, transparent);
+}
+
+.dsr-read-more__toggle {
+  margin-top: 0.6rem;
+  padding: 0.6rem 0;
+  border: 0;
+  background: none;
+  font-family: 'Dressar UI', var(--font-body-family);
+  font-size: 1.15rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: underline;
+  text-underline-offset: 0.4rem;
+  color: rgb(var(--color-foreground));
+  cursor: pointer;
+}
+
+@media screen and (min-width: 750px) {
+  .collection-hero__inner {
+    padding-top: 4rem;
+  }
+
+  .collection-hero__title {
+    font-size: calc(var(--font-heading-scale) * 3.2rem);
+  }
+
+  .collection-hero__description {
+    font-size: 1.5rem;
+  }
+}
+
+/* ---------- Filter and sort bar ---------- */
+
+.facets__summary,
+.facets__heading,
+.mobile-facets__summary,
+.facet-filters__label,
+.facet-filters__sort,
+.mobile-facets__open-label,
+.product-count__text,
+.active-facets__button-inner {
+  font-family: 'Dressar UI', var(--font-body-family);
+}
+
+.facets__summary > div > span:first-child,
+.facets__heading,
+.facet-filters__label,
+.mobile-facets__open-label {
+  font-size: 1.15rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.product-count__text {
+  font-size: 1.15rem;
+  letter-spacing: 0.06em;
+  color: rgba(var(--color-foreground), 0.7);
+}
+
+.active-facets__button-inner {
+  font-size: 1.2rem;
+  letter-spacing: 0.02em;
+}
+
+.mobile-facets__summary > div > span:first-child {
+  font-size: 1.4rem;
+  font-weight: 500;
+}
+
+.facets__heading {
+  color: rgba(var(--color-foreground), 0.6);
+}
+
+/* ---------- Pagination ---------- */
+
+.pagination__item {
+  font-family: 'Dressar UI', var(--font-body-family);
+  font-weight: 500;
+}
+
+/* ---------- Arabic ---------- */
+
+:lang(ar) .collection-hero__title,
+:lang(ar) .dsr-read-more__toggle,
+:lang(ar) .facets__summary > div > span:first-child,
+:lang(ar) .facets__heading,
+:lang(ar) .facet-filters__label,
+:lang(ar) .mobile-facets__open-label,
+:lang(ar) .product-count__text {
+  letter-spacing: 0;
+}

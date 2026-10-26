@@ -536,5 +536,34 @@
       "expanded": "Formulir penerima voucher dibuka",
       "collapsed": "Formulir penerima voucher ditutup"
     }
+  },
+  "dressar": {
+    "card": {
+      "sale_percent": "{{ percent }}% off",
+      "colors_label": "Colours",
+      "colors_count": {
+        "one": "{{ count }} colour",
+        "other": "{{ count }} colours"
+      },
+      "more_colors": {
+        "one": "{{ count }} more colour",
+        "other": "{{ count }} more colours"
+      },
+      "sizes_label": "Sizes",
+      "value_sold_out": "{{ value }}, sold out"
+    },
+    "product": {
+      "model_size": "The model is wearing size {{ size }}",
+      "pick_size": "Choose your size"
+    },
+    "whatsapp": {
+      "label": "Chat with us on WhatsApp",
+      "message_product": "Hello, I'd like to ask about: {{ title }}",
+      "message_general": "Hello, I'd like to ask about {{ shop }} products"
+    },
+    "collection": {
+      "read_more": "Read more",
+      "read_less": "Show less"
+    }
   }
 }

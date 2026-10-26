@@ -211,7 +211,11 @@
 
     // A size counts as chosen once she touches the picker, or when the link
     // already named a variant (an ad pointing at one size, for example).
-    var picked = choiceGroups().length === 0 || /[?&]variant=/.test(window.location.search);
+    // Links from a product card's colour swatch name a variant too, but only
+    // the colour was chosen there; they carry pick=color (assets/dsr-card.js).
+    var search = window.location.search;
+    var picked =
+      choiceGroups().length === 0 || (/[?&]variant=/.test(search) && !/[?&]pick=color(&|$)/.test(search));
 
     function sync() {
       var price = info.querySelector('.price');

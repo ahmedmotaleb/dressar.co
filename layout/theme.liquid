@@ -406,6 +406,15 @@
       <script src="https://assets.sympl.ai/widgets/ecom-prod-dtls/widget.min.js" defer="defer"></script>
     {%- endif -%}
 
+    {%- comment -%}
+      Dressar product-card swatches. Loaded here rather than with the cards,
+      because cards also arrive later by fetch (filters, recommendations),
+      and scripts in fetched HTML never run.
+    {%- endcomment -%}
+    {%- if settings.card_show_swatches -%}
+      <script src="{{ 'dsr-card.js' | asset_url }}" defer="defer"></script>
+    {%- endif -%}
+
     {%- if settings.whatsapp_button_enabled and settings.whatsapp_number != blank -%}
       {%- render 'whatsapp-button' -%}
     {%- endif -%}

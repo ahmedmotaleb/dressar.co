@@ -1523,6 +1523,45 @@
         "id": "sympl_store_code",
         "label": "Sympl store code",
         "default": "STR-983"
+      },
+      {
+        "type": "header",
+        "content": "Product cards"
+      },
+      {
+        "type": "color",
+        "id": "card_media_background",
+        "label": "Photo background",
+        "info": "Shown behind product photos while they load.",
+        "default": "#f2ede8"
+      },
+      {
+        "type": "checkbox",
+        "id": "card_show_swatches",
+        "label": "Show colour swatches",
+        "info": "Uses the colours set on each product's colour option in Shopify. Products in one colour show none.",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "card_show_sizes",
+        "label": "Show sizes",
+        "info": "Sizes with no stock in any colour are struck through.",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "card_color_option_names",
+        "label": "Colour option names",
+        "info": "Comma-separated, not case-sensitive. Used for colour options without swatch data, which show a colour count instead.",
+        "default": "Color, Colour, اللون, لون"
+      },
+      {
+        "type": "text",
+        "id": "card_size_option_names",
+        "label": "Size option names",
+        "info": "Comma-separated, not case-sensitive.",
+        "default": "Size, Sizes, المقاس, مقاس"
       }
     ]
   }

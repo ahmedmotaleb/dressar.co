@@ -1,0 +1,2527 @@
+{
+ "_source": "Products 1-11: options, swatch colours, variant prices, stock and photo sizes copied from the store's Admin API on 2026-10-26 (read-only). Products 12-20: titles, prices, stock and photo sizes from tests/fixtures/store.json, with sizes M-3XL added. Collections are built from these in tests/lib/theme-harness.js. Test data only; the theme never reads it.",
+ "products": [
+  {
+   "handle": "linen-maxi-skirt-with-front-pockets",
+   "title": "Linen Skirt with Front Pockets | جيبة كتان بجيوب أمامية",
+   "type": "Skirt",
+   "created": 20,
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      [
+       "olive",
+       "#736416"
+      ],
+      [
+       "Genzari",
+       "#0E7F8B"
+      ],
+      [
+       "coffe",
+       "#a7752e"
+      ],
+      [
+       "Green",
+       "#05AA3D"
+      ]
+     ]
+    },
+    {
+     "name": "Size",
+     "values": [
+      "M",
+      "L",
+      "XL",
+      "XXL",
+      "3XL"
+     ]
+    },
+    {
+     "name": "Fabric",
+     "values": [
+      "Linen"
+     ]
+    }
+   ],
+   "media": [
+    [
+     1024,
+     1536
+    ],
+    [
+     810,
+     1080
+    ],
+    [
+     810,
+     1080
+    ],
+    [
+     810,
+     1080
+    ],
+    [
+     1024,
+     1536
+    ],
+    [
+     1024,
+     1536
+    ]
+   ],
+   "variants": [
+    [
+     [
+      "olive",
+      "M",
+      "Linen"
+     ],
+     24900,
+     35000,
+     0,
+     0
+    ],
+    [
+     [
+      "olive",
+      "L",
+      "Linen"
+     ],
+     24900,
+     35000,
+     1,
+     0
+    ],
+    [
+     [
+      "olive",
+      "XL",
+      "Linen"
+     ],
+     24900,
+     35000,
+     0,
+     0
+    ],
+    [
+     [
+      "olive",
+      "XXL",
+      "Linen"
+     ],
+     24900,
+     35000,
+     0,
+     0
+    ],
+    [
+     [
+      "Genzari",
+      "M",
+      "Linen"
+     ],
+     24900,
+     35000,
+     1,
+     2
+    ],
+    [
+     [
+      "Genzari",
+      "L",
+      "Linen"
+     ],
+     24900,
+     35000,
+     1,
+     2
+    ],
+    [
+     [
+      "Genzari",
+      "XL",
+      "Linen"
+     ],
+     24900,
+     35000,
+     1,
+     2
+    ],
+    [
+     [
+      "Genzari",
+      "XXL",
+      "Linen"
+     ],
+     24900,
+     35000,
+     1,
+     2
+    ],
+    [
+     [
+      "Genzari",
+      "3XL",
+      "Linen"
+     ],
+     29900,
+     40000,
+     1,
+     2
+    ],
+    [
+     [
+      "coffe",
+      "M",
+      "Linen"
+     ],
+     24900,
+     35000,
+     0,
+     5
+    ],
+    [
+     [
+      "coffe",
+      "L",
+      "Linen"
+     ],
+     24900,
+     35000,
+     1,
+     5
+    ],
+    [
+     [
+      "coffe",
+      "XL",
+      "Linen"
+     ],
+     24900,
+     35000,
+     1,
+     5
+    ],
+    [
+     [
+      "coffe",
+      "XXL",
+      "Linen"
+     ],
+     24900,
+     35000,
+     0,
+     5
+    ],
+    [
+     [
+      "coffe",
+      "3XL",
+      "Linen"
+     ],
+     29900,
+     40000,
+     0,
+     5
+    ],
+    [
+     [
+      "Green",
+      "M",
+      "Linen"
+     ],
+     24900,
+     35000,
+     0,
+     3
+    ],
+    [
+     [
+      "Green",
+      "L",
+      "Linen"
+     ],
+     24900,
+     35000,
+     0,
+     3
+    ],
+    [
+     [
+      "Green",
+      "XL",
+      "Linen"
+     ],
+     24900,
+     35000,
+     0,
+     3
+    ],
+    [
+     [
+      "Green",
+      "XXL",
+      "Linen"
+     ],
+     24900,
+     35000,
+     0,
+     3
+    ],
+    [
+     [
+      "Green",
+      "3XL",
+      "Linen"
+     ],
+     29900,
+     40000,
+     0,
+     3
+    ]
+   ]
+  },
+  {
+   "handle": "long-linen-shirt",
+   "title": "Long Linen Shirt Dress | قميص كتان طويل",
+   "type": "Dress",
+   "created": 19,
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      [
+       "Genzari",
+       "#0E7F8B"
+      ],
+      [
+       "Black",
+       "#000000",
+       "black-swatch"
+      ],
+      [
+       "Beige",
+       "#EAD8AB"
+      ]
+     ]
+    },
+    {
+     "name": "Size",
+     "values": [
+      "M",
+      "L",
+      "XL",
+      "XXL",
+      "3XL"
+     ]
+    },
+    {
+     "name": "Fabric",
+     "values": [
+      "Linen"
+     ]
+    }
+   ],
+   "media": [
+    [
+     2716,
+     3874
+    ],
+    [
+     896,
+     1200
+    ],
+    [
+     1024,
+     1536
+    ],
+    [
+     1024,
+     1536
+    ],
+    [
+     2642,
+     3522
+    ],
+    [
+     2505,
+     3340
+    ],
+    [
+     3024,
+     4032
+    ],
+    [
+     3024,
+     4032
+    ]
+   ],
+   "variants": [
+    [
+     [
+      "Genzari",
+      "M",
+      "Linen"
+     ],
+     24900,
+     44900,
+     0,
+     1
+    ],
+    [
+     [
+      "Genzari",
+      "L",
+      "Linen"
+     ],
+     24900,
+     44900,
+     0,
+     1
+    ],
+    [
+     [
+      "Genzari",
+      "XL",
+      "Linen"
+     ],
+     24900,
+     44900,
+     0,
+     1
+    ],
+    [
+     [
+      "Genzari",
+      "XXL",
+      "Linen"
+     ],
+     24900,
+     44900,
+     0,
+     1
+    ],
+    [
+     [
+      "Genzari",
+      "3XL",
+      "Linen"
+     ],
+     24900,
+     49900,
+     0,
+     1
+    ],
+    [
+     [
+      "Black",
+      "M",
+      "Linen"
+     ],
+     24900,
+     44900,
+     1,
+     2
+    ],
+    [
+     [
+      "Black",
+      "L",
+      "Linen"
+     ],
+     24900,
+     44900,
+     0,
+     2
+    ],
+    [
+     [
+      "Black",
+      "XL",
+      "Linen"
+     ],
+     24900,
+     44900,
+     0,
+     2
+    ],
+    [
+     [
+      "Black",
+      "XXL",
+      "Linen"
+     ],
+     24900,
+     44900,
+     0,
+     2
+    ],
+    [
+     [
+      "Black",
+      "3XL",
+      "Linen"
+     ],
+     24900,
+     49900,
+     0,
+     2
+    ],
+    [
+     [
+      "Beige",
+      "M",
+      "Linen"
+     ],
+     24900,
+     44900,
+     0,
+     0
+    ],
+    [
+     [
+      "Beige",
+      "L",
+      "Linen"
+     ],
+     24900,
+     44900,
+     0,
+     0
+    ],
+    [
+     [
+      "Beige",
+      "XL",
+      "Linen"
+     ],
+     24900,
+     44900,
+     1,
+     0
+    ],
+    [
+     [
+      "Beige",
+      "XXL",
+      "Linen"
+     ],
+     24900,
+     44900,
+     0,
+     0
+    ],
+    [
+     [
+      "Beige",
+      "3XL",
+      "Linen"
+     ],
+     24900,
+     49900,
+     0,
+     0
+    ]
+   ]
+  },
+  {
+   "handle": "linen-suit",
+   "title": "طقم كتان بياقة صيني | Linen Two-Piece Suit with Mandarin Collar",
+   "type": "Sets",
+   "created": 18,
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      [
+       "Black",
+       "#000000",
+       "black-swatch"
+      ],
+      [
+       "Genzari",
+       "#0E7F8B"
+      ],
+      [
+       "Beige",
+       "#EAD8AB"
+      ],
+      [
+       "coffe",
+       "#a7752e"
+      ]
+     ]
+    },
+    {
+     "name": "Fabric",
+     "values": [
+      "Linen"
+     ]
+    },
+    {
+     "name": "Size",
+     "values": [
+      "M",
+      "L",
+      "XL",
+      "XXL",
+      "3XL"
+     ]
+    }
+   ],
+   "media": [
+    [
+     1024,
+     1536
+    ],
+    [
+     1024,
+     1536
+    ],
+    [
+     1024,
+     1536
+    ],
+    [
+     1024,
+     1536
+    ]
+   ],
+   "variants": [
+    [
+     [
+      "Black",
+      "Linen",
+      "M"
+     ],
+     59900,
+     68000,
+     0,
+     0
+    ],
+    [
+     [
+      "Black",
+      "Linen",
+      "L"
+     ],
+     59900,
+     68000,
+     0,
+     0
+    ],
+    [
+     [
+      "Black",
+      "Linen",
+      "XL"
+     ],
+     59900,
+     68000,
+     0,
+     0
+    ],
+    [
+     [
+      "Black",
+      "Linen",
+      "XXL"
+     ],
+     59900,
+     68000,
+     0,
+     0
+    ],
+    [
+     [
+      "Black",
+      "Linen",
+      "3XL"
+     ],
+     64900,
+     73000,
+     0,
+     0
+    ],
+    [
+     [
+      "Genzari",
+      "Linen",
+      "M"
+     ],
+     57300,
+     88800,
+     0,
+     1
+    ],
+    [
+     [
+      "Genzari",
+      "Linen",
+      "L"
+     ],
+     57300,
+     88800,
+     0,
+     1
+    ],
+    [
+     [
+      "Genzari",
+      "Linen",
+      "XL"
+     ],
+     57300,
+     88800,
+     0,
+     1
+    ],
+    [
+     [
+      "Genzari",
+      "Linen",
+      "XXL"
+     ],
+     57300,
+     88800,
+     0,
+     1
+    ],
+    [
+     [
+      "Genzari",
+      "Linen",
+      "3XL"
+     ],
+     62300,
+     88800,
+     0,
+     1
+    ],
+    [
+     [
+      "Beige",
+      "Linen",
+      "M"
+     ],
+     57300,
+     88800,
+     0,
+     2
+    ],
+    [
+     [
+      "Beige",
+      "Linen",
+      "L"
+     ],
+     57300,
+     88800,
+     0,
+     2
+    ],
+    [
+     [
+      "Beige",
+      "Linen",
+      "XL"
+     ],
+     57300,
+     88800,
+     0,
+     2
+    ],
+    [
+     [
+      "Beige",
+      "Linen",
+      "XXL"
+     ],
+     57300,
+     88800,
+     0,
+     2
+    ],
+    [
+     [
+      "Beige",
+      "Linen",
+      "3XL"
+     ],
+     62300,
+     88800,
+     0,
+     2
+    ],
+    [
+     [
+      "coffe",
+      "Linen",
+      "M"
+     ],
+     57300,
+     88800,
+     0,
+     3
+    ],
+    [
+     [
+      "coffe",
+      "Linen",
+      "L"
+     ],
+     57300,
+     88800,
+     0,
+     3
+    ],
+    [
+     [
+      "coffe",
+      "Linen",
+      "XL"
+     ],
+     57300,
+     88800,
+     0,
+     3
+    ],
+    [
+     [
+      "coffe",
+      "Linen",
+      "XXL"
+     ],
+     57300,
+     88800,
+     0,
+     3
+    ],
+    [
+     [
+      "coffe",
+      "Linen",
+      "3XL"
+     ],
+     62300,
+     88800,
+     0,
+     3
+    ]
+   ]
+  },
+  {
+   "handle": "linen-pajama-set",
+   "title": "Linen Pajama Set",
+   "type": "Home Wear",
+   "created": 17,
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      [
+       "Pink",
+       "#FFC0CB"
+      ],
+      [
+       "White",
+       "#FFFFFF"
+      ]
+     ]
+    },
+    {
+     "name": "Size",
+     "values": [
+      "M",
+      "L",
+      "XL",
+      "XXL",
+      "3XL"
+     ]
+    },
+    {
+     "name": "Fabric",
+     "values": [
+      "Linen"
+     ]
+    }
+   ],
+   "media": [
+    [
+     1086,
+     1448
+    ],
+    [
+     1086,
+     1448
+    ],
+    [
+     829,
+     1448
+    ]
+   ],
+   "variants": [
+    [
+     [
+      "Pink",
+      "M",
+      "Linen"
+     ],
+     78900,
+     92800,
+     1,
+     0
+    ],
+    [
+     [
+      "Pink",
+      "L",
+      "Linen"
+     ],
+     78900,
+     92800,
+     1,
+     0
+    ],
+    [
+     [
+      "Pink",
+      "XL",
+      "Linen"
+     ],
+     78900,
+     92800,
+     1,
+     0
+    ],
+    [
+     [
+      "Pink",
+      "XXL",
+      "Linen"
+     ],
+     78900,
+     92800,
+     1,
+     0
+    ],
+    [
+     [
+      "Pink",
+      "3XL",
+      "Linen"
+     ],
+     83900,
+     92800,
+     1,
+     0
+    ],
+    [
+     [
+      "White",
+      "M",
+      "Linen"
+     ],
+     78900,
+     92800,
+     1,
+     1
+    ],
+    [
+     [
+      "White",
+      "L",
+      "Linen"
+     ],
+     78900,
+     92800,
+     1,
+     1
+    ],
+    [
+     [
+      "White",
+      "XL",
+      "Linen"
+     ],
+     78900,
+     92800,
+     1,
+     1
+    ],
+    [
+     [
+      "White",
+      "XXL",
+      "Linen"
+     ],
+     78900,
+     92800,
+     1,
+     1
+    ],
+    [
+     [
+      "White",
+      "3XL",
+      "Linen"
+     ],
+     83900,
+     92800,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "handle": "471",
+   "title": "Linen blouse",
+   "type": "Blouse",
+   "created": 16,
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      [
+       "black"
+      ],
+      [
+       "marron"
+      ]
+     ]
+    },
+    {
+     "name": "Size",
+     "values": [
+      "M",
+      "L",
+      "XL",
+      "XXL"
+     ]
+    }
+   ],
+   "media": [
+    [
+     810,
+     1080
+    ],
+    [
+     810,
+     1080
+    ]
+   ],
+   "variants": [
+    [
+     [
+      "black",
+      "M"
+     ],
+     79300,
+     94367,
+     1,
+     0
+    ],
+    [
+     [
+      "black",
+      "L"
+     ],
+     79300,
+     94367,
+     1,
+     null
+    ],
+    [
+     [
+      "black",
+      "XL"
+     ],
+     79300,
+     94367,
+     1,
+     null
+    ],
+    [
+     [
+      "black",
+      "XXL"
+     ],
+     79300,
+     94367,
+     1,
+     null
+    ],
+    [
+     [
+      "marron",
+      "M"
+     ],
+     79300,
+     94367,
+     1,
+     1
+    ],
+    [
+     [
+      "marron",
+      "L"
+     ],
+     79300,
+     94367,
+     1,
+     null
+    ],
+    [
+     [
+      "marron",
+      "XL"
+     ],
+     79300,
+     94367,
+     1,
+     null
+    ],
+    [
+     [
+      "marron",
+      "XXL"
+     ],
+     79300,
+     94367,
+     1,
+     null
+    ]
+   ]
+  },
+  {
+   "handle": "476",
+   "title": "Linen blouse",
+   "type": "Blouse",
+   "created": 15,
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      [
+       "Black",
+       "#000000",
+       "black-swatch"
+      ],
+      [
+       "Genzari",
+       "#0E7F8B"
+      ]
+     ]
+    },
+    {
+     "name": "Fabric",
+     "values": [
+      "Linen"
+     ]
+    },
+    {
+     "name": "SIZE",
+     "values": [
+      "M",
+      "L",
+      "XL",
+      "XXL",
+      "3XL"
+     ]
+    }
+   ],
+   "media": [
+    [
+     1024,
+     1536
+    ],
+    [
+     811,
+     1080
+    ]
+   ],
+   "variants": [
+    [
+     [
+      "Black",
+      "Linen",
+      "M"
+     ],
+     76400,
+     86037,
+     1,
+     0
+    ],
+    [
+     [
+      "Black",
+      "Linen",
+      "L"
+     ],
+     76400,
+     84300,
+     1,
+     0
+    ],
+    [
+     [
+      "Black",
+      "Linen",
+      "XL"
+     ],
+     76400,
+     84300,
+     1,
+     0
+    ],
+    [
+     [
+      "Black",
+      "Linen",
+      "XXL"
+     ],
+     76400,
+     84300,
+     1,
+     0
+    ],
+    [
+     [
+      "Black",
+      "Linen",
+      "3XL"
+     ],
+     81400,
+     84300,
+     1,
+     0
+    ],
+    [
+     [
+      "Genzari",
+      "Linen",
+      "M"
+     ],
+     76400,
+     86037,
+     0,
+     1
+    ],
+    [
+     [
+      "Genzari",
+      "Linen",
+      "L"
+     ],
+     76400,
+     84300,
+     0,
+     1
+    ],
+    [
+     [
+      "Genzari",
+      "Linen",
+      "XL"
+     ],
+     76400,
+     84300,
+     0,
+     1
+    ],
+    [
+     [
+      "Genzari",
+      "Linen",
+      "XXL"
+     ],
+     76400,
+     84300,
+     0,
+     1
+    ],
+    [
+     [
+      "Genzari",
+      "Linen",
+      "3XL"
+     ],
+     81400,
+     84300,
+     0,
+     1
+    ]
+   ]
+  },
+  {
+   "handle": "510",
+   "title": "Havan Linen Blouse",
+   "type": "Blouse",
+   "created": 14,
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      [
+       "dark beige"
+      ]
+     ]
+    },
+    {
+     "name": "Size",
+     "values": [
+      "M",
+      "L",
+      "XL",
+      "XXL",
+      "3XL"
+     ]
+    }
+   ],
+   "media": [
+    [
+     750,
+     1000
+    ]
+   ],
+   "variants": [
+    [
+     [
+      "dark beige",
+      "M"
+     ],
+     72300,
+     86037,
+     1,
+     0
+    ],
+    [
+     [
+      "dark beige",
+      "L"
+     ],
+     72300,
+     86037,
+     1,
+     null
+    ],
+    [
+     [
+      "dark beige",
+      "XL"
+     ],
+     72300,
+     86037,
+     1,
+     null
+    ],
+    [
+     [
+      "dark beige",
+      "XXL"
+     ],
+     72300,
+     86037,
+     1,
+     null
+    ],
+    [
+     [
+      "dark beige",
+      "3XL"
+     ],
+     72300,
+     86037,
+     1,
+     null
+    ]
+   ]
+  },
+  {
+   "handle": "381",
+   "title": "Linen dress",
+   "type": "Dress",
+   "created": 13,
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      [
+       "powder blue"
+      ]
+     ]
+    },
+    {
+     "name": "Size",
+     "values": [
+      "L",
+      "XL",
+      "XXL",
+      "M",
+      "3XL"
+     ]
+    }
+   ],
+   "media": [
+    [
+     810,
+     1080
+    ]
+   ],
+   "variants": [
+    [
+     [
+      "powder blue",
+      "L"
+     ],
+     80800,
+     92920,
+     1,
+     0
+    ],
+    [
+     [
+      "powder blue",
+      "XL"
+     ],
+     80800,
+     92920,
+     1,
+     null
+    ],
+    [
+     [
+      "powder blue",
+      "XXL"
+     ],
+     80800,
+     92920,
+     1,
+     null
+    ],
+    [
+     [
+      "powder blue",
+      "M"
+     ],
+     80800,
+     92920,
+     1,
+     null
+    ],
+    [
+     [
+      "powder blue",
+      "3XL"
+     ],
+     80800,
+     92920,
+     1,
+     null
+    ]
+   ]
+  },
+  {
+   "handle": "488",
+   "title": "Navy Breeze Linen Blouse",
+   "type": "Blouse",
+   "created": 12,
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      [
+       "navy"
+      ]
+     ]
+    },
+    {
+     "name": "Size",
+     "values": [
+      "M",
+      "L",
+      "XL",
+      "3XL",
+      "XXL"
+     ]
+    }
+   ],
+   "media": [
+    [
+     738,
+     1080
+    ]
+   ],
+   "variants": [
+    [
+     [
+      "navy",
+      "M"
+     ],
+     72300,
+     86037,
+     1,
+     0
+    ],
+    [
+     [
+      "navy",
+      "L"
+     ],
+     72300,
+     86037,
+     1,
+     null
+    ],
+    [
+     [
+      "navy",
+      "XL"
+     ],
+     72300,
+     86037,
+     1,
+     null
+    ],
+    [
+     [
+      "navy",
+      "3XL"
+     ],
+     72300,
+     86037,
+     1,
+     null
+    ],
+    [
+     [
+      "navy",
+      "XXL"
+     ],
+     72300,
+     86037,
+     1,
+     null
+    ]
+   ]
+  },
+  {
+   "handle": "white-pinstriped-linen-suit-in-black",
+   "title": "Grey Pinstripe linen Suit",
+   "type": "Sets",
+   "created": 11,
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      [
+       "Striped"
+      ]
+     ]
+    },
+    {
+     "name": "Size",
+     "values": [
+      "M",
+      "L",
+      "XL",
+      "XXL",
+      "3XL"
+     ]
+    },
+    {
+     "name": "Fabric",
+     "values": [
+      "Linen"
+     ]
+    }
+   ],
+   "media": [
+    [
+     1931,
+     2854
+    ],
+    [
+     2458,
+     2838
+    ],
+    [
+     2068,
+     3034
+    ],
+    [
+     2010,
+     3133
+    ]
+   ],
+   "variants": [
+    [
+     [
+      "Striped",
+      "M",
+      "Linen"
+     ],
+     132100,
+     138800,
+     1,
+     0
+    ],
+    [
+     [
+      "Striped",
+      "L",
+      "Linen"
+     ],
+     132100,
+     138800,
+     1,
+     null
+    ],
+    [
+     [
+      "Striped",
+      "XL",
+      "Linen"
+     ],
+     132100,
+     138800,
+     1,
+     null
+    ],
+    [
+     [
+      "Striped",
+      "XXL",
+      "Linen"
+     ],
+     132100,
+     138800,
+     1,
+     null
+    ],
+    [
+     [
+      "Striped",
+      "3XL",
+      "Linen"
+     ],
+     137100,
+     138800,
+     1,
+     null
+    ]
+   ]
+  },
+  {
+   "handle": "white-striped-linen-dress",
+   "title": "White Striped Linen Dress",
+   "type": "Dress",
+   "created": 10,
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      [
+       "Striped"
+      ]
+     ]
+    },
+    {
+     "name": "Size",
+     "values": [
+      "M",
+      "L",
+      "XL",
+      "XXL",
+      "3XL"
+     ]
+    },
+    {
+     "name": "Fabric",
+     "values": [
+      "Linen"
+     ]
+    }
+   ],
+   "media": [
+    [
+     1023,
+     1537
+    ]
+   ],
+   "variants": [
+    [
+     [
+      "Striped",
+      "M",
+      "Linen"
+     ],
+     149000,
+     156600,
+     1,
+     0
+    ],
+    [
+     [
+      "Striped",
+      "L",
+      "Linen"
+     ],
+     149000,
+     156600,
+     1,
+     null
+    ],
+    [
+     [
+      "Striped",
+      "XL",
+      "Linen"
+     ],
+     149000,
+     156600,
+     1,
+     null
+    ],
+    [
+     [
+      "Striped",
+      "XXL",
+      "Linen"
+     ],
+     149000,
+     156600,
+     1,
+     null
+    ],
+    [
+     [
+      "Striped",
+      "3XL",
+      "Linen"
+     ],
+     154000,
+     156600,
+     1,
+     null
+    ]
+   ]
+  },
+  {
+   "handle": "olive-chiffon-maxi-skirt",
+   "title": "Olive Chiffon Skirt | جيبة شيفون زيتونية",
+   "type": "Skirt",
+   "created": 9,
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      [
+       "Default"
+      ]
+     ]
+    },
+    {
+     "name": "Size",
+     "values": [
+      "M",
+      "L",
+      "XL",
+      "XXL",
+      "3XL"
+     ]
+    }
+   ],
+   "media": [
+    [
+     810,
+     1080
+    ],
+    [
+     810,
+     1080
+    ]
+   ],
+   "variants": [
+    [
+     [
+      "Default",
+      "M"
+     ],
+     24900,
+     49900,
+     1,
+     0
+    ],
+    [
+     [
+      "Default",
+      "L"
+     ],
+     24900,
+     49900,
+     1,
+     null
+    ],
+    [
+     [
+      "Default",
+      "XL"
+     ],
+     24900,
+     49900,
+     1,
+     null
+    ],
+    [
+     [
+      "Default",
+      "XXL"
+     ],
+     24900,
+     49900,
+     1,
+     null
+    ],
+    [
+     [
+      "Default",
+      "3XL"
+     ],
+     29900,
+     49900,
+     1,
+     null
+    ]
+   ]
+  },
+  {
+   "handle": "beige-chiffon-maxi-skirt",
+   "title": "Beige Chiffon Skirt | جيبة شيفون بيج",
+   "type": "Skirt",
+   "created": 8,
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      [
+       "Default"
+      ]
+     ]
+    },
+    {
+     "name": "Size",
+     "values": [
+      "M",
+      "L",
+      "XL",
+      "XXL",
+      "3XL"
+     ]
+    }
+   ],
+   "media": [
+    [
+     750,
+     1000
+    ],
+    [
+     750,
+     1000
+    ]
+   ],
+   "variants": [
+    [
+     [
+      "Default",
+      "M"
+     ],
+     34900,
+     49900,
+     1,
+     0
+    ],
+    [
+     [
+      "Default",
+      "L"
+     ],
+     34900,
+     49900,
+     1,
+     null
+    ],
+    [
+     [
+      "Default",
+      "XL"
+     ],
+     34900,
+     49900,
+     1,
+     null
+    ],
+    [
+     [
+      "Default",
+      "XXL"
+     ],
+     34900,
+     49900,
+     1,
+     null
+    ],
+    [
+     [
+      "Default",
+      "3XL"
+     ],
+     39900,
+     49900,
+     1,
+     null
+    ]
+   ]
+  },
+  {
+   "handle": "lined-betana-maxi-skirt",
+   "title": "Liner Skirt | جيبة بطانة",
+   "type": "Skirt",
+   "created": 7,
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      [
+       "Default"
+      ]
+     ]
+    },
+    {
+     "name": "Size",
+     "values": [
+      "M",
+      "L",
+      "XL",
+      "XXL",
+      "3XL"
+     ]
+    }
+   ],
+   "media": [
+    [
+     750,
+     1000
+    ],
+    [
+     750,
+     1000
+    ]
+   ],
+   "variants": [
+    [
+     [
+      "Default",
+      "M"
+     ],
+     24900,
+     34900,
+     1,
+     0
+    ],
+    [
+     [
+      "Default",
+      "L"
+     ],
+     24900,
+     34900,
+     1,
+     null
+    ],
+    [
+     [
+      "Default",
+      "XL"
+     ],
+     24900,
+     34900,
+     1,
+     null
+    ],
+    [
+     [
+      "Default",
+      "XXL"
+     ],
+     24900,
+     34900,
+     1,
+     null
+    ],
+    [
+     [
+      "Default",
+      "3XL"
+     ],
+     29900,
+     34900,
+     1,
+     null
+    ]
+   ]
+  },
+  {
+   "handle": "lined-joubert-maxi-skirt",
+   "title": "Basic Liner Skirt with Lace | جيبة بطانة بحافة دانتيل",
+   "type": "Skirt",
+   "created": 6,
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      [
+       "Default"
+      ]
+     ]
+    },
+    {
+     "name": "Size",
+     "values": [
+      "M",
+      "L",
+      "XL",
+      "XXL",
+      "3XL"
+     ]
+    }
+   ],
+   "media": [
+    [
+     1086,
+     1448
+    ],
+    [
+     1086,
+     1448
+    ]
+   ],
+   "variants": [
+    [
+     [
+      "Default",
+      "M"
+     ],
+     19900,
+     34900,
+     1,
+     0
+    ],
+    [
+     [
+      "Default",
+      "L"
+     ],
+     19900,
+     34900,
+     1,
+     null
+    ],
+    [
+     [
+      "Default",
+      "XL"
+     ],
+     19900,
+     34900,
+     1,
+     null
+    ],
+    [
+     [
+      "Default",
+      "XXL"
+     ],
+     19900,
+     34900,
+     1,
+     null
+    ],
+    [
+     [
+      "Default",
+      "3XL"
+     ],
+     19900,
+     34900,
+     1,
+     null
+    ]
+   ]
+  },
+  {
+   "handle": "black-pocket-maxi-skirt",
+   "title": "Black Pocket Skirt | جيبة سوداء بجيوب",
+   "type": "Skirt",
+   "created": 5,
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      [
+       "Default"
+      ]
+     ]
+    },
+    {
+     "name": "Size",
+     "values": [
+      "M",
+      "L",
+      "XL",
+      "XXL",
+      "3XL"
+     ]
+    }
+   ],
+   "media": [
+    [
+     750,
+     1000
+    ],
+    [
+     750,
+     1000
+    ]
+   ],
+   "variants": [
+    [
+     [
+      "Default",
+      "M"
+     ],
+     49900,
+     54900,
+     1,
+     0
+    ],
+    [
+     [
+      "Default",
+      "L"
+     ],
+     49900,
+     54900,
+     1,
+     null
+    ],
+    [
+     [
+      "Default",
+      "XL"
+     ],
+     49900,
+     54900,
+     1,
+     null
+    ],
+    [
+     [
+      "Default",
+      "XXL"
+     ],
+     49900,
+     54900,
+     1,
+     null
+    ],
+    [
+     [
+      "Default",
+      "3XL"
+     ],
+     54900,
+     54900,
+     1,
+     null
+    ]
+   ]
+  },
+  {
+   "handle": "wine-pocket-maxi-skirt",
+   "title": "Wine Pocket Skirt | جيبة نبيتي بجيوب",
+   "type": "Skirt",
+   "created": 4,
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      [
+       "Default"
+      ]
+     ]
+    },
+    {
+     "name": "Size",
+     "values": [
+      "M",
+      "L",
+      "XL",
+      "XXL",
+      "3XL"
+     ]
+    }
+   ],
+   "media": [
+    [
+     810,
+     1080
+    ],
+    [
+     810,
+     1080
+    ]
+   ],
+   "variants": [
+    [
+     [
+      "Default",
+      "M"
+     ],
+     39900,
+     54900,
+     1,
+     0
+    ],
+    [
+     [
+      "Default",
+      "L"
+     ],
+     39900,
+     54900,
+     1,
+     null
+    ],
+    [
+     [
+      "Default",
+      "XL"
+     ],
+     39900,
+     54900,
+     1,
+     null
+    ],
+    [
+     [
+      "Default",
+      "XXL"
+     ],
+     39900,
+     54900,
+     1,
+     null
+    ],
+    [
+     [
+      "Default",
+      "3XL"
+     ],
+     39900,
+     54900,
+     1,
+     null
+    ]
+   ]
+  },
+  {
+   "handle": "three-strand-blouse",
+   "title": "Three-Strand Blouse | بلوزة تلات خيوط",
+   "type": "Skirt",
+   "created": 3,
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      [
+       "Default"
+      ]
+     ]
+    },
+    {
+     "name": "Size",
+     "values": [
+      "M",
+      "L",
+      "XL",
+      "XXL",
+      "3XL"
+     ]
+    }
+   ],
+   "media": [
+    [
+     810,
+     1080
+    ],
+    [
+     810,
+     1080
+    ]
+   ],
+   "variants": [
+    [
+     [
+      "Default",
+      "M"
+     ],
+     9900,
+     19900,
+     0,
+     0
+    ],
+    [
+     [
+      "Default",
+      "L"
+     ],
+     9900,
+     19900,
+     0,
+     null
+    ],
+    [
+     [
+      "Default",
+      "XL"
+     ],
+     9900,
+     19900,
+     0,
+     null
+    ],
+    [
+     [
+      "Default",
+      "XXL"
+     ],
+     9900,
+     19900,
+     0,
+     null
+    ],
+    [
+     [
+      "Default",
+      "3XL"
+     ],
+     14900,
+     19900,
+     0,
+     null
+    ]
+   ]
+  },
+  {
+   "handle": "mint-green-gogh-jacket",
+   "title": "Mint Green Felt Jacket | جاكيت فيلت منت جرين",
+   "type": "Skirt",
+   "created": 2,
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      [
+       "Default"
+      ]
+     ]
+    },
+    {
+     "name": "Size",
+     "values": [
+      "M",
+      "L",
+      "XL",
+      "XXL",
+      "3XL"
+     ]
+    }
+   ],
+   "media": [
+    [
+     750,
+     1000
+    ],
+    [
+     750,
+     1000
+    ]
+   ],
+   "variants": [
+    [
+     [
+      "Default",
+      "M"
+     ],
+     34900,
+     54900,
+     0,
+     0
+    ],
+    [
+     [
+      "Default",
+      "L"
+     ],
+     34900,
+     54900,
+     0,
+     null
+    ],
+    [
+     [
+      "Default",
+      "XL"
+     ],
+     34900,
+     54900,
+     0,
+     null
+    ],
+    [
+     [
+      "Default",
+      "XXL"
+     ],
+     34900,
+     54900,
+     0,
+     null
+    ],
+    [
+     [
+      "Default",
+      "3XL"
+     ],
+     34900,
+     54900,
+     0,
+     null
+    ]
+   ]
+  },
+  {
+   "handle": "wool-shawl-1",
+   "title": "Wool Shawl Extra-Long | شال شتوي طويل",
+   "type": "Skirt",
+   "created": 1,
+   "options": [
+    {
+     "name": "Color",
+     "values": [
+      [
+       "Default"
+      ]
+     ]
+    },
+    {
+     "name": "Size",
+     "values": [
+      "M",
+      "L",
+      "XL",
+      "XXL",
+      "3XL"
+     ]
+    }
+   ],
+   "media": [
+    [
+     1024,
+     1536
+    ],
+    [
+     1024,
+     1536
+    ]
+   ],
+   "variants": [
+    [
+     [
+      "Default",
+      "M"
+     ],
+     9900,
+     16100,
+     0,
+     0
+    ],
+    [
+     [
+      "Default",
+      "L"
+     ],
+     9900,
+     16100,
+     0,
+     null
+    ],
+    [
+     [
+      "Default",
+      "XL"
+     ],
+     9900,
+     16100,
+     0,
+     null
+    ],
+    [
+     [
+      "Default",
+      "XXL"
+     ],
+     9900,
+     16100,
+     0,
+     null
+    ],
+    [
+     [
+      "Default",
+      "3XL"
+     ],
+     9900,
+     16100,
+     0,
+     null
+    ]
+   ]
+  }
+ ],
+ "collections": {
+  "skirts": {
+   "title": "Skirts",
+   "size": 152,
+   "description": ""
+  },
+  "home-wear": {
+   "title": "Home Wear",
+   "size": 22,
+   "description": "<p>قطع الهوم وير من درسر — لبس بيتي ناعم ومريح لراحتك الخاصة في البيت. خامات قطنية بتتنفس، قصّات واسعة، وأطقم سهلة وعملية للنوم والقعدة في البيت.</p><p>Dressar's homewear collection — soft, comfortable pieces made for your private comfort at home. Breathable cotton, relaxed cuts, and easy sets for lounging and sleepwear.</p><hr><p><strong>⚠️ ملابس الهوم وير: لا يوجد استبدال أو استرجاع</strong><br>لأسباب صحية، كل قطع الهوم وير وملابس النوم غير قابلة للاستبدال أو الاسترجاع نهائيًا. من حقك <strong>المعاينة فقط</strong> قدام المندوب قبل الاستلام — تقدري تشوفي القطعة وتتأكدي من المقاس واللون قبل ما تدفعي.<br><em>Homewear is non-returnable and non-exchangeable for hygiene reasons. Inspection on delivery is permitted before payment.</em><br>للاستفسار قبل الطلب: واتساب <strong>01020676173</strong></p>"
+  },
+  "pants": {
+   "title": "Pants",
+   "size": 5,
+   "description": "<p>Short description.</p>"
+  },
+  "empty": {
+   "title": "Empty",
+   "size": 0,
+   "description": ""
+  }
+ }
+}

@@ -2210,7 +2210,24 @@
   },
   "dressar": {
     "card": {
-      "sale_percent": "خصم {{ percent }}%"
+      "sale_percent": "خصم {{ percent }}%",
+      "colors_label": "الألوان",
+      "colors_count": {
+        "one": "لون واحد",
+        "two": "لونين",
+        "few": "{{ count }} ألوان",
+        "many": "{{ count }} لون",
+        "other": "{{ count }} لون"
+      },
+      "more_colors": {
+        "one": "لون كمان",
+        "two": "لونين كمان",
+        "few": "{{ count }} ألوان كمان",
+        "many": "{{ count }} لون كمان",
+        "other": "{{ count }} لون كمان"
+      },
+      "sizes_label": "المقاسات",
+      "value_sold_out": "{{ value }}، خلص"
     },
     "product": {
       "model_size": "البنت اللي في الصورة لابسة مقاس {{ size }}",
@@ -2220,6 +2237,10 @@
       "label": "كلمنا على واتساب",
       "message_product": "السلام عليكم، حابب أستفسر عن: {{ title }}",
       "message_general": "السلام عليكم، حابب أستفسر عن منتجات {{ shop }}"
+    },
+    "collection": {
+      "read_more": "اقرئي أكتر",
+      "read_less": "عرض أقل"
     }
   }
 }

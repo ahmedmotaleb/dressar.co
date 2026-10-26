@@ -31,7 +31,7 @@ Everything Stage 3 requires already exists in Dawn and is tested upstream, so no
 
 **Transparent header:** the current behaviour (transparent over the homepage hero) is kept as a setting. It is limited to desktop (≥ 990 px), where it is done in CSS alone without measuring heights (no CLS). On phones the header stays solid, because Dawn's mobile drawer positions itself from the header's height.
 
-**Language:** every new storefront string uses an existing locale key. Theme-editor labels for the new settings are plain English, like the existing Dressar settings group. Uppercase and letter-spacing in the navigation are switched off for Arabic (`:lang(ar)`), because letter-spacing breaks Arabic letter joining. The new CSS uses logical properties where the layout is directional, ready for the RTL stage.
+**Language:** every new storefront string uses an existing locale key. Theme-editor labels for the new settings are plain English, like the existing Dressar settings group. Uppercase and letter-spacing in the navigation are switched off for Arabic (`:lang(ar)`), because uppercase means nothing in Arabic and letter-spacing can pull Arabic letters apart in some browsers. (Chromium was checked in Stage 4 and keeps them joined.) The new CSS uses logical properties where the layout is directional, ready for the RTL stage.
 
 ## 2. Files modified
 

@@ -1,5 +1,6 @@
 {% comment %}theme-check-disable ImgLazyLoading{% endcomment %}
 {{ 'component-collection-hero.css' | asset_url | stylesheet_tag }}
+{{ 'dsr-collection.css' | asset_url | stylesheet_tag }}
 
 {%- style -%}
   @media screen and (max-width: 749px) {
@@ -17,8 +18,54 @@
         {{- collection.title | escape -}}
       </h1>
 
-      {%- if section.settings.show_collection_description -%}
-        <div class="collection-hero__description rte">{{ collection.description }}</div>
+      {%- if section.settings.show_collection_description and collection.description != blank -%}
+        {%- comment -%}
+          Dressar: long descriptions open collapsed to a few lines behind
+          "Read more", so the products start higher on phones. Without
+          JavaScript the whole description shows.
+        {%- endcomment -%}
+        <dsr-read-more class="dsr-read-more">
+          <div class="collection-hero__description rte" id="CollectionDescription-{{ section.id }}">
+            {{- collection.description -}}
+          </div>
+          <button
+            type="button"
+            class="dsr-read-more__toggle link link--text"
+            aria-controls="CollectionDescription-{{ section.id }}"
+            aria-expanded="false"
+            data-label-more="{{ 'dressar.collection.read_more' | t | escape }}"
+            data-label-less="{{ 'dressar.collection.read_less' | t | escape }}"
+            hidden
+          >
+            {{- 'dressar.collection.read_more' | t -}}
+          </button>
+        </dsr-read-more>
+        <script>
+          if (!customElements.get('dsr-read-more')) {
+            customElements.define(
+              'dsr-read-more',
+              class extends HTMLElement {
+                connectedCallback() {
+                  const content = this.querySelector('.collection-hero__description');
+                  const toggle = this.querySelector('.dsr-read-more__toggle');
+                  if (!content || !toggle) return;
+                  this.setAttribute('data-collapsed', '');
+                  if (content.scrollHeight <= content.clientHeight + 1) {
+                    this.removeAttribute('data-collapsed');
+                    return;
+                  }
+                  toggle.hidden = false;
+                  toggle.addEventListener('click', () => {
+                    const open = toggle.getAttribute('aria-expanded') === 'true';
+                    toggle.setAttribute('aria-expanded', String(!open));
+                    this.toggleAttribute('data-collapsed', open);
+                    toggle.textContent = open ? toggle.dataset.labelMore : toggle.dataset.labelLess;
+                  });
+                }
+              }
+            );
+          }
+        </script>
       {%- endif -%}
     </div>
 

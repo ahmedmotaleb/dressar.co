@@ -7,7 +7,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { Liquid, Drop } = require('liquidjs');
+const { Liquid, Drop, Value } = require('liquidjs');
 
 const HEADER_COMMENT = /^\s*\/\*[\s\S]*?\*\//;
 const readJson = (file) => JSON.parse(fs.readFileSync(file, 'utf8').replace(HEADER_COMMENT, ''));
@@ -239,6 +239,63 @@ function createHarness({ root, fixtures, locale = 'en.default', origin = 'http:/
     },
     '</form>'
   );
+  // {% paginate collection.products by 16 %}: slices the list and sets `paginate`,
+  // with links that keep the current query string (filters, sort).
+  engine.registerTag('paginate', {
+    parse(token, remain) {
+      const m = /^\s*([\w.]+)\s+by\s+(.+?)\s*$/.exec(token.args);
+      this.path = m[1].split('.');
+      this.list = new Value(m[1], this.liquid);
+      this.by = new Value(m[2], this.liquid);
+      this.tpls = [];
+      const stream = this.liquid.parser
+        .parseStream(remain)
+        .on('tag:endpaginate', () => stream.stop())
+        .on('template', (tpl) => this.tpls.push(tpl))
+        .on('end', () => {
+          throw new Error('paginate not closed');
+        });
+      stream.start();
+    },
+    *render(ctx, emitter) {
+      const list = (yield this.list.value(ctx, false)) || [];
+      const size = Number(yield this.by.value(ctx, false));
+      const all = ctx.getAll();
+      const query = new URLSearchParams(all.__query || '');
+      const pages = Math.max(1, Math.ceil(list.length / size));
+      const current = Math.min(pages, Math.max(1, Number(query.get('page')) || 1));
+      const pageUrl = (n) => {
+        const q = new URLSearchParams(query);
+        q.delete('section_id');
+        if (n > 1) q.set('page', n);
+        else q.delete('page');
+        const qs = q.toString();
+        return `${all.__path || ''}${qs ? `?${qs}` : ''}`;
+      };
+      const parts = [];
+      for (let n = 1; n <= pages; n++) {
+        if (n === 1 || n === pages || Math.abs(n - current) <= 2) parts.push({ title: n, url: pageUrl(n), is_link: n !== current });
+        else if (parts[parts.length - 1].title !== '…') parts.push({ title: '…', url: '', is_link: false });
+      }
+      const paginate = {
+        current_page: current,
+        current_offset: (current - 1) * size,
+        items: list.length,
+        page_size: size,
+        pages,
+        parts,
+        previous: current > 1 ? { title: '«', url: pageUrl(current - 1), is_link: true } : null,
+        next: current < pages ? { title: '»', url: pageUrl(current + 1), is_link: true } : null,
+      };
+      const slice = list.slice((current - 1) * size, current * size);
+      const [root, ...rest] = this.path;
+      const scope = { paginate };
+      if (rest.length === 1) scope[root] = Object.assign(Object.create(Object.getPrototypeOf(all[root] || {})), all[root], { [rest[0]]: slice });
+      ctx.push(scope);
+      yield this.liquid.renderer.renderTemplates(this.tpls, ctx, emitter);
+      ctx.pop();
+    },
+  });
   engine.registerTag('sections', {
     parse(token) {
       this.group = /'([^']+)'/.exec(token.args)[1];
@@ -252,7 +309,10 @@ function createHarness({ root, fixtures, locale = 'en.default', origin = 'http:/
   const t = (key, ...args) => {
     const vars = Object.fromEntries(args.filter(Array.isArray));
     let v = String(key).split('.').reduce((o, k) => (o == null ? o : o[k]), localeData);
-    if (v && typeof v === 'object' && 'count' in vars) v = Number(vars.count) === 1 && v.one ? v.one : v.other;
+    if (v && typeof v === 'object' && 'count' in vars) {
+      const category = new Intl.PluralRules(locale === 'en.default' ? 'en' : locale).select(Number(vars.count));
+      v = v[category] ?? v.other;
+    }
     if (typeof v !== 'string') return `translation missing: ${locale}.${key}`;
     return v.replace(/{{\s*(\w+)\s*}}/g, (_, k) => (vars[k] ?? ''));
   };
@@ -434,6 +494,21 @@ function createHarness({ root, fixtures, locale = 'en.default', origin = 'http:/
       }
       return html;
     },
+    // A JSON template's sections in order, like Shopify's content_for_layout.
+    async renderTemplate(name, globals, { only } = {}) {
+      const template = readJson(path.join(root, 'templates', `${name}.json`));
+      let html = '';
+      for (const sid of template.order) {
+        const s = template.sections[sid];
+        const id = `template--1__${sid}`;
+        if (s.disabled || (only && only !== id)) continue;
+        html +=
+          s.type === '_blocks'
+            ? await harness.renderBlocksSection(id, s, globals)
+            : await harness.renderSection(s.type, id, s, globals);
+      }
+      return html;
+    },
     async renderLayout(globals, contentForLayout) {
       const source = fs.readFileSync(path.join(root, 'layout/theme.liquid'), 'utf8');
       return engine.parseAndRender(source, {}, { globals: { ...globals, content_for_layout: contentForLayout } });
@@ -465,7 +540,7 @@ function svgPlaceholder(name, w, h) {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}"><rect width="100%" height="100%" fill="${tones[hash % tones.length]}"/></svg>`;
 }
 
-async function routeTheme(page, { root, fontsDir, harness, globalsFor, onCartAdd, cartSection, cartJson }) {
+async function routeTheme(page, { root, fontsDir, harness, globalsFor, onCartAdd, cartSection, cartJson, pages, imageSize }) {
   const mime = { '.css': 'text/css', '.js': 'application/javascript', '.svg': 'image/svg+xml', '.json': 'application/json' };
   await page.route('**/*', async (route) => {
     const url = new URL(route.request().url());
@@ -493,7 +568,9 @@ async function routeTheme(page, { root, fontsDir, harness, globalsFor, onCartAdd
     if (url.pathname.startsWith('/img/')) {
       const name = path.basename(url.pathname);
       const p = harness.store.products.find((x) => name.startsWith(x.handle));
-      const [w, h] = /Full_Lookup/.test(name) ? [harness.store.logo.width, harness.store.logo.height] : p ? p.image : [1600, 1000];
+      const [w, h] = /Full_Lookup/.test(name)
+        ? [harness.store.logo.width, harness.store.logo.height]
+        : (imageSize && imageSize(name)) || (p ? p.image : [1600, 1000]);
       return send(svgPlaceholder(name, w, h), 'image/svg+xml');
     }
     if (url.pathname === '/search/suggest')
@@ -505,6 +582,10 @@ async function routeTheme(page, { root, fontsDir, harness, globalsFor, onCartAdd
     if (url.pathname === '/cart' && url.searchParams.get('section_id') && cartSection)
       return send(await cartSection(url.searchParams.get('section_id')));
     if (url.pathname.startsWith('/__page')) return send(page.__html || '');
+    if (pages) {
+      const html = await pages(url, route.request());
+      if (html != null) return send(html);
+    }
     return send('', 'text/plain', 404);
   });
 }
