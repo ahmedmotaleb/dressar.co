@@ -4,7 +4,7 @@
 |---|---|
 | Live theme (never written) | `#167717929191` "Updated copy of DRESSAR — Sales Optimized (DRAFT for review)" |
 | Dev theme | `#167837270247` "DRESSAR DEV (Claude) — from live 2026-10-26", unpublished, duplicated from live on 2026-10-26 |
-| Last synced commit | `d2bee8d` (Stage 2) |
+| Last synced commit | `33ecaf7` (Stage 2 + Arabic locale groundwork) |
 | Sync check | All code files byte-identical to the repo. All non-locale JSON semantically identical. |
 
 ## How changes reach the dev theme today
