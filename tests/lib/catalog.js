@@ -180,11 +180,13 @@ function hash(s) {
 }
 
 // The products of a collection: the fixture's products repeated (with numbered
-// handles and titles) up to the collection's real size.
+// handles and titles) up to the collection's real size, starting `offset`
+// products in so collections side by side (the homepage rows) differ.
 function collectionProducts(catalog, spec) {
   const base = spec.handle === 'home-wear' ? catalog.products.filter((p) => p.type === 'Home Wear' || p.type === 'Blouse') : catalog.products;
+  const offset = spec.offset || 0;
   const out = [];
-  for (let i = 0; out.length < spec.size; i++) out.push(buildProduct(base[i % base.length], Math.floor(i / base.length)));
+  for (let i = 0; out.length < spec.size; i++) out.push(buildProduct(base[(i + offset) % base.length], Math.floor((i + offset) / base.length)));
   return out;
 }
 
@@ -198,6 +200,7 @@ function buildCollection(catalog, handle, query = new URLSearchParams()) {
   const spec = { handle, ...catalog.collections[handle] };
   const all = collectionProducts(catalog, spec);
   const url = `/collections/${handle}`;
+  const image = spec.image ? new MediaDrop({ id: hash(handle), filename: `collection-${handle}.jpg`, width: spec.image[0], height: spec.image[1], alt: '' }) : null;
   const active = {
     availability: query.getAll('filter.v.availability'),
     color: query.getAll('filter.v.option.color'),
@@ -317,7 +320,8 @@ function buildCollection(catalog, handle, query = new URLSearchParams()) {
     title: spec.title,
     description: spec.description,
     url,
-    image: null,
+    image,
+    featured_image: image || (all[0] && all[0].featured_media ? all[0].featured_media.preview_image : null),
     products,
     products_count: products.length,
     all_products_count: all.length,

@@ -77,9 +77,9 @@
         "layout": "full_bleed",
         "slide_height": "medium",
         "slider_visual": "counter",
-        "auto_rotate": true,
+        "auto_rotate": false,
         "change_slides_speed": 5,
-        "image_behavior": "ambient",
+        "image_behavior": "none",
         "show_text_below": false,
         "accessibility_info": "Slideshow about our brand"
       }
@@ -225,7 +225,7 @@
         "title": "تسوّقي حسب احتياجك",
         "heading_size": "h1",
         "image_ratio": "portrait",
-        "columns_desktop": 2,
+        "columns_desktop": 3,
         "color_scheme": "scheme-1",
         "show_view_all": true,
         "columns_mobile": "2",
@@ -291,7 +291,8 @@
         "ai_gen_block_c5191df_7QKqaa"
       ],
       "name": "Featured collection",
-      "settings": {}
+      "settings": {},
+      "disabled": true
     },
     "178380029305c1cfb4": {
       "type": "_blocks",
@@ -350,7 +351,8 @@
       "block_order": [
         "ai_gen_block_c5191df_fyeqDF"
       ],
-      "settings": {}
+      "settings": {},
+      "disabled": true
     },
     "slideshow_ATRpFY": {
       "type": "slideshow",
@@ -401,9 +403,9 @@
         "layout": "full_bleed",
         "slide_height": "adapt_image",
         "slider_visual": "counter",
-        "auto_rotate": true,
+        "auto_rotate": false,
         "change_slides_speed": 5,
-        "image_behavior": "ambient",
+        "image_behavior": "none",
         "show_text_below": false,
         "accessibility_info": "Dressar at home"
       }
@@ -523,7 +525,8 @@
         "ai_gen_block_c5191df_QMDrJR"
       ],
       "name": "Featured collection",
-      "settings": {}
+      "settings": {},
+      "disabled": true
     },
     "1783544336b861804d": {
       "type": "_blocks",
@@ -606,7 +609,8 @@
       "block_order": [
         "ai_gen_block_13d13cc_9RXaWW"
       ],
-      "settings": {}
+      "settings": {},
+      "disabled": true
     },
     "1783545576ddb21e92": {
       "type": "_blocks",
@@ -865,24 +869,170 @@
         "ai_gen_block_c5191df_dsrWF1"
       ],
       "name": "Featured collection",
-      "settings": {}
+      "settings": {},
+      "disabled": true
+    },
+    "dsr_row_white_friday": {
+      "type": "featured-collection",
+      "settings": {
+        "collection": "white-friday-sale",
+        "products_to_show": 8,
+        "title": "عروض الوايت فرايدي 🖤",
+        "heading_size": "h1",
+        "description": "",
+        "show_description": false,
+        "description_style": "body",
+        "columns_desktop": 4,
+        "enable_desktop_slider": true,
+        "full_width": false,
+        "show_view_all": true,
+        "view_all_style": "solid",
+        "color_scheme": "scheme-1",
+        "image_ratio": "tall",
+        "image_shape": "default",
+        "show_secondary_image": true,
+        "show_vendor": false,
+        "show_rating": false,
+        "quick_add": "none",
+        "columns_mobile": "2",
+        "swipe_on_mobile": true,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "dsr_row_new_arrivals": {
+      "type": "featured-collection",
+      "settings": {
+        "collection": "new-arrivals",
+        "products_to_show": 8,
+        "title": "New Arrivals",
+        "heading_size": "h1",
+        "description": "",
+        "show_description": false,
+        "description_style": "body",
+        "columns_desktop": 4,
+        "enable_desktop_slider": true,
+        "full_width": false,
+        "show_view_all": true,
+        "view_all_style": "solid",
+        "color_scheme": "scheme-1",
+        "image_ratio": "tall",
+        "image_shape": "default",
+        "show_secondary_image": true,
+        "show_vendor": false,
+        "show_rating": false,
+        "quick_add": "none",
+        "columns_mobile": "2",
+        "swipe_on_mobile": true,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "dsr_row_best_sellers": {
+      "type": "featured-collection",
+      "settings": {
+        "collection": "best-seller",
+        "products_to_show": 8,
+        "title": "الأكثر مبيعًا",
+        "heading_size": "h1",
+        "description": "",
+        "show_description": false,
+        "description_style": "body",
+        "columns_desktop": 4,
+        "enable_desktop_slider": true,
+        "full_width": false,
+        "show_view_all": true,
+        "view_all_style": "solid",
+        "color_scheme": "scheme-1",
+        "image_ratio": "tall",
+        "image_shape": "default",
+        "show_secondary_image": true,
+        "show_vendor": false,
+        "show_rating": false,
+        "quick_add": "none",
+        "columns_mobile": "2",
+        "swipe_on_mobile": true,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "dsr_row_complete_looks": {
+      "type": "featured-collection",
+      "settings": {
+        "collection": "complete-looks",
+        "products_to_show": 8,
+        "title": "Complete Looks | أطقم متكاملة",
+        "heading_size": "h1",
+        "description": "",
+        "show_description": false,
+        "description_style": "body",
+        "columns_desktop": 4,
+        "enable_desktop_slider": true,
+        "full_width": false,
+        "show_view_all": true,
+        "view_all_style": "solid",
+        "color_scheme": "scheme-1",
+        "image_ratio": "tall",
+        "image_shape": "default",
+        "show_secondary_image": true,
+        "show_vendor": false,
+        "show_rating": false,
+        "quick_add": "none",
+        "columns_mobile": "2",
+        "swipe_on_mobile": true,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "dsr_row_back_to_uni": {
+      "type": "featured-collection",
+      "settings": {
+        "collection": "back-to-university",
+        "products_to_show": 8,
+        "title": "Back to University | لبس الجامعة",
+        "heading_size": "h1",
+        "description": "",
+        "show_description": false,
+        "description_style": "body",
+        "columns_desktop": 4,
+        "enable_desktop_slider": true,
+        "full_width": false,
+        "show_view_all": true,
+        "view_all_style": "solid",
+        "color_scheme": "scheme-1",
+        "image_ratio": "tall",
+        "image_shape": "default",
+        "show_secondary_image": true,
+        "show_vendor": false,
+        "show_rating": false,
+        "quick_add": "none",
+        "columns_mobile": "2",
+        "swipe_on_mobile": true,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
     }
   },
   "order": [
     "slideshow_xmQTbz",
-    "178387929947731171",
-    "dsr_white_friday",
+    "dsr_row_white_friday",
+    "dsr_row_new_arrivals",
     "collection_list_DJAc8Q",
-    "blocks_UNdXLN",
-    "178380029305c1cfb4",
-    "slideshow_ATRpFY",
-    "blocks_QqFNpk",
-    "blocks_ejM6Ri",
+    "dsr_row_best_sellers",
     "1783544336b861804d",
-    "178393405299cfb2a3",
+    "dsr_row_complete_looks",
+    "slideshow_ATRpFY",
+    "dsr_row_back_to_uni",
     "1783545576ddb21e92",
     "multicolumn_YVGgni",
     "1783546806decc8eee",
-    "17855997423e962d80"
+    "17855997423e962d80",
+    "178387929947731171",
+    "dsr_white_friday",
+    "blocks_UNdXLN",
+    "178380029305c1cfb4",
+    "blocks_QqFNpk",
+    "blocks_ejM6Ri",
+    "178393405299cfb2a3"
   ]
 }

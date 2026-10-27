@@ -1,5 +1,5 @@
 {
- "_source": "Products 1-11: options, swatch colours, variant prices, stock, photo sizes and category metafields (facts) copied from the store's Admin API on 2026-10-26 (read-only). Products 12-20: titles, prices, stock and photo sizes from tests/fixtures/store.json, with sizes M-3XL added. Collections are built from these in tests/lib/theme-harness.js. Test data only; the theme never reads it.",
+ "_source": "Products 1-11: options, swatch colours, variant prices, stock, photo sizes and category metafields (facts) copied from the store's Admin API on 2026-10-26 (read-only). Products 12-20: titles, prices, stock and photo sizes from tests/fixtures/store.json, with sizes M-3XL added. Collections: real titles, sizes and photo sizes (Admin API, 2026-10-27); offset rotates the fixture products so homepage rows differ. They are built from these in tests/lib/catalog.js. Test data only; the theme never reads it.",
  "products": [
   {
    "handle": "linen-maxi-skirt-with-front-pockets",
@@ -2549,18 +2549,100 @@
  "collections": {
   "skirts": {
    "title": "Skirts",
+   "image": [
+    2048,
+    2048
+   ],
    "size": 152,
    "description": ""
   },
   "home-wear": {
    "title": "Home Wear",
+   "image": [
+    2048,
+    2048
+   ],
    "size": 22,
    "description": "<p>قطع الهوم وير من درسر — لبس بيتي ناعم ومريح لراحتك الخاصة في البيت. خامات قطنية بتتنفس، قصّات واسعة، وأطقم سهلة وعملية للنوم والقعدة في البيت.</p><p>Dressar's homewear collection — soft, comfortable pieces made for your private comfort at home. Breathable cotton, relaxed cuts, and easy sets for lounging and sleepwear.</p><hr><p><strong>⚠️ ملابس الهوم وير: لا يوجد استبدال أو استرجاع</strong><br>لأسباب صحية، كل قطع الهوم وير وملابس النوم غير قابلة للاستبدال أو الاسترجاع نهائيًا. من حقك <strong>المعاينة فقط</strong> قدام المندوب قبل الاستلام — تقدري تشوفي القطعة وتتأكدي من المقاس واللون قبل ما تدفعي.<br><em>Homewear is non-returnable and non-exchangeable for hygiene reasons. Inspection on delivery is permitted before payment.</em><br>للاستفسار قبل الطلب: واتساب <strong>01020676173</strong></p>"
   },
   "pants": {
    "title": "Pants",
+   "image": [
+    2048,
+    2048
+   ],
    "size": 5,
    "description": "<p>Short description.</p>"
+  },
+  "white-friday-sale": {
+   "title": "عروض الجمعة البيضاء | White Friday Sale",
+   "image": [
+    1092,
+    1440
+   ],
+   "offset": 0,
+   "size": 100,
+   "description": ""
+  },
+  "new-arrivals": {
+   "title": "New Arrivals",
+   "image": [
+    2752,
+    1536
+   ],
+   "offset": 3,
+   "size": 95,
+   "description": ""
+  },
+  "best-seller": {
+   "title": "Best Seller",
+   "image": [
+    2048,
+    2048
+   ],
+   "offset": 6,
+   "size": 25,
+   "description": ""
+  },
+  "complete-looks": {
+   "title": "Complete Looks | أطقم متكاملة",
+   "image": [
+    832,
+    1248
+   ],
+   "offset": 9,
+   "size": 26,
+   "description": ""
+  },
+  "back-to-university": {
+   "title": "Back to University | لبس الجامعة",
+   "image": [
+    2048,
+    2048
+   ],
+   "offset": 12,
+   "size": 26,
+   "description": ""
+  },
+  "dresses": {
+   "title": "Dresses",
+   "image": [
+    2048,
+    2048
+   ],
+   "offset": 2,
+   "size": 107,
+   "description": ""
+  },
+  "shirts-blouses": {
+   "title": "Shirts & Blouses",
+   "image": [
+    2048,
+    2048
+   ],
+   "offset": 5,
+   "size": 84,
+   "description": ""
   },
   "empty": {
    "title": "Empty",

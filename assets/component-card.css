@@ -647,23 +647,6 @@
 }
 
 /* ==========================================================================
-   Dressar - hold the hero images still
-
-   The slideshow sections use Dawn's "ambient" image behaviour, which runs a
-   30s infinite zoom on every hero image (5 across the homepage). On a phone
-   that reads as the page never settling.
-
-   To bring it back: Customize > Slideshow > Image behavior > Ambient, and
-   delete this rule.
-   ========================================================================== */
-
-.animate--ambient,
-.animate--ambient img,
-.animate--ambient > img {
-  animation: none !important;
-}
-
-/* ==========================================================================
    Dressar - Judge.me review carousel overflowed narrow phones
 
    .jdgm-content is a flex row of [arrow][testimonials][arrow] with statically

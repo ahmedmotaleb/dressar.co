@@ -2,7 +2,8 @@
 // enforces on upload but Theme Check doesn't report: schema names of at most
 // 25 characters (Stage 5's first upload was silently refused over a 27-character
 // block name), unique setting IDs, select defaults that exist, and template
-// blocks whose type the section declares.
+// blocks whose type the section declares, and template setting values the
+// schema allows.
 // usage: node tests/schema.test.js [themeRoot]
 'use strict';
 
@@ -92,6 +93,33 @@ for (const file of jsonFiles) {
   }
 }
 check('template blocks are types their section declares', unknown.length === 0, unknown.join('; '));
+
+// Section and block settings in JSON templates hold values their schema allows
+// (select/radio options, range bounds); Shopify refuses the template otherwise.
+const invalid = [];
+const validate = (defs, values, where) => {
+  const byId = Object.fromEntries((defs || []).filter((d) => d.id).map((d) => [d.id, d]));
+  for (const [id, v] of Object.entries(values || {})) {
+    const def = byId[id];
+    if (!def) continue;
+    if ((def.type === 'select' || def.type === 'radio') && !(def.options || []).some((o) => o.value === v)) invalid.push(`${where} ${id}=${v}`);
+    if (def.type === 'range' && (typeof v !== 'number' || v < def.min || v > def.max)) invalid.push(`${where} ${id}=${v}`);
+  }
+};
+for (const file of jsonFiles) {
+  const data = JSON.parse(fs.readFileSync(path.join(root, file), 'utf8').replace(HEADER, ''));
+  for (const [id, section] of Object.entries(data.sections || {})) {
+    if (section.type === '_blocks' || section.type.startsWith('shopify://')) continue;
+    const schema = schemas[`sections/${section.type}.liquid`];
+    if (!schema) continue;
+    validate(schema.settings, section.settings, `${file} ${id}`);
+    for (const [bid, block] of Object.entries(section.blocks || {})) {
+      const bdef = (schema.blocks || []).find((b) => b.type === block.type);
+      if (bdef) validate(bdef.settings, block.settings, `${file} ${id}/${bid}`);
+    }
+  }
+}
+check('template setting values are allowed by their schema (options, ranges)', invalid.length === 0, invalid.join('; '));
 
 let failed = 0;
 for (const r of results) {

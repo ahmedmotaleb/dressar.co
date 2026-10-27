@@ -173,6 +173,26 @@ function shiftLightness(color, pct) {
   return new ColorDrop('#' + [r, g, b].map((x) => Math.round(x * 255).toString(16).padStart(2, '0')).join(''));
 }
 
+// Section and block settings that point at store resources, resolved like
+// Shopify does: collection/page pickers to objects (from globals.__collections
+// and globals.__pages), images to image objects, shopify:// links to paths.
+function resolveResource(def, v, globals) {
+  if (v === '' && ['image_picker', 'collection', 'product', 'page', 'video'].includes(def.type)) return null;
+  if (v == null) return v;
+  switch (def.type) {
+    case 'collection':
+      return typeof v === 'string' ? (globals.__collections ? globals.__collections(v) : null) : v;
+    case 'page':
+      return typeof v === 'string' ? (globals.__pages || {})[v] || null : v;
+    case 'image_picker':
+      return typeof v === 'string' ? new ImageDrop({ filename: v.split('/').pop(), width: 1600, height: 1000, alt: '' }) : v;
+    case 'url':
+      return typeof v === 'string' ? v.replace(/^shopify:\/\/(collections|products|pages|blogs)\//, '/$1/').replace(/^shopify:\/\/collections$/, '/collections') : v;
+    default:
+      return v;
+  }
+}
+
 // ---------- harness ----------
 
 function createHarness({ root, fixtures, locale = 'en.default', origin = 'http://dressar.test' }) {
@@ -333,8 +353,14 @@ function createHarness({ root, fixtures, locale = 'en.default', origin = 'http:/
       const width = (args.find((a) => Array.isArray(a) && a[0] === 'width') || [])[1];
       return `${img && img.valueOf ? img.valueOf() : img}${width ? `?width=${width}` : ''}`;
     },
-    image_tag: (url, ...args) => {
+    // Like Shopify: with no loading argument, images in the template's 4th
+    // section and later get loading="lazy" (eager when section.index is nil).
+    image_tag: function (url, ...args) {
       const o = Object.fromEntries(args.filter(Array.isArray));
+      if (o.loading === undefined) {
+        const index = this.context.getSync(['section', 'index']);
+        if (index > 3) o.loading = 'lazy';
+      }
       const extra = ['class', 'alt', 'sizes', 'loading', 'fetchpriority', 'width', 'height']
         .filter((k) => o[k] !== undefined && o[k] !== false)
         .map((k) => ` ${k}="${attr(k === 'height' || k === 'width' ? Math.round(Number(o[k])) : o[k])}"`)
@@ -461,8 +487,7 @@ function createHarness({ root, fixtures, locale = 'en.default', origin = 'http:/
           if (!def.id) continue;
           let v = values[def.id] !== undefined ? values[def.id] : def.default;
           if (def.type === 'link_list') v = v ? globals.__menus[v] || null : null;
-          if (def.type === 'page') v = v ? (globals.__pages || {})[v] || null : null;
-          if (def.type === 'image_picker' && v === '') v = null;
+          v = resolveResource(def, v, globals);
           out[def.id] = v;
         }
         return out;
@@ -477,8 +502,9 @@ function createHarness({ root, fixtures, locale = 'en.default', origin = 'http:/
         });
       return { source, schema, section: { id, settings: resolve(schema.settings, json.settings), blocks } };
     },
-    async renderSection(type, id, json, globals, { groupClass = '' } = {}) {
+    async renderSection(type, id, json, globals, { groupClass = '', index } = {}) {
       const { source, schema, section } = harness.sectionObject(type, id, json, globals);
+      if (index) section.index = index;
       // Settings of type liquid are Liquid themselves; Shopify renders them first.
       for (const block of section.blocks) {
         const defs = ((schema.blocks || []).find((d) => d.type === block.type) || {}).settings || [];
@@ -505,7 +531,7 @@ function createHarness({ root, fixtures, locale = 'en.default', origin = 'http:/
           if (!def.id) continue;
           let v = (b.settings || {})[def.id] ?? def.default;
           if (def.type === 'link_list') v = v ? globals.__menus[v] || null : null;
-          settingsOut[def.id] = v;
+          settingsOut[def.id] = resolveResource(def, v, globals);
         }
         html += await engine.parseAndRender(source, {}, {
           globals: { ...globals, block: { id: bid, type: b.type, settings: settingsOut, shopify_attributes: '' } },
@@ -533,14 +559,18 @@ function createHarness({ root, fixtures, locale = 'en.default', origin = 'http:/
     async renderTemplate(name, globals, { only } = {}) {
       const template = readJson(path.join(root, 'templates', `${name}.json`));
       let html = '';
+      let index = 0;
       for (const sid of template.order) {
         const s = template.sections[sid];
         const id = `template--1__${sid}`;
-        if (s.disabled || (only && only !== id)) continue;
+        if (s.disabled) continue;
+        // section.index: the section's 1-based position among the template's rendered sections.
+        index++;
+        if (only && only !== id) continue;
         html +=
           s.type === '_blocks'
             ? await harness.renderBlocksSection(id, s, globals)
-            : await harness.renderSection(s.type, id, s, globals);
+            : await harness.renderSection(s.type, id, s, globals, { index });
       }
       return html;
     },
