@@ -46,6 +46,8 @@ Every deletion was proven unused first: no reference anywhere in the theme. The 
 - **App integration code** (Judge.me, Sympl, Whatflow, Preorder Duck, WB FBT), untouched.
 - **`snippets/quick-order-product-row.liquid`** (Dawn's own) and `snippets/dsr-model-size.liquid`. Theme Check calls the latter orphaned because it is rendered from a Custom Liquid block in `templates/product.json`, which it can't see.
 
+**On the dev theme**, the 3 changed files are synced (MD5-identical). The 19 deleted files are still there: this environment's Shopify connector refuses file deletion on any theme. They are unreferenced and load nowhere; `docs/dev-theme.md` lists them and the two ways to remove them (GitHub-connected theme, or Edit code).
+
 ## 3. Tests
 
 All commands run from `tests/` with `npm test`. Each suite also runs in Arabic with `LOCALE=ar node <suite>.test.js ..`. The harness renders the theme's real Liquid, CSS and JavaScript in Chromium, with store data from the Admin API (read-only).
@@ -194,6 +196,7 @@ Only things that need Shopify Admin or a business decision:
    - `custom.model_size` for photographed products
 8. **Brand copy:** consider naming hijab-friendly styling and maxi lengths on the homepage (`stage-7.md`).
 9. **Apps:** switch off the Whatflow embed if only its (hidden) button used it.
+10. **Dev theme leftovers:** before publishing `#167837270247`, delete the 19 unused files that Stage 9 removed from the branch (`docs/dev-theme.md`), or publish a GitHub-connected theme built from the branch instead.
 
 ## 8. Known limitations
 
