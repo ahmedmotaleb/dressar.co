@@ -37,10 +37,6 @@
         "padding_bottom": 36
       }
     },
-    "17858764834ef3df09": {
-      "type": "_blocks",
-      "settings": {}
-    },
     "1783850161d9269d0b": {
       "type": "_blocks",
       "blocks": {
@@ -124,7 +120,6 @@
   "order": [
     "banner",
     "product-grid",
-    "17858764834ef3df09",
     "1783850161d9269d0b"
   ]
 }

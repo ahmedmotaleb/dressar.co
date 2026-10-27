@@ -595,58 +595,6 @@
 }
 
 /* ==========================================================================
-   Dressar - make the whole product card clickable in AI product-grid blocks
-
-   The AI-generated product grid (blocks/ai_gen_block_8e2a527.liquid) wraps only
-   the product title in an <a>, so the product image was not a link. This mirrors
-   the .card__heading a::after technique above to turn the entire card into the
-   link, while keeping the image arrows, colour swatches and size buttons on top.
-   ========================================================================== */
-
-[data-product-card][class*='ai-product-card-'] {
-  position: relative;
-}
-
-[class*='ai-product-card-title-'] a::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 1;
-}
-
-[data-color-swatch],
-[data-size-button] {
-  position: relative;
-  z-index: 2;
-}
-
-[data-image-prev],
-[data-image-next] {
-  z-index: 3;
-}
-
-/* ==========================================================================
-   Dressar - product card links were falling back to browser defaults
-
-   The collection-page grid block (ai_gen_block_8ec498c) ships no rule for its
-   own <a> tags, so every product link rendered as #0000EE blue with an
-   underline - 100 of them on a single collection page. The homepage block
-   already sets `color: inherit; text-decoration: none`, so this only needs to
-   cover the collection grid.
-   ========================================================================== */
-
-[class*='ai-product-card'] a,
-[class*='ai-product-card'] a:visited,
-[class*='ai-product-card'] a:hover,
-[class*='ai-product-card'] a:focus {
-  color: #121212;
-  text-decoration: none;
-}
-
-/* ==========================================================================
    Dressar - Judge.me review carousel overflowed narrow phones
 
    .jdgm-content is a flex row of [arrow][testimonials][arrow] with statically
@@ -683,84 +631,9 @@
 }
 
 /* ==========================================================================
-   Dressar - product card design
-
-   Reworked towards the reference the owner picked (mavin-wear.com): a small
-   uppercase widely-tracked product name, a heavier price sitting under it, and
-   a warm neutral behind the photography instead of a cold grey.
-
-   The `:not([hidden])` on some selectors is only there to raise specificity -
-   the block prints its own sizes in an inline <style> further down the page,
-   which would otherwise win on source order at equal specificity.
-
-   Sizes are in px on purpose: this theme sets html { font-size: 11px }, so rem
-   values here would read very differently from the rest of the stylesheet.
+   Dressar - product page price: the product's own price only, not the cards
+   in "Complete the look" further down the same page (Stage 6).
    ========================================================================== */
-
-/* Product name - small, uppercase, generously tracked */
-[class*='ai-product-card__title-']:not([hidden]),
-[class*='ai-product-card__title-'] a {
-  font-size: 12.5px;
-  font-weight: 400;
-  line-height: 1.4;
-  text-transform: uppercase;
-  letter-spacing: 0.09em;
-  color: #121212;
-}
-
-/* The price carries the weight instead of the name */
-[class*='ai-product-card__price-']:not([class*='wrapper']) {
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-}
-
-[class*='ai-product-card__compare-price-']:not([hidden]) {
-  font-size: 12px;
-  font-weight: 400;
-}
-
-/* The sale price and the struck-through price read as one unit, so they sit
-   close together and share a baseline rather than being centred to each other. */
-[class*='ai-product-card__price-wrapper-']:not([hidden]) {
-  gap: 5px;
-  align-items: baseline;
-  margin-top: 6px;
-}
-
-/* Warm neutral behind the photography, matching the announcement bar */
-[class*='ai-product-card__image-wrapper-']:not([hidden]) {
-  background-color: #f2ede8;
-}
-
-/* Discount flag - tighter and readable at a glance */
-[class*='ai-product-card__badge-']:not([hidden]) {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  border-radius: 3px;
-  padding: 5px 9px;
-  line-height: 1;
-}
-
-@media screen and (min-width: 750px) {
-  [class*='ai-product-card__title-']:not([hidden]),
-  [class*='ai-product-card__title-'] a {
-    font-size: 13px;
-  }
-
-  [class*='ai-product-card__price-']:not([class*='wrapper']) {
-    font-size: 15px;
-  }
-
-  [class*='ai-product-card__compare-price-']:not([hidden]) {
-    font-size: 13px;
-  }
-}
-
-/* Product page price - the product's own price only, not the cards in
-   "Complete the look" further down the same page (Stage 6). */
 
 .product__info-container .price--large .price-item {
   font-size: 22px;

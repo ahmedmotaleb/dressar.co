@@ -257,7 +257,11 @@ function createHarness({ root, fixtures, locale = 'en.default', origin = 'http:/
       const id = /id:\s*'([^']+)'/.exec(args);
       const cls = /class:\s*'([^']+)'/.exec(args);
       const type = /^\s*'([^']+)'/.exec(args);
-      return `<form method="post" action="/${type ? type[1] : 'form'}"${id ? ` id="${id[1]}"` : ''}${cls ? ` class="${cls[1]}"` : ''}>`;
+      // Where Shopify's form tag posts, by form type.
+      const actions = { customer: '/contact', contact: '/contact', localization: '/localization', cart: '/cart', product: '/cart/add' };
+      const action = (type && actions[type[1]]) || `/${type ? type[1] : 'form'}`;
+      const formType = type ? `<input type="hidden" name="form_type" value="${type[1]}">` : '';
+      return `<form method="post" action="${action}${id ? `#${id[1]}` : ''}"${id ? ` id="${id[1]}"` : ''}${cls ? ` class="${cls[1]}"` : ''}>${formType}`;
     },
     '</form>'
   );

@@ -66,7 +66,8 @@ function storefront({ root, harness, cartLines = [] }) {
         results_count: found.length,
         products_count: found.length,
         all_products_count: results.all_products_count,
-        filters: results.filters,
+        // No products, no filter values: Dawn then shows its "no results" message.
+        filters: found.length ? results.filters : [],
         sort_options: results.sort_options,
         sort_by: results.sort_by,
         default_sort_by: 'relevance',
