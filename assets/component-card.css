@@ -776,21 +776,22 @@
   }
 }
 
-/* Product page price - scoped by template so collection/cart prices are untouched */
+/* Product page price - the product's own price only, not the cards in
+   "Complete the look" further down the same page (Stage 6). */
 
-main[data-template='product'] .price .price-item {
+.product__info-container .price--large .price-item {
   font-size: 22px;
   font-weight: 500;
 }
 
 @media screen and (min-width: 750px) {
-  main[data-template='product'] .price .price-item {
+  .product__info-container .price--large .price-item {
     font-size: 26px;
   }
 }
 
-main[data-template='product'] .price .price-item--regular s,
-main[data-template='product'] .price__sale .price-item--regular {
+.product__info-container .price--large .price-item--regular s,
+.product__info-container .price--large .price__sale .price-item--regular {
   font-size: 16px;
   font-weight: 400;
 }

@@ -306,13 +306,14 @@
         "columns_desktop": 4,
         "columns_mobile": "2",
         "color_scheme": "scheme-1",
-        "image_ratio": "portrait",
+        "image_ratio": "tall",
         "image_shape": "default",
         "show_secondary_image": true,
         "show_vendor": false,
         "show_rating": true,
         "padding_top": 36,
-        "padding_bottom": 28
+        "padding_bottom": 28,
+        "recommendation_intent": "complementary_related"
       }
     },
     "178648157455ed3771": {

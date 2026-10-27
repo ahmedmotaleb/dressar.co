@@ -435,6 +435,7 @@ function createHarness({ root, fixtures, locale = 'en.default', origin = 'http:/
           cart_change_url: '/cart/change',
           cart_update_url: '/cart/update',
           predictive_search_url: '/search/suggest',
+          product_recommendations_url: '/recommendations/products',
           account_login_url: '/account/login',
           all_products_collection_url: '/collections/all',
         },

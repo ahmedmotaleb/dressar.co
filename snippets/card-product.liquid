@@ -31,6 +31,10 @@
   {{ 'quantity-popover.css' | asset_url | stylesheet_tag }}
   {%- comment -%} Dressar card layer (docs/stages/stage-4.md); its script loads from layout/theme.liquid. {%- endcomment -%}
   {{ 'dsr-card.css' | asset_url | stylesheet_tag }}
+  {%- comment -%} Swatch base styles: Dawn only loads them with the filters and the product form. {%- endcomment -%}
+  {%- if settings.card_show_swatches -%}
+    {{ 'component-swatch.css' | asset_url | stylesheet_tag }}
+  {%- endif -%}
   {%- if settings.card_media_background != blank -%}
     {%- style -%}
       .product-card-wrapper { --dsr-card-media-bg: {{ settings.card_media_background }}; }

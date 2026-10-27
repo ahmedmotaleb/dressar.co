@@ -76,6 +76,8 @@
           </span>
         </button>
       </div>
+      {%- comment -%} Dressar: free-shipping progress, part of every drawer re-render (snippets/dsr-free-shipping.liquid). {%- endcomment -%}
+      {%- render 'dsr-free-shipping' -%}
       <cart-drawer-items
         view-event-payload="{{ cart | standard_event_data: 'view', context: 'dialog' | escape }}"
         view-event-trigger="manual"

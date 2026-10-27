@@ -1562,6 +1562,27 @@
         "label": "Size option names",
         "info": "Comma-separated, not case-sensitive.",
         "default": "Size, Sizes, المقاس, مقاس"
+      },
+      {
+        "type": "header",
+        "content": "Free shipping"
+      },
+      {
+        "type": "paragraph",
+        "content": "Shows progress towards free shipping in the cart drawer and on the cart page, and the free-shipping line under the product price. It only repeats what the store's free-shipping discount does: keep it in step with Discounts, and switch it off when the offer ends."
+      },
+      {
+        "type": "checkbox",
+        "id": "free_shipping_enabled",
+        "label": "Show free-shipping progress",
+        "default": true
+      },
+      {
+        "type": "number",
+        "id": "free_shipping_threshold",
+        "label": "Free shipping from (EGP)",
+        "info": "Order subtotal after product discounts, as in the discount's minimum purchase amount.",
+        "default": 1500
       }
     ]
   }

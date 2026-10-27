@@ -168,6 +168,8 @@ async function main() {
     const olive = v(skirt, 'olive', 'L', 'Linen');
     check(`${tag} sale badge from the locale: % and amount saved`, s0.badge === t('dressar.product.sale_badge', { percent: 28, amount: money(10100) }), s0.badge);
     check(`${tag} price and compare-at of the selected variant`, s0.price === 249 && s0.compare === 350, JSON.stringify(s0));
+    const priceSize = await page.evaluate((sel) => parseFloat(getComputedStyle(document.querySelector(`${sel} .price--large .price__sale .price-item--last`)).fontSize), info);
+    check(`${tag} product price at its Dressar size (22px phones, 26px from 750px)`, priceSize === (width < 750 ? 22 : 26), String(priceSize));
     check(`${tag} Sympl gets the selected variant's price`, s0.sympl.length === 1 && Number(s0.sympl[0]) === 249, s0.sympl.join());
     const struck = await page.evaluate((sel) =>
       [...document.querySelectorAll(`${sel} variant-selects fieldset:nth-of-type(2) input`)].map((i) => `${i.value}:${i.classList.contains('disabled') ? 'x' : 'ok'}:${getComputedStyle(document.querySelector(`label[for="${i.id}"]`)).textDecorationLine}`), info);

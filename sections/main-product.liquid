@@ -126,7 +126,7 @@
                       <span>{{ 'products.product.volume_pricing.note' | t }}</span>
                     </div>
                   {%- endif -%}
-                  {%- if cart.taxes_included or cart.duties_included or shop.shipping_policy.body != blank -%}
+                  {%- if cart.taxes_included or cart.duties_included or shop.shipping_policy.body != blank or settings.free_shipping_enabled -%}
                     <div class="product__tax caption rte">
                       {%- if cart.duties_included and cart.taxes_included -%}
                         {{ 'products.product.duties_and_taxes_included' | t }}
@@ -135,7 +135,19 @@
                       {%- elsif cart.duties_included -%}
                         {{ 'products.product.duties_included' | t }}
                       {%- endif -%}
-                      {%- if shop.shipping_policy.body != blank -%}
+                      {%- comment -%}
+                        Dressar: the free-shipping offer comes from Theme settings > Dressar >
+                        Free shipping (the same switch and threshold as the cart's progress bar),
+                        not from a sentence typed into a locale file.
+                      {%- endcomment -%}
+                      {%- if settings.free_shipping_enabled and settings.free_shipping_threshold > 0 -%}
+                        {%- assign dsr_free_from = settings.free_shipping_threshold | times: 100 | money -%}
+                        {%- if shop.shipping_policy.body != blank -%}
+                          {{ 'dressar.free_shipping.policy_link_html' | t: amount: dsr_free_from, link: shop.shipping_policy.url }}
+                        {%- else -%}
+                          {{ 'dressar.free_shipping.policy' | t: amount: dsr_free_from }}
+                        {%- endif -%}
+                      {%- elsif shop.shipping_policy.body != blank -%}
                         {{ 'products.product.shipping_policy_html' | t: link: shop.shipping_policy.url }}
                       {%- endif -%}
                     </div>

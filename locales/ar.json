@@ -1859,7 +1859,7 @@
       "taxes_included": "الضرائب مشمولة.",
       "duties_included": "الرسوم الجمركية مشمولة.",
       "duties_and_taxes_included": "الرسوم الجمركية والضرائب مشمولة.",
-      "shipping_policy_html": "🚚 شحن مجاني للطلبات من 1500 جنيه — <a href=\"{{ link }}\">تفاصيل الشحن</a>"
+      "shipping_policy_html": "<a href=\"{{ link }}\">الشحن</a> بيتحسب عند الدفع."
     },
     "modal": {
       "label": "معرض الصور"
@@ -2252,6 +2252,15 @@
     "collection": {
       "read_more": "اقرئي أكتر",
       "read_less": "عرض أقل"
+    },
+    "free_shipping": {
+      "remaining_html": "فاضلك <strong>{{ amount }}</strong> والشحن يبقى مجاني",
+      "qualified": "تمام! الشحن مجاني على طلبك",
+      "policy": "شحن مجاني للطلبات من {{ amount }}.",
+      "policy_link_html": "شحن مجاني للطلبات من {{ amount }}. <a href=\"{{ link }}\">تفاصيل الشحن</a>"
+    },
+    "recommendations": {
+      "fallback_heading": "ممكن يعجبك كمان"
     }
   }
 }
