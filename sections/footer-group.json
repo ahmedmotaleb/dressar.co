@@ -1,0 +1,80 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "name": "t:sections.footer.name",
+  "type": "footer",
+  "sections": {
+    "footer": {
+      "type": "footer",
+      "blocks": {
+        "image_w9jL8t": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/Full_Lookup_Clean_-_Gold.png",
+            "image_width": 275,
+            "alignment": ""
+          }
+        },
+        "text_XHibPV": {
+          "type": "text",
+          "settings": {
+            "heading": "ABOUT DRESSAR",
+            "subtext": "<p>دِرسَر بتصمم قطع متناسقة مع بعضها — كل بلوزة معمولة تليق على جيبة أو بنطلون من نفس التشكيلة، عشان تلبسي كامل من غير ما تدوّري في خمس محلات. قصّات واسعة، خامات مبطّنة غير شفافة، ومقاسات صادقة بالسنتيمتر.</p><p>Dressar designs pieces made to work together — every blouse pairs with a skirt or trouser from the same collection, so you dress complete without hunting across five stores. Relaxed cuts, fully lined fabrics, honest measurements.</p><p><a href=\"/pages/about\" title=\"About us\">اعرفي أكتر | LEARN MORE</a></p>"
+          }
+        },
+        "text_dRLmPR": {
+          "type": "text",
+          "settings": {
+            "heading": "support",
+            "subtext": "<p><a href=\"/pages/faq\" title=\"FAQ\">FAQ</a></p><p><a href=\"/pages/size-chart\" title=\"Size Chart\">HOW TO PICK YOUR SIZE</a></p><p>Contact us :</p><p>   - whats app: (+20) 1020676173</p><p>   - Email: Dressar.brand@gmail.com</p>"
+          }
+        },
+        "link_list_iH3Et6": {
+          "type": "link_list",
+          "settings": {
+            "heading": "",
+            "menu": "footer-1"
+          }
+        },
+        "brand_information_kjGkap": {
+          "type": "brand_information",
+          "disabled": true,
+          "settings": {
+            "show_social": true
+          }
+        }
+      },
+      "block_order": [
+        "image_w9jL8t",
+        "text_XHibPV",
+        "text_dRLmPR",
+        "link_list_iH3Et6",
+        "brand_information_kjGkap"
+      ],
+      "settings": {
+        "color_scheme": "scheme-3",
+        "newsletter_enable": true,
+        "newsletter_heading": "Subscribe to our emails",
+        "enable_follow_on_shop": true,
+        "show_social": true,
+        "enable_country_selector": true,
+        "enable_language_selector": true,
+        "payment_enable": true,
+        "show_policy": true,
+        "margin_top": 0,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    }
+  },
+  "order": [
+    "footer"
+  ]
+}

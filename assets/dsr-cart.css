@@ -1,0 +1,54 @@
+/* ==========================================================================
+   Dressar cart (Stage 6, docs/stages/stage-6.md)
+
+   Free-shipping progress in the cart drawer and on the cart page
+   (snippets/dsr-free-shipping.liquid). Loaded with the drawer's styles
+   (layout/theme.liquid) and by the cart page footer.
+   ========================================================================== */
+
+.dsr-shipping {
+  margin: 0 0 1.6rem;
+  padding: 1.2rem 1.4rem 1.4rem;
+  border: 0.1rem solid rgba(var(--color-foreground), 0.1);
+  background: rgba(var(--color-foreground), 0.03);
+}
+
+cart-drawer .dsr-shipping {
+  margin: 0 0 1.2rem;
+}
+
+.dsr-shipping__text {
+  margin: 0 0 0.9rem;
+  font-size: 1.3rem;
+  line-height: 1.5;
+  text-align: center;
+  color: rgb(var(--color-foreground));
+}
+
+.dsr-shipping__text strong,
+.dsr-shipping__text .money {
+  font-weight: 600;
+}
+
+.dsr-shipping__track {
+  height: 0.3rem;
+  overflow: hidden;
+  background: rgba(var(--color-foreground), 0.12);
+}
+
+.dsr-shipping__fill {
+  display: block;
+  height: 100%;
+  background: rgb(var(--color-foreground));
+  transition: width 0.35s ease;
+}
+
+.dsr-shipping--qualified .dsr-shipping__text {
+  font-weight: 600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dsr-shipping__fill {
+    transition: none;
+  }
+}

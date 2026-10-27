@@ -1,0 +1,359 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "17851584660d57e669": {
+      "type": "_blocks",
+      "blocks": {
+        "ai_gen_block_35c082d_XfYHUG": {
+          "type": "ai_gen_block_35c082d",
+          "disabled": true,
+          "settings": {
+            "show_original_price": true,
+            "show_discount_badge": true,
+            "badge_format": "percentage",
+            "alignment": "baseline",
+            "spacing": 12,
+            "desktop_width_percent": 100,
+            "original_price_size": 16,
+            "original_price_color": "#999999",
+            "original_price_weight": "400",
+            "current_price_size": 24,
+            "current_price_color": "#121212",
+            "current_price_weight": "700",
+            "badge_font_size": 14,
+            "badge_font_weight": "600",
+            "badge_bg_color": "#334fb4",
+            "badge_text_color": "#ffffff",
+            "badge_padding_vertical": 4,
+            "badge_padding_horizontal": 12,
+            "badge_border_radius": 4
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "ai_gen_block_35c082d_XfYHUG"
+      ],
+      "settings": {}
+    },
+    "main": {
+      "type": "main-product",
+      "blocks": {
+        "share": {
+          "type": "share",
+          "settings": {
+            "share_label": "شاركي | Share"
+          }
+        },
+        "title": {
+          "type": "title",
+          "settings": {}
+        },
+        "judge_me_reviews_preview_badge_amPJgp": {
+          "type": "shopify://apps/judge-me-reviews/blocks/preview_badge/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
+          "settings": {}
+        },
+        "price": {
+          "type": "price",
+          "settings": {}
+        },
+        "sku_r8AL6g": {
+          "type": "sku",
+          "disabled": true,
+          "settings": {
+            "text_style": "body"
+          }
+        },
+        "rating_izydnW": {
+          "type": "rating",
+          "disabled": true,
+          "settings": {}
+        },
+        "variant_picker": {
+          "type": "variant_picker",
+          "settings": {
+            "picker_type": "button",
+            "swatch_shape": "circle"
+          }
+        },
+        "quantity_selector": {
+          "type": "quantity_selector",
+          "settings": {}
+        },
+        "buy_buttons": {
+          "type": "buy_buttons",
+          "settings": {
+            "show_dynamic_checkout": false,
+            "show_gift_card_recipient": false
+          }
+        },
+        "cod_note": {
+          "type": "text",
+          "disabled": true,
+          "settings": {
+            "text": "الدفع عند الاستلام • شحن لكل محافظات مصر • معاينة قبل الاستلام واستبدال خلال ٣ أيام • اسألي على مقاسك واتساب 01020676173&nbsp;",
+            "text_style": "body"
+          }
+        },
+        "description": {
+          "type": "description",
+          "settings": {}
+        },
+        "dsr_model_size": {
+          "type": "custom_liquid",
+          "settings": {
+            "custom_liquid": "{%- render 'dsr-model-size', product: product -%}"
+          }
+        },
+        "collapsible_tab_RC7gzi": {
+          "type": "collapsible_tab",
+          "settings": {
+            "heading": "جدول المقاسات | Size Chart",
+            "icon": "clipboard",
+            "content": "<p>قياسات القطعة دي بالسنتيمتر موجودة فوق في الوصف. لجدول قياسات الجسم الكامل: <a href=\"/pages/size-chart\" target=\"_blank\" title=\"Size Chart\">اضغطي هنا 📏</a></p><p>مش متأكدة؟ ابعتيلنا طولك ووزنك واتساب <strong>01020676173</strong> وهنقولك مقاسك.</p>",
+            "page": ""
+          }
+        },
+        "collapsible_tab_CYGWxM": {
+          "type": "collapsible_tab",
+          "settings": {
+            "heading": "الشحن والاستبدال | Shipping & Exchange",
+            "icon": "truck",
+            "content": "<p>🚚 التوصيل لكل محافظات مصر — <a href=\"/policies/shipping-policy\" target=\"_blank\" title=\"Shipping Policy\">تفاصيل الشحن</a></p><p>🔄 الاستبدال خلال 3 ايام والاسترجاع خلال يوم واحد — <a href=\"/policies/refund-policy\" title=\"Refund Policy\">اقري السياسة</a></p>",
+            "page": ""
+          }
+        },
+        "collapsible_tab_qDAwhz": {
+          "type": "collapsible_tab",
+          "settings": {
+            "heading": "تعليمات العناية | Care",
+            "icon": "leather",
+            "content": "",
+            "page": "care-instructions"
+          }
+        },
+        "inventory_dsr": {
+          "type": "inventory",
+          "settings": {
+            "text_style": "body",
+            "inventory_threshold": 3,
+            "show_inventory_quantity": true
+          }
+        },
+        "dsr_trust": {
+          "type": "custom_liquid",
+          "settings": {
+            "custom_liquid": "<div class=\"dsr-trust\" dir=\"rtl\">\n  <ul class=\"dsr-trust__list\" role=\"list\">\n    <li><span aria-hidden=\"true\">💵</span>الدفع عند الاستلام</li>\n    <li><span aria-hidden=\"true\">👀</span>معاينة قبل ما تدفعي</li>\n    <li><span aria-hidden=\"true\">🔄</span>استبدال خلال ٣ أيام</li>\n    <li><span aria-hidden=\"true\">🚚</span>توصيل لكل محافظات مصر</li>\n  </ul>\n  {%- capture dsr_wa_text -%}السلام عليكم، محتاجة أعرف مقاسي في: {{ product.title }} {{ shop.url }}{{ product.url }}{%- endcapture -%}\n  <a class=\"dsr-trust__help\" href=\"https://wa.me/201020676173?text={{ dsr_wa_text | url_encode }}\" target=\"_blank\" rel=\"noopener\">💬 مش متأكدة من مقاسك؟ ابعتيلنا طولك ووزنك على واتساب</a>\n</div>"
+          },
+          "disabled": true
+        },
+        "size_guide": {
+          "type": "popup",
+          "settings": {
+            "text": "جدول المقاسات | Size Chart",
+            "page": "size-chart"
+          }
+        },
+        "dsr_size_help": {
+          "type": "dsr_size_help",
+          "settings": {}
+        },
+        "dsr_reassurance": {
+          "type": "icon-with-text",
+          "settings": {
+            "layout": "horizontal",
+            "icon_1": "price_tag",
+            "heading_1": "الدفع عند الاستلام بعد المعاينة",
+            "icon_2": "return",
+            "heading_2": "استبدال خلال ٣ أيام",
+            "icon_3": "truck",
+            "heading_3": "توصيل لكل محافظات مصر"
+          }
+        },
+        "dsr_facts": {
+          "type": "dsr_facts",
+          "settings": {
+            "heading": "الخامة والقَصّة | Fabric & Fit",
+            "icon": "leather",
+            "open": false
+          }
+        },
+        "dsr_breadcrumbs": {
+          "type": "dsr_breadcrumbs",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "dsr_breadcrumbs",
+        "title",
+        "price",
+        "judge_me_reviews_preview_badge_amPJgp",
+        "sku_r8AL6g",
+        "rating_izydnW",
+        "variant_picker",
+        "size_guide",
+        "dsr_size_help",
+        "dsr_model_size",
+        "inventory_dsr",
+        "quantity_selector",
+        "buy_buttons",
+        "dsr_reassurance",
+        "dsr_trust",
+        "cod_note",
+        "description",
+        "dsr_facts",
+        "collapsible_tab_RC7gzi",
+        "collapsible_tab_qDAwhz",
+        "collapsible_tab_CYGWxM",
+        "share"
+      ],
+      "settings": {
+        "enable_sticky_info": true,
+        "color_scheme": "scheme-1",
+        "media_size": "medium",
+        "constrain_to_viewport": false,
+        "media_fit": "contain",
+        "gallery_layout": "thumbnail_slider",
+        "mobile_thumbnails": "show",
+        "media_position": "left",
+        "image_zoom": "hover",
+        "hide_variants": true,
+        "enable_video_looping": true,
+        "padding_top": 36,
+        "padding_bottom": 12
+      }
+    },
+    "disclosures": {
+      "type": "disclosures",
+      "settings": {
+        "heading": "Disclosures",
+        "heading_size": "h2",
+        "open_by_default": false,
+        "color_scheme": "",
+        "padding_top": 36,
+        "padding_bottom": 0
+      }
+    },
+    "17835520174d0243a5": {
+      "type": "_blocks",
+      "blocks": {
+        "ai_gen_block_4dc647a_d6nfQE": {
+          "type": "ai_gen_block_4dc647a",
+          "disabled": true,
+          "settings": {
+            "heading": "Recently Viewed",
+            "empty_message": "No recently viewed products",
+            "max_products": 4,
+            "show_vendor": false,
+            "show_sale_badge": true,
+            "desktop_width_percent": 100,
+            "section_padding": 40,
+            "products_per_row": 4,
+            "products_per_row_tablet": 3,
+            "products_per_row_mobile": "2",
+            "grid_gap": 20,
+            "heading_alignment": "left",
+            "heading_size": 32,
+            "heading_spacing": 24,
+            "heading_color": "#121212",
+            "card_background": "#ffffff",
+            "card_border_radius": 0,
+            "card_padding": 16,
+            "product_title_size": 16,
+            "product_title_color": "#121212",
+            "vendor_color": "#666666",
+            "price_size": 16,
+            "price_color": "#121212",
+            "compare_price_color": "#999999",
+            "badge_background": "#334fb4",
+            "badge_text_color": "#ffffff",
+            "badge_border_radius": 4
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "ai_gen_block_4dc647a_d6nfQE"
+      ],
+      "settings": {}
+    },
+    "17851581515604d190": {
+      "type": "apps",
+      "blocks": {
+        "judge_me_reviews_featured_carousel_MxAqLd": {
+          "type": "shopify://apps/judge-me-reviews/blocks/featured_carousel/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
+          "settings": {
+            "maxwidth": 1080
+          }
+        }
+      },
+      "block_order": [
+        "judge_me_reviews_featured_carousel_MxAqLd"
+      ],
+      "settings": {
+        "include_margins": true
+      }
+    },
+    "related-products": {
+      "type": "related-products",
+      "settings": {
+        "heading": "كمّلي اللوك | Complete the look",
+        "heading_size": "h2",
+        "products_to_show": 4,
+        "columns_desktop": 4,
+        "columns_mobile": "2",
+        "color_scheme": "scheme-1",
+        "image_ratio": "tall",
+        "image_shape": "default",
+        "show_secondary_image": true,
+        "show_vendor": false,
+        "show_rating": true,
+        "padding_top": 36,
+        "padding_bottom": 28,
+        "recommendation_intent": "complementary_related"
+      }
+    },
+    "178648157455ed3771": {
+      "type": "apps",
+      "blocks": {
+        "judge_me_reviews_review_widget_Ugc6mn": {
+          "type": "shopify://apps/judge-me-reviews/blocks/review_widget/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
+          "settings": {
+            "review_data": "sample_data",
+            "max_width": 1200,
+            "show_shop_reviews": true,
+            "empty_state": "other_products_reviews"
+          }
+        }
+      },
+      "block_order": [
+        "judge_me_reviews_review_widget_Ugc6mn"
+      ],
+      "settings": {
+        "include_margins": true
+      }
+    },
+    "dsr_product_boost": {
+      "type": "dsr-product-boost",
+      "settings": {}
+    }
+  },
+  "order": [
+    "17851584660d57e669",
+    "main",
+    "disclosures",
+    "related-products",
+    "178648157455ed3771",
+    "17851581515604d190",
+    "17835520174d0243a5",
+    "dsr_product_boost"
+  ]
+}

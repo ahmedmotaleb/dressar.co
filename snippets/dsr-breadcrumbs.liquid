@@ -1,0 +1,69 @@
+{%- doc -%}
+  Breadcrumbs for collection and product pages, with matching BreadcrumbList
+  structured data. Trail: Home > collection > product. On a product page the
+  collection appears only when the shopper came through one
+  (/collections/…/products/…); otherwise Home > product.
+
+  @example
+  {% render 'dsr-breadcrumbs' %}
+{%- enddoc -%}
+{{ 'dsr-breadcrumbs.css' | asset_url | stylesheet_tag }}
+{%- liquid
+  assign home_label = 'dressar.breadcrumbs.home' | t
+  assign home_url = request.origin | append: routes.root_url
+  assign on_product = false
+  if request.page_type == 'product' and product
+    assign on_product = true
+  endif
+  assign crumb_collection = collection
+  if crumb_collection == blank or crumb_collection.handle == blank
+    assign crumb_collection = nil
+  endif
+-%}
+<nav class="dsr-breadcrumbs" aria-label="{{ 'dressar.breadcrumbs.label' | t | escape }}">
+  <ol class="dsr-breadcrumbs__list" role="list">
+    <li class="dsr-breadcrumbs__item">
+      <a class="dsr-breadcrumbs__link" href="{{ routes.root_url }}">{{ home_label }}</a>
+    </li>
+    {%- if on_product -%}
+      {%- if crumb_collection -%}
+        <li class="dsr-breadcrumbs__item">
+          <a class="dsr-breadcrumbs__link" href="{{ crumb_collection.url }}">{{ crumb_collection.title | escape }}</a>
+        </li>
+      {%- endif -%}
+      <li class="dsr-breadcrumbs__item" aria-current="page">{{ product.title | escape }}</li>
+    {%- elsif crumb_collection -%}
+      <li class="dsr-breadcrumbs__item" aria-current="page">{{ crumb_collection.title | escape }}</li>
+    {%- endif -%}
+  </ol>
+</nav>
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": {{ home_label | json }},
+        "item": {{ home_url | json }}
+      }
+      {%- if crumb_collection -%},
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": {{ crumb_collection.title | json }},
+          "item": {{ request.origin | append: crumb_collection.url | json }}
+        }
+      {%- endif -%}
+      {%- if on_product -%},
+        {
+          "@type": "ListItem",
+          "position": {% if crumb_collection %}3{% else %}2{% endif %},
+          "name": {{ product.title | json }},
+          "item": {{ request.origin | append: product.url | json }}
+        }
+      {%- endif %}
+    ]
+  }
+</script>

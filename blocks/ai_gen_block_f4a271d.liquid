@@ -1,0 +1,580 @@
+{% doc %}
+  @prompt
+    Modify my Shopify theme by adding a media grid section similar to the one on Dressar.co.
+    
+    The section should contain 4 videos in one clean media grid layout. Make the videos responsive so the length and width fit the page perfectly on desktop, tablet, and mobile.
+    
+    The video grid must not interrupt or break any other section of the website. It should not overlap, stretch, crop badly, slow the page, or affect the layout.
+    
+    Requirements:
+    
+    * Add 4 videos in one media grid section
+    * Make the grid responsive for desktop and mobile
+    * Keep equal spacing between videos
+    * Make the video size fit the page width properly
+    * Keep the height balanced and elegant
+    * Prevent overlap with other sections
+    * Make it look premium, clean, and suitable for a fashion brand
+    * Videos should load smoothly without affecting the website performance
+    * The section should blend naturally with the rest of the theme design
+    , Modify this section to become a premium media grid video section for Dressar.
+    
+    Keep the heading as: “Dressar Signature”.
+    
+    Add 4 videos in one clean responsive media grid. The videos should fit the page width properly without interrupting the layout or affecting other sections.
+    
+    Use a large or full-width section layout, not a small section width. Set the desktop row height between 420 and 520 so the videos appear tall and elegant. Set the mobile row height between 300 and 380 so the videos remain clear and not too short.
+    
+    Keep column spacing X-Small for a clean luxury look. Add a separate section border if it matches the theme style. Make sure the grid is responsive on desktop, tablet, and mobile.
+    
+    The videos must not overlap, stretch, crop badly, or slow down the page. Keep the section smooth, balanced, and suitable for a premium modest fashion brand.
+    , Desktop row height
+    
+    210
+    Mobile row height
+    
+    100
+    Section width
+    
+    Small
+    Small
+    Column spacing
+    xsmall, put four video in the same line , Column width
+    
+    25%
+    25%
+    On desktop, the sum must be equal to 100% to fill a row.
+    
+    Row count
+    
+    2
+    Control the row size in the section general settings., row have four videos and one row not two for grid, Column width
+    
+    25%
+    25%
+    On desktop, the sum must be equal to 100% to fill a row.and add control row count 
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-dressar-video-grid-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    {% if block.settings.enable_section_border %}
+      border-top: 1px solid rgba(18, 18, 18, 0.08);
+      border-bottom: 1px solid rgba(18, 18, 18, 0.08);
+    {% endif %}
+  }
+
+  .ai-dressar-video-grid-wrapper-{{ ai_gen_id }} {
+    max-width: {{ block.settings.container_width }}px;
+    margin: 0 auto;
+    padding: {{ block.settings.section_padding_top }}px {{ block.settings.section_padding_horizontal }}px {{ block.settings.section_padding_bottom }}px;
+  }
+
+  .ai-dressar-video-grid-heading-{{ ai_gen_id }} {
+    text-align: {{ block.settings.heading_alignment }};
+    margin: 0 0 {{ block.settings.heading_spacing }}px;
+    font-size: {{ block.settings.heading_size }}px;
+    font-weight: {{ block.settings.heading_weight }};
+    color: {{ block.settings.heading_color }};
+    letter-spacing: {{ block.settings.heading_letter_spacing }}px;
+    text-transform: {{ block.settings.heading_transform }};
+  }
+
+  .ai-dressar-video-grid-container-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat({{ block.settings.columns_per_row }}, 1fr);
+    gap: {{ block.settings.column_spacing }}px;
+    width: 100%;
+  }
+
+  .ai-dressar-video-grid-item-{{ ai_gen_id }} {
+    position: relative;
+    width: 100%;
+    height: {{ block.settings.desktop_row_height }}px;
+    overflow: hidden;
+    border-radius: {{ block.settings.video_border_radius }}px;
+    background-color: #000000;
+  }
+
+  .ai-dressar-video-grid-video-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-dressar-video-grid-placeholder-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f4f4f4;
+  }
+
+  .ai-dressar-video-grid-placeholder-{{ ai_gen_id }} svg {
+    width: 50%;
+    height: 50%;
+    opacity: 0.2;
+  }
+
+  .ai-dressar-video-grid-empty-state-{{ ai_gen_id }} {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 20px;
+    background-color: rgba(0, 0, 0, 0.75);
+    color: #ffffff;
+    font-size: 13px;
+    border-radius: 4px;
+    white-space: nowrap;
+    pointer-events: none;
+    font-weight: 500;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-dressar-video-grid-wrapper-{{ ai_gen_id }} {
+      padding: {{ block.settings.section_padding_top | times: 0.5 }}px {{ block.settings.section_padding_horizontal | times: 0.5 }}px {{ block.settings.section_padding_bottom | times: 0.5 }}px;
+    }
+
+    .ai-dressar-video-grid-heading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.heading_size | times: 0.7 }}px;
+      margin-bottom: {{ block.settings.heading_spacing | times: 0.6 }}px;
+    }
+
+    .ai-dressar-video-grid-container-{{ ai_gen_id }} {
+      grid-template-columns: 1fr;
+      gap: {{ block.settings.column_spacing | times: 0.5 }}px;
+    }
+
+    .ai-dressar-video-grid-item-{{ ai_gen_id }} {
+      height: {{ block.settings.mobile_row_height }}px;
+    }
+  }
+
+  @media screen and (min-width: 750px) and (max-width: 989px) {
+    .ai-dressar-video-grid-heading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.heading_size | times: 0.85 }}px;
+    }
+
+    .ai-dressar-video-grid-container-{{ ai_gen_id }} {
+      grid-template-columns: repeat(2, 1fr);
+      gap: {{ block.settings.column_spacing | times: 0.7 }}px;
+    }
+
+    .ai-dressar-video-grid-item-{{ ai_gen_id }} {
+      height: {{ block.settings.desktop_row_height | times: 0.8 }}px;
+    }
+  }
+{% endstyle %}
+
+<dressar-video-grid-{{ ai_gen_id }} class="ai-dressar-video-grid-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-dressar-video-grid-wrapper-{{ ai_gen_id }}">
+    {% if block.settings.heading != blank %}
+      <h2 class="ai-dressar-video-grid-heading-{{ ai_gen_id }}">{{ block.settings.heading }}</h2>
+    {% endif %}
+
+    <div class="ai-dressar-video-grid-container-{{ ai_gen_id }}">
+      {% for i in (1..4) %}
+        {% liquid
+          assign video_key = 'video_' | append: i
+          assign video = block.settings[video_key]
+        %}
+        
+        <div class="ai-dressar-video-grid-item-{{ ai_gen_id }}">
+          {% if video %}
+            {%- liquid
+              # Prefer progressive MP4 over HLS. The adaptive player was pulling several
+              # renditions of the same clip on every loop, which is what made this section
+              # weigh tens of megabytes on the homepage.
+              assign playable_sources = video.sources | where: 'format', 'mp4' | sort: 'height'
+              if playable_sources.size == 0
+                assign playable_sources = video.sources
+              endif
+            -%}
+            <video
+              class="ai-dressar-video-grid-video-{{ ai_gen_id }}"
+              muted
+              loop
+              playsinline
+              preload="none"
+              {% if video.preview_image %}poster="{{ video.preview_image | image_url: width: 800 }}"{% endif %}
+              aria-label="Video {{ i }}"
+            >
+              {% for source in playable_sources %}
+                <source src="{{ source.url }}" type="{{ source.mime_type }}">
+              {% endfor %}
+            </video>
+          {% else %}
+            <div class="ai-dressar-video-grid-placeholder-{{ ai_gen_id }}">
+              {{ 'image' | placeholder_svg_tag }}
+              <div class="ai-dressar-video-grid-empty-state-{{ ai_gen_id }}">
+                Add video {{ i }}
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</dressar-video-grid-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class DressarVideoGrid{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.videos = this.querySelectorAll('.ai-dressar-video-grid-video-{{ ai_gen_id }}');
+
+        // Videos ship with preload="none" so the homepage does not download them up
+        // front. Without IntersectionObserver there is no way to know when they come
+        // into view, so fall back to playing them straight away.
+        if (!('IntersectionObserver' in window)) {
+          this.playAll();
+          return;
+        }
+
+        this.setupIntersectionObserver();
+      }
+
+      playAll() {
+        this.videos.forEach((video) => {
+          video.preload = 'auto';
+          video.play().catch(() => {});
+        });
+      }
+
+      setupIntersectionObserver() {
+        const options = {
+          root: null,
+          rootMargin: '100px',
+          threshold: 0.15
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            const video = entry.target;
+            if (entry.isIntersecting) {
+              // Nothing is downloaded until the clip is about to be seen.
+              if (video.preload !== 'auto') {
+                video.preload = 'auto';
+              }
+              if (video.paused) {
+                video.play().catch(() => {});
+              }
+            } else {
+              if (!video.paused) {
+                video.pause();
+              }
+            }
+          });
+        }, options);
+
+        this.videos.forEach((video) => {
+          observer.observe(video);
+        });
+      }
+    }
+
+    customElements.define('dressar-video-grid-{{ ai_gen_id }}', DressarVideoGrid{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Dressar video grid",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Dressar Signature"
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "label": "Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "min": 20,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "label": "Size",
+      "default": 40
+    },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Weight",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi-bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "300"
+    },
+    {
+      "type": "select",
+      "id": "heading_transform",
+      "label": "Text transform",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "uppercase",
+          "label": "Uppercase"
+        },
+        {
+          "value": "lowercase",
+          "label": "Lowercase"
+        },
+        {
+          "value": "capitalize",
+          "label": "Capitalize"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "heading_letter_spacing",
+      "min": 0,
+      "max": 10,
+      "step": 0.5,
+      "unit": "px",
+      "label": "Letter spacing",
+      "default": 0
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Color",
+      "default": "#121212"
+    },
+    {
+      "type": "range",
+      "id": "heading_spacing",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom spacing",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Videos"
+    },
+    {
+      "type": "video",
+      "id": "video_1",
+      "label": "Video 1"
+    },
+    {
+      "type": "video",
+      "id": "video_2",
+      "label": "Video 2"
+    },
+    {
+      "type": "video",
+      "id": "video_3",
+      "label": "Video 3"
+    },
+    {
+      "type": "video",
+      "id": "video_4",
+      "label": "Video 4"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "container_width",
+      "label": "Section width",
+      "options": [
+        {
+          "value": "600",
+          "label": "Small"
+        },
+        {
+          "value": "1200",
+          "label": "Standard"
+        },
+        {
+          "value": "1400",
+          "label": "Large"
+        },
+        {
+          "value": "1600",
+          "label": "Full"
+        }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "range",
+      "id": "columns_per_row",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "label": "Columns per row",
+      "default": 4,
+      "info": "Number of videos per row on desktop"
+    },
+    {
+      "type": "range",
+      "id": "desktop_row_height",
+      "min": 100,
+      "max": 700,
+      "step": 10,
+      "unit": "px",
+      "label": "Desktop row height",
+      "default": 210
+    },
+    {
+      "type": "range",
+      "id": "mobile_row_height",
+      "min": 100,
+      "max": 500,
+      "step": 10,
+      "unit": "px",
+      "label": "Mobile row height",
+      "default": 100
+    },
+    {
+      "type": "select",
+      "id": "column_spacing",
+      "label": "Column spacing",
+      "options": [
+        {
+          "value": "4",
+          "label": "X-Small"
+        },
+        {
+          "value": "8",
+          "label": "Small"
+        },
+        {
+          "value": "12",
+          "label": "Medium"
+        },
+        {
+          "value": "16",
+          "label": "Large"
+        }
+      ],
+      "default": "4"
+    },
+    {
+      "type": "range",
+      "id": "video_border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Corner radius",
+      "default": 0
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_section_border",
+      "label": "Enable section border",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "section_padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "section_padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "section_padding_horizontal",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "label": "Horizontal padding",
+      "default": 20
+    }
+  ],
+  "presets": [
+    {
+      "name": "Dressar video grid"
+    }
+  ]
+}
+{% endschema %}

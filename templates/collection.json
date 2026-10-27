@@ -1,0 +1,125 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "banner": {
+      "type": "main-collection-banner",
+      "settings": {
+        "show_collection_description": true,
+        "show_collection_image": false,
+        "color_scheme": "scheme-1"
+      }
+    },
+    "product-grid": {
+      "type": "main-collection-product-grid",
+      "settings": {
+        "products_per_page": 16,
+        "columns_desktop": 4,
+        "columns_mobile": "2",
+        "color_scheme": "scheme-1",
+        "image_ratio": "tall",
+        "image_shape": "default",
+        "show_secondary_image": true,
+        "show_vendor": false,
+        "show_rating": false,
+        "quick_add": "none",
+        "enable_filtering": true,
+        "filter_type": "horizontal",
+        "enable_sorting": true,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "1783850161d9269d0b": {
+      "type": "_blocks",
+      "blocks": {
+        "ai_gen_block_c781fe7_hzijDY": {
+          "type": "ai_gen_block_c781fe7",
+          "disabled": true,
+          "settings": {
+            "announcement_text": "<p>{{ closest.collection.metafields.custom.univeristy_collection.value }}</p>",
+            "background_color": "#f6f2f0",
+            "text_color": "#000000",
+            "bar_height": 8,
+            "font_size": 14,
+            "font_weight": "400",
+            "desktop_width_percent": 100,
+            "animation_speed": 60
+          },
+          "blocks": {}
+        },
+        "ai_gen_block_8ec498c_TLCLCC": {
+          "type": "ai_gen_block_8ec498c",
+          "name": "Product grid",
+          "settings": {
+            "collection": "{{ closest.collection }}",
+            "products_per_page": 16,
+            "columns_desktop": 4,
+            "columns_mobile": "2",
+            "grid_gap": 16,
+            "horizontal_spacing": 20,
+            "bottom_spacing": 40,
+            "image_ratio": "0.75",
+            "enable_filters": true,
+            "show_title_underline": false,
+            "title_underline_width": 1,
+            "title_underline_style": "solid",
+            "title_underline_color": "#f6f2f0",
+            "show_sale_badge": true,
+            "badge_text": "percent",
+            "badge_font_size": 12,
+            "badge_padding_vertical": 4,
+            "badge_padding_horizontal": 10,
+            "badge_border_radius": 4,
+            "badge_border_width": 0,
+            "badge_bg_color": "#860505",
+            "badge_text_color": "#ffffff",
+            "badge_border_color": "#000000",
+            "show_color_swatches": true,
+            "swatch_size": 20,
+            "swatch_border_width": 1,
+            "swatch_active_border_width": 2,
+            "swatch_border_color": "#d6d0c9",
+            "swatch_active_border": "#121212",
+            "show_size_options": false,
+            "size_button_font_size": 12,
+            "size_button_padding_vertical": 4,
+            "size_button_padding_horizontal": 10,
+            "size_button_border_width": 1,
+            "size_button_border_radius": 4,
+            "size_button_bg_color": "#ffffff",
+            "size_button_text_color": "#121212",
+            "size_button_border_color": "#e0e0e0",
+            "size_button_active_bg_color": "#121212",
+            "size_button_active_text_color": "#ffffff",
+            "size_button_active_border_color": "#121212",
+            "text_color": "#121212",
+            "price_color": "#121212",
+            "sale_price_color": "#000000",
+            "compare_price_color": "#999999",
+            "border_color": "#e0e0e0"
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "ai_gen_block_c781fe7_hzijDY",
+        "ai_gen_block_8ec498c_TLCLCC"
+      ],
+      "settings": {},
+      "disabled": true
+    }
+  },
+  "order": [
+    "banner",
+    "product-grid",
+    "1783850161d9269d0b"
+  ]
+}

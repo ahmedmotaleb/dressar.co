@@ -1,0 +1,17 @@
+{%- doc -%}
+  Renders "the model in the photo wears size X" from the product's
+  custom.model_size metafield. Renders nothing when the metafield is empty,
+  so a product never claims a size that wasn't entered for it.
+
+  @param {product} product - The product being shown.
+
+  @example
+  {% render 'dsr-model-size', product: product %}
+{%- enddoc -%}
+
+{%- assign model_size = product.metafields.custom.model_size.value -%}
+{%- if model_size != blank -%}
+  <p class="product__text dsr-model-size">
+    {{- 'dressar.product.model_size' | t: size: model_size -}}
+  </p>
+{%- endif -%}

@@ -1,0 +1,28 @@
+{%- doc -%}
+  "Not sure of your size?" link that opens WhatsApp with the product named.
+  The number is the one in Theme settings > Dressar > WhatsApp, the same as
+  the floating button; the wording comes from the locale files. Renders
+  nothing without a number.
+
+  @param {product} product - The product.
+
+  @example
+  {% render 'dsr-size-help', product: product %}
+{%- enddoc -%}
+
+{%- assign wa_number = settings.whatsapp_number | remove: '+' | remove: ' ' | remove: '-' -%}
+{%- if wa_number != blank -%}
+  {%- capture wa_text -%}
+    {{- 'dressar.whatsapp.message_size' | t: title: product.title }} {{ shop.url }}{{ product.url -}}
+  {%- endcapture -%}
+  <a
+    class="dsr-size-help link"
+    href="https://wa.me/{{ wa_number }}?text={{ wa_text | strip | url_encode }}"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    {{- 'icon-chat-bubble.svg' | inline_asset_content -}}
+    <span>{{ 'dressar.product.size_help' | t }}</span>
+    <span class="visually-hidden">{{ 'accessibility.link_messages.new_window' | t }}</span>
+  </a>
+{%- endif -%}

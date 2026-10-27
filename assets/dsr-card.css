@@ -1,0 +1,207 @@
+/* ==========================================================================
+   Dressar product card (Stage 4, docs/stages/stage-4.md)
+
+   A styling layer on Dawn's snippets/card-product.liquid, used by every grid
+   that renders Dawn cards: collection, search, recommendations, featured
+   collection. Photography leads; the text is small and quiet: an uppercase,
+   tracked name (the reference the owner picked), a firmer price, then the
+   colours and sizes the product really has in stock.
+   ========================================================================== */
+
+.product-card-wrapper .card__inner {
+  background-color: var(--dsr-card-media-bg, #f2ede8);
+}
+
+.product-card-wrapper .card__information {
+  padding-top: 1rem;
+  padding-bottom: 0.4rem;
+}
+
+.product-card-wrapper .card-information {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.product-card-wrapper .card-information > * + * {
+  margin-top: 0;
+}
+
+/* ---------- Name ---------- */
+
+.product-card-wrapper .card__heading.h5 {
+  font-family: 'Dressar UI', var(--font-body-family);
+  font-size: 1.15rem;
+  font-weight: 500;
+  line-height: 1.45;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgba(var(--color-foreground), 0.88);
+  margin-bottom: 0.4rem;
+}
+
+/* Long names stop at two lines; the full name stays in the link text. */
+.product-card-wrapper .card__heading.h5 > a {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Price ---------- */
+
+.product-card-wrapper .price {
+  font-family: 'Dressar UI', var(--font-body-family);
+  font-size: 1.35rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.product-card-wrapper .price .price-item {
+  margin-inline-start: 0;
+  margin-inline-end: 0.6rem;
+}
+
+.product-card-wrapper .price--on-sale .price-item--regular {
+  font-family: var(--font-body-family);
+  font-size: 1.2rem;
+  font-weight: var(--font-body-weight);
+  /* At least 4.5:1 on white (WCAG 1.4.3). */
+  color: rgba(var(--color-foreground), 0.65);
+}
+
+/* ---------- Badge ---------- */
+
+.product-card-wrapper .card__badge .badge {
+  font-family: 'Dressar UI', var(--font-body-family);
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+  padding: 0.6rem 0.9rem;
+}
+
+/* ---------- Colour swatches (snippets/dsr-card-swatches.liquid) ---------- */
+
+.dsr-card-swatches__list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.2rem;
+  margin: 0.2rem 0 0;
+  margin-inline-start: -0.5rem;
+}
+
+.dsr-card-swatch {
+  --swatch-input--size: 1.6rem;
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.dsr-card-swatch--static {
+  cursor: default;
+}
+
+.dsr-card-swatch .swatch {
+  border-color: rgba(var(--color-foreground), 0.2);
+}
+
+.dsr-card-swatch[aria-pressed='true'] .swatch {
+  outline: 0.1rem solid rgb(var(--color-foreground));
+  outline-offset: 0.2rem;
+}
+
+.dsr-card-swatch--sold-out .swatch {
+  opacity: 0.45;
+}
+
+.dsr-card-swatch--sold-out::after {
+  content: '';
+  position: absolute;
+  width: 1.9rem;
+  height: 0.1rem;
+  background: rgba(var(--color-foreground), 0.7);
+  transform: rotate(-45deg);
+  pointer-events: none;
+}
+
+.dsr-card-swatch:focus-visible {
+  outline: 0.2rem solid rgba(var(--color-foreground), 0.6);
+  outline-offset: 0;
+}
+
+.dsr-card-swatches__more,
+.dsr-card-colors {
+  margin: 0;
+  font-size: 1.1rem;
+  letter-spacing: 0.04em;
+  color: rgba(var(--color-foreground), 0.65);
+}
+
+.dsr-card-swatches__more {
+  padding-inline-start: 0.2rem;
+}
+
+/* ---------- Sizes (snippets/dsr-card-sizes.liquid) ---------- */
+
+.dsr-card-sizes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 0.9rem;
+  margin: 0;
+  font-family: 'Dressar UI', var(--font-body-family);
+  font-size: 1.05rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: rgba(var(--color-foreground), 0.85);
+}
+
+/* Struck through and lighter, still at least 4.5:1 on white (WCAG 1.4.3). */
+.dsr-card-sizes__size--unavailable {
+  color: rgba(var(--color-foreground), 0.6);
+  text-decoration: line-through;
+}
+
+/* ---------- Second image ---------- */
+
+/* Dawn swaps to the second photo on hover from 990px. On touch screens that
+   wide (tablets in landscape), a tap would leave it stuck, so keep the first. */
+@media screen and (min-width: 990px) and (hover: none) {
+  .card-wrapper:hover .media.media--hover-effect > img:first-child:not(:only-child) {
+    opacity: 1;
+  }
+
+  .card-wrapper:hover .media.media--hover-effect > img + img {
+    opacity: 0;
+  }
+}
+
+/* Once a colour is picked, its photo stays on the card. */
+.card-wrapper.dsr-card--color-picked .media.media--hover-effect > img + img {
+  display: none;
+}
+
+.card-wrapper.dsr-card--color-picked:hover .media.media--hover-effect > img:first-child:not(:only-child) {
+  opacity: 1;
+}
+
+/* ---------- Arabic ---------- */
+
+:lang(ar) .product-card-wrapper .card__heading.h5,
+:lang(ar) .product-card-wrapper .card__badge .badge,
+:lang(ar) .dsr-card-sizes {
+  letter-spacing: 0;
+}
