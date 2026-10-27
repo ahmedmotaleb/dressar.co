@@ -155,13 +155,17 @@ Plus:
 4. **Category metafields:** fit (8 products) and care (22) are rarely filled. Filling them in the product's category metafields adds them to "Fabric & Fit" automatically.
 5. **Buy it now:** turn it back on in the Buy buttons block if wanted (section 5).
 
-## 10. Risks
+## 10. Sync note
+
+The first upload of `sections/main-product.liquid` was refused by Shopify: the new block was named "Dressar: WhatsApp size help" (27 characters; Shopify allows 25 for schema names). Theme Check doesn't flag this, and the upload job still reported "done". The checksum comparison caught it. The block is now "Dressar: size help" (commit `97560ae`), and all Stage 5 files are byte-identical on the dev theme.
+
+## 11. Risks
 
 - **Dawn updates:** `main-product.liquid` carries marked edits (stylesheet, two block types, the dialog heading level).
 - **Fact values are taxonomy labels** (English by default). Translate them in Translate & Adapt for the Arabic storefront.
 - **Assumption about category metafields:** `item.label.value` reads Shopify's documented field-access path, but it hasn't been checked on the real storefront.
 - **Rollback:** reorder or re-enable blocks in the theme editor; re-enable `dsr_trust` to bring back the old list; or revert this commit.
 
-## 11. Widths tested
+## 12. Widths tested
 
 360, 390, 430, 768, 990, 1280, 1440 px, in `en.default` and `ar`.

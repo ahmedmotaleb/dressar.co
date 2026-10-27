@@ -4,8 +4,8 @@
 |---|---|
 | Live theme (never written) | `#167717929191` "Updated copy of DRESSAR — Sales Optimized (DRAFT for review)" |
 | Dev theme | `#167837270247` "DRESSAR DEV (Claude) — from live 2026-10-26", unpublished, duplicated from live on 2026-10-26 |
-| Last synced commit | `049423e` (Stage 4: collection page and product cards) |
-| Sync check | The 53 Stage 4 files are byte-identical to the commit (MD5), except `config/settings_data.json`, which Shopify re-serialises; its changed values (sale badge colour scheme, badge radius) were checked in the dev theme's copy. The dev theme had not been edited since the previous sync. Live theme `updatedAt` unchanged (2026-10-26 18:16 UTC). |
+| Last synced commit | `97560ae` (Stage 5: product page) |
+| Sync check | The 38 Stage 5 files are byte-identical to the commit (MD5). The dev theme had not been edited since the previous sync. Live theme `updatedAt` unchanged (2026-10-26 18:16 UTC). |
 
 Sync history:
 
@@ -14,12 +14,13 @@ Sync history:
 | `33ecaf7` | Stage 2 + locale files (full-theme parity check) | 2026-10-26 |
 | `8ef021d` | Stage 3: `assets/dsr-header.css`, `snippets/dsr-menu-view-all.liquid`, `sections/header.liquid`, `sections/header-group.json`, `snippets/header-dropdown-menu.liquid`, `snippets/header-drawer.liquid`, `sections/predictive-search.liquid`, `sections/dsr-product-boost.liquid`, `snippets/whatsapp-button.liquid` | 2026-10-26 |
 | `049423e` | Stage 4: 21 theme files (cards, collection, swatch CSS, settings, templates) and 32 locale files | 2026-10-26 |
+| `135cf8f` + `97560ae` | Stage 5: product section, template, price snippet, two new snippets, `dsr-product.css`, 32 locale files | 2026-10-27 |
 
 ## How changes reach the dev theme today
 
 1. Commit and push to `claude/dressar-theme-audit-7xbdeb`.
 2. Upload the changed files to the dev theme with the Admin API `themeFilesUpsert`, using `URL` bodies that point at `raw.githubusercontent.com/…/<commit>/<file>`. Shopify fetches the exact committed bytes, so nothing is retyped.
-3. Re-read the dev theme's checksums and compare them with the repo.
+3. Re-read the dev theme's checksums and compare them with the repo. **Don't trust the job status:** the upload job reports `done` even when Shopify rejected a file. In Stage 5 a section whose schema had a 27-character block name (Shopify allows 25; Theme Check doesn't flag it) was silently refused, along with the template that used its new blocks. Only the checksum comparison caught it.
 
 Shopify's Admin API refuses theme-file writes to the published theme, so this route can't touch live.
 
