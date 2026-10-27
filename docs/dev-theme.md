@@ -4,8 +4,8 @@
 |---|---|
 | Live theme (never written) | `#167717929191` "Updated copy of DRESSAR — Sales Optimized (DRAFT for review)" |
 | Dev theme | `#167837270247` "DRESSAR DEV (Claude) — from live 2026-10-26", unpublished, duplicated from live on 2026-10-26 |
-| Last synced commit | `97560ae` (Stage 5: product page) |
-| Sync check | The 38 Stage 5 files are byte-identical to the commit (MD5). The dev theme had not been edited since the previous sync. Live theme `updatedAt` unchanged (2026-10-26 18:16 UTC). |
+| Last synced commit | `7da521a` (Stage 6: cart, Complete the look) |
+| Sync check | The 45 Stage 6 files are byte-identical to the commit (MD5). The dev theme had not been edited since the previous sync. Live theme `updatedAt` unchanged (2026-10-26 18:16 UTC). |
 
 Sync history:
 
@@ -15,6 +15,7 @@ Sync history:
 | `8ef021d` | Stage 3: `assets/dsr-header.css`, `snippets/dsr-menu-view-all.liquid`, `sections/header.liquid`, `sections/header-group.json`, `snippets/header-dropdown-menu.liquid`, `snippets/header-drawer.liquid`, `sections/predictive-search.liquid`, `sections/dsr-product-boost.liquid`, `snippets/whatsapp-button.liquid` | 2026-10-26 |
 | `049423e` | Stage 4: 21 theme files (cards, collection, swatch CSS, settings, templates) and 32 locale files | 2026-10-26 |
 | `135cf8f` + `97560ae` | Stage 5: product section, template, price snippet, two new snippets, `dsr-product.css`, 32 locale files | 2026-10-27 |
+| `7da521a` | Stage 6: cart drawer and footer, free-shipping snippet, related products, product section and template, card snippet and CSS, layout, settings schema, 32 locale files | 2026-10-27 |
 
 ## How changes reach the dev theme today
 
