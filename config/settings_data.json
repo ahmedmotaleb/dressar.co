@@ -14,7 +14,7 @@
     "favicon": "shopify://shop_images/431208052_390468133726825_7474651623050128081_n.jpg",
     "type_header_font": "poppins_n2",
     "heading_scale": 100,
-    "type_body_font": "poppins_n2",
+    "type_body_font": "poppins_n3",
     "body_scale": 110,
     "page_width": 1200,
     "spacing_sections": 0,
@@ -214,10 +214,10 @@
         "settings": {
           "background": "#000000",
           "background_gradient": "",
-          "text": "#121212",
-          "button": "#121212",
-          "button_label": "#f3f3f3",
-          "secondary_button_label": "#121212",
+          "text": "#ffffff",
+          "button": "#ffffff",
+          "button_label": "#000000",
+          "secondary_button_label": "#ffffff",
           "shadow": "#121212"
         }
       },

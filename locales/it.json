@@ -596,6 +596,10 @@
     },
     "recommendations": {
       "fallback_heading": "You may also like"
+    },
+    "breadcrumbs": {
+      "label": "Breadcrumbs",
+      "home": "Home"
     }
   }
 }

@@ -738,6 +738,11 @@ class SliderComponent extends HTMLElement {
 
     if (!this.slider || !this.nextButton) return;
 
+    // Dressar: right-to-left pages scroll the other way (scrollLeft runs from 0
+    // to negative). The maths below works on distances from the slider's start
+    // edge, through scrollStart(), itemStart() and scrollToStart().
+    this.isRtl = getComputedStyle(this.slider).direction === 'rtl';
+
     this.initPages();
     const resizeObserver = new ResizeObserver((entries) => this.initPages());
     resizeObserver.observe(this.slider);
@@ -750,9 +755,9 @@ class SliderComponent extends HTMLElement {
   initPages() {
     this.sliderItemsToShow = Array.from(this.sliderItems).filter((element) => element.clientWidth > 0);
     if (this.sliderItemsToShow.length < 2) return;
-    this.sliderItemOffset = this.sliderItemsToShow[1].offsetLeft - this.sliderItemsToShow[0].offsetLeft;
+    this.sliderItemOffset = this.itemStart(this.sliderItemsToShow[1]) - this.itemStart(this.sliderItemsToShow[0]);
     this.slidesPerPage = Math.floor(
-      (this.slider.clientWidth - this.sliderItemsToShow[0].offsetLeft) / this.sliderItemOffset
+      (this.slider.clientWidth - this.itemStart(this.sliderItemsToShow[0])) / this.sliderItemOffset
     );
     this.totalPages = this.sliderItemsToShow.length - this.slidesPerPage + 1;
     this.update();
@@ -769,7 +774,7 @@ class SliderComponent extends HTMLElement {
     if (!this.slider || !this.nextButton) return;
 
     const previousPage = this.currentPage;
-    this.currentPage = Math.round(this.slider.scrollLeft / this.sliderItemOffset) + 1;
+    this.currentPage = Math.round(this.scrollStart() / this.sliderItemOffset) + 1;
 
     if (this.currentPageElement && this.pageTotalElement) {
       this.currentPageElement.textContent = this.currentPage;
@@ -789,7 +794,7 @@ class SliderComponent extends HTMLElement {
 
     if (this.enableSliderLooping) return;
 
-    if (this.isSlideVisible(this.sliderItemsToShow[0]) && this.slider.scrollLeft === 0) {
+    if (this.isSlideVisible(this.sliderItemsToShow[0]) && this.scrollStart() === 0) {
       this.prevButton.setAttribute('disabled', 'disabled');
     } else {
       this.prevButton.removeAttribute('disabled');
@@ -803,8 +808,8 @@ class SliderComponent extends HTMLElement {
   }
 
   isSlideVisible(element, offset = 0) {
-    const lastVisibleSlide = this.slider.clientWidth + this.slider.scrollLeft - offset;
-    return element.offsetLeft + element.clientWidth <= lastVisibleSlide && element.offsetLeft >= this.slider.scrollLeft;
+    const lastVisibleSlide = this.slider.clientWidth + this.scrollStart() - offset;
+    return this.itemStart(element) + element.clientWidth <= lastVisibleSlide && this.itemStart(element) >= this.scrollStart();
   }
 
   onButtonClick(event) {
@@ -812,14 +817,29 @@ class SliderComponent extends HTMLElement {
     const step = event.currentTarget.dataset.step || 1;
     this.slideScrollPosition =
       event.currentTarget.name === 'next'
-        ? this.slider.scrollLeft + step * this.sliderItemOffset
-        : this.slider.scrollLeft - step * this.sliderItemOffset;
+        ? this.scrollStart() + step * this.sliderItemOffset
+        : this.scrollStart() - step * this.sliderItemOffset;
     this.setSlidePosition(this.slideScrollPosition);
   }
 
   setSlidePosition(position) {
+    this.scrollToStart(position);
+  }
+
+  // Dressar: how far the slider is scrolled from its start edge (right on rtl pages).
+  scrollStart() {
+    return this.isRtl ? Math.round(-this.slider.scrollLeft) : this.slider.scrollLeft;
+  }
+
+  // Dressar: an item's distance from the slider's start edge, in scrolled content.
+  itemStart(element) {
+    return this.isRtl ? this.slider.clientWidth - element.offsetLeft - element.clientWidth : element.offsetLeft;
+  }
+
+  // Dressar: scroll to a distance from the start edge.
+  scrollToStart(position) {
     this.slider.scrollTo({
-      left: position,
+      left: this.isRtl ? -position : position,
     });
   }
 }
@@ -899,7 +919,7 @@ class SlideshowComponent extends SliderComponent {
 
     if (isFirstSlide && event.currentTarget.name === 'previous') {
       this.slideScrollPosition =
-        this.slider.scrollLeft + this.sliderFirstItemNode.clientWidth * this.sliderItemsToShow.length;
+        this.scrollStart() + this.sliderFirstItemNode.clientWidth * this.sliderItemsToShow.length;
     } else if (isLastSlide && event.currentTarget.name === 'next') {
       this.slideScrollPosition = 0;
     }
@@ -912,9 +932,7 @@ class SlideshowComponent extends SliderComponent {
   setSlidePosition(position) {
     if (this.setPositionTimeout) clearTimeout(this.setPositionTimeout);
     this.setPositionTimeout = setTimeout(() => {
-      this.slider.scrollTo({
-        left: position,
-      });
+      this.scrollToStart(position);
     }, this.announcerBarAnimationDelay);
   }
 
@@ -987,7 +1005,7 @@ class SlideshowComponent extends SliderComponent {
 
   autoRotateSlides() {
     const slideScrollPosition =
-      this.currentPage === this.sliderItems.length ? 0 : this.slider.scrollLeft + this.sliderItemOffset;
+      this.currentPage === this.sliderItems.length ? 0 : this.scrollStart() + this.sliderItemOffset;
 
     this.setSlidePosition(slideScrollPosition);
     this.applyAnimationToAnnouncementBar();
@@ -1049,12 +1067,10 @@ class SlideshowComponent extends SliderComponent {
   linkToSlide(event) {
     event.preventDefault();
     const slideScrollPosition =
-      this.slider.scrollLeft +
+      this.scrollStart() +
       this.sliderFirstItemNode.clientWidth *
         (this.sliderControlLinksArray.indexOf(event.currentTarget) + 1 - this.currentPage);
-    this.slider.scrollTo({
-      left: slideScrollPosition,
-    });
+    this.scrollToStart(slideScrollPosition);
   }
 }
 

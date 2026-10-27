@@ -98,6 +98,10 @@
                   >
                     {{- block.settings.text -}}
                   </p>
+                {%- when 'dsr_breadcrumbs' -%}
+                  <div {{ block.shopify_attributes }}>
+                    {% render 'dsr-breadcrumbs' %}
+                  </div>
                 {%- when 'title' -%}
                   <div class="product__title" {{ block.shopify_attributes }}>
                     <h1>{{ product.title | escape }}</h1>
@@ -287,6 +291,10 @@
                             {{- 'icon-minus.svg' | inline_asset_content -}}
                           </span>
                         </button>
+                        {%- comment -%}
+                          Dressar: the label's own text is aria-hidden, so the input is named by
+                          the visually hidden label above (aria-labelledby).
+                        {%- endcomment -%}
                         <input
                           class="quantity__input"
                           type="number"
@@ -302,6 +310,7 @@
                           step="{{ product.selected_or_first_available_variant.quantity_rule.increment }}"
                           value="{{ product.selected_or_first_available_variant.quantity_rule.min }}"
                           form="{{ product_form_id }}"
+                          aria-labelledby="quantity-label-{{ section.id }}"
                         >
                         <button class="quantity__button" name="plus" type="button">
                           <span class="visually-hidden">
@@ -1566,6 +1575,17 @@
         {
           "type": "paragraph",
           "content": "Opens WhatsApp with the product named. Number: Theme settings > Dressar > WhatsApp."
+        }
+      ]
+    },
+    {
+      "type": "dsr_breadcrumbs",
+      "name": "Dressar: breadcrumbs",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Home > collection > product, with breadcrumb structured data for search engines. The collection shows when the shopper came from one."
         }
       ]
     },

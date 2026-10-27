@@ -217,7 +217,12 @@ async function main() {
     const long = await page.evaluate((sel) => {
       const a = document.querySelector(`${sel} .card__heading.h5 a`);
       const lh = parseFloat(getComputedStyle(a).lineHeight);
-      return { lines: Math.round(a.getBoundingClientRect().height / lh), fits: a.scrollWidth <= a.clientWidth + 1 };
+      // The text's own boxes, not scrollWidth: on rtl pages Chromium counts hanging spaces in scrollWidth.
+      const box = a.getBoundingClientRect();
+      const range = document.createRange();
+      range.selectNodeContents(a);
+      const fits = [...range.getClientRects()].every((r) => r.left >= box.left - 1 && r.right <= box.right + 1);
+      return { lines: Math.round(box.height / lh), fits };
     }, cardFor('linen-suit'));
     check(`${tag} long title stops at 2 lines`, long.lines <= 2 && long.fits, JSON.stringify(long));
 

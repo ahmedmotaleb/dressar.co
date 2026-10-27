@@ -349,9 +349,10 @@ function createHarness({ root, fixtures, locale = 'en.default', origin = 'http:/
       }
     },
     stylesheet_tag: (url) => `<link href="${url}" rel="stylesheet" type="text/css" media="all" />`,
+    // The URL keeps a reference to its image, so image_tag can print the image's alt like Shopify.
     image_url: (img, ...args) => {
       const width = (args.find((a) => Array.isArray(a) && a[0] === 'width') || [])[1];
-      return `${img && img.valueOf ? img.valueOf() : img}${width ? `?width=${width}` : ''}`;
+      return Object.assign(new String(`${img && img.valueOf ? img.valueOf() : img}${width ? `?width=${width}` : ''}`), { __image: img, __width: width });
     },
     // Like Shopify: with no loading argument, images in the template's 4th
     // section and later get loading="lazy" (eager when section.index is nil).
@@ -361,11 +362,24 @@ function createHarness({ root, fixtures, locale = 'en.default', origin = 'http:/
         const index = this.context.getSync(['section', 'index']);
         if (index > 3) o.loading = 'lazy';
       }
+      if (o.alt === undefined) o.alt = (url && url.__image && url.__image.alt) || '';
+      // Like Shopify, width and height default to the size of the requested image.
+      const img = url && url.__image;
+      if (img && img.width && img.height && o.width === undefined) {
+        if (o.height === undefined) {
+          o.width = Math.min(Number(url.__width) || img.width, img.width);
+          o.height = (o.width * img.height) / img.width;
+        } else {
+          o.width = (Number(o.height) * img.width) / img.height;
+        }
+      }
+      const extraAlt = ` alt="${attr(o.alt)}"`;
+      delete o.alt;
       const extra = ['class', 'alt', 'sizes', 'loading', 'fetchpriority', 'width', 'height']
         .filter((k) => o[k] !== undefined && o[k] !== false)
         .map((k) => ` ${k}="${attr(k === 'height' || k === 'width' ? Math.round(Number(o[k])) : o[k])}"`)
         .join('');
-      return html(`<img src="${url}"${extra}>`);
+      return html(`<img src="${url}"${extraAlt}${extra}>`);
     },
     // Shopify leaves HTML-safe filter output (image_tag and friends) alone; Dawn relies on it.
     escape: (v) => (v && v.__html ? v : v == null ? '' : String(v instanceof Drop ? v.valueOf() : v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')),
@@ -386,7 +400,13 @@ function createHarness({ root, fixtures, locale = 'en.default', origin = 'http:/
     color_lighten: (c, n) => shiftLightness(c, Number(n)),
     color_darken: (c, n) => shiftLightness(c, -Number(n)),
     standard_event_data: () => '{}',
-    structured_data: () => '{}',
+    // Shopify prints the product's Product JSON-LD; the harness prints its outline.
+    structured_data: (p) =>
+      JSON.stringify(
+        p && p.title
+          ? { '@context': 'http://schema.org/', '@type': 'Product', name: p.title, url: `${origin}${p.url}`, offers: (p.variants || []).map((v) => ({ '@type': 'Offer', price: v.price / 100 })) }
+          : {}
+      ),
     // Shopify's `json` filter, without the harness's own back-references.
     json: (value) => {
       const seen = new WeakSet();
@@ -465,7 +485,12 @@ function createHarness({ root, fixtures, locale = 'en.default', origin = 'http:/
           account_login_url: '/account/login',
           all_products_collection_url: '/collections/all',
         },
-        localization: { available_countries: [{ iso_code: 'EG' }], available_languages: [{ iso_code: 'en' }, { iso_code: 'ar' }] },
+        localization: {
+          country: { iso_code: 'EG', name: 'Egypt', currency: { iso_code: 'EGP', symbol: 'ج.م' } },
+          available_countries: [{ iso_code: 'EG', name: 'Egypt', currency: { iso_code: 'EGP', symbol: 'ج.م' } }],
+          language: locale.startsWith('ar') ? { iso_code: 'ar', endonym_name: 'العربية' } : { iso_code: 'en', endonym_name: 'English' },
+          available_languages: [{ iso_code: 'en', endonym_name: 'English' }, { iso_code: 'ar', endonym_name: 'العربية' }],
+        },
         search: { terms: '' },
         page: { url: pagePath },
         template: { name: template || pageType },
@@ -541,7 +566,6 @@ function createHarness({ root, fixtures, locale = 'en.default', origin = 'http:/
     },
     groupOverride: {},
     async renderGroup(name, globals) {
-      if (name === 'footer-group') return '<div class="shopify-section shopify-section-group-footer-group"><footer>footer</footer></div>';
       const group = harness.groupOverride[name] || readJson(path.join(root, 'sections', `${name}.json`));
       const groupClass = `shopify-section-group-${name}`;
       let html = '';

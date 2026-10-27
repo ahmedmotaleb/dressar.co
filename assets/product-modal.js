@@ -28,7 +28,9 @@ if (!customElements.get('product-modal')) {
         activeMedia.scrollIntoView();
 
         const container = this.querySelector('[role="document"]');
-        container.scrollLeft = (activeMedia.width - container.clientWidth) / 2;
+        const centre = (activeMedia.width - container.clientWidth) / 2;
+        // Dressar: on right-to-left pages scrollLeft runs negative.
+        container.scrollLeft = getComputedStyle(container).direction === 'rtl' ? -centre : centre;
 
         if (
           activeMedia.nodeName == 'DEFERRED-MEDIA' &&

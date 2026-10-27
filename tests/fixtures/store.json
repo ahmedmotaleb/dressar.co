@@ -22,6 +22,17 @@
       { "title": "Home Wear", "url": "/collections/home-wear" },
       { "title": "Last Pieces", "url": "/collections/last-pieces" },
       { "title": "Navy & Blue", "url": "/collections/navy-and-blue" }
+    ],
+    "footer-1": [
+      { "title": "Home ", "url": "/" },
+      { "title": "Privacy Policy", "url": "/policies/privacy-policy" },
+      { "title": "Return Policy", "url": "/policies/refund-policy" },
+      { "title": "Homewear Policy | سياسة الهوم وير", "url": "/pages/homewear-policy" },
+      { "title": "Shipping Policy", "url": "/policies/shipping-policy" },
+      { "title": "Terms of Service", "url": "/policies/terms-of-service" },
+      { "title": "Size Chart", "url": "/pages/size-chart" },
+      { "title": "Care Instructions", "url": "/pages/care-instructions" },
+      { "title": "FAQ", "url": "/pages/faq" }
     ]
   },
   "products": [

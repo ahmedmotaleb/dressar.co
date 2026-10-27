@@ -1583,6 +1583,20 @@
         "label": "Free shipping from (EGP)",
         "info": "Order subtotal after product discounts, as in the discount's minimum purchase amount.",
         "default": 1500
+      },
+      {
+        "type": "header",
+        "content": "Language direction"
+      },
+      {
+        "type": "paragraph",
+        "content": "Pages in Arabic (today the /ar/ storefront, or the whole store once Arabic is the default language) are laid out right to left: text, menus, sliders and drawers are mirrored. Switch this off to show every language left to right."
+      },
+      {
+        "type": "checkbox",
+        "id": "rtl_enabled",
+        "label": "Right-to-left layout for Arabic",
+        "default": true
       }
     ]
   }

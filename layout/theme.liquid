@@ -1,5 +1,6 @@
 <!doctype html>
-<html class="js" lang="{{ request.locale.iso_code }}">
+{%- capture dsr_dir -%}{%- render 'dsr-direction' -%}{%- endcapture -%}
+<html class="js" lang="{{ request.locale.iso_code }}" dir="{{ dsr_dir }}">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -121,6 +122,13 @@
       {{ scheme_classes | prepend: 'body' }} {
         color: rgba(var(--color-foreground), 0.75);
         background-color: rgb(var(--color-background));
+      }
+
+      /* Dressar: each paragraph of merchant text reads, and aligns, in the direction
+         of its first letter, so an English line on an Arabic page (and the reverse)
+         keeps its punctuation in place. Centred text stays centred. */
+      .rte :is(p, li, h1, h2, h3, h4, h5, h6, blockquote) {
+        unicode-bidi: plaintext;
       }
 
       :root {
@@ -279,6 +287,9 @@
     {% endstyle %}
 
     {{ 'base.css' | asset_url | stylesheet_tag }}
+    {%- if dsr_dir == 'rtl' -%}
+      {{ 'dsr-rtl.css' | asset_url | stylesheet_tag }}
+    {%- endif -%}
     <link rel="stylesheet" href="{{ 'component-cart-items.css' | asset_url }}" media="print" onload="this.media='all'">
 
     {%- if settings.cart_type == 'drawer' -%}

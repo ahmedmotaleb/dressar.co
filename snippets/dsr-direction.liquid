@@ -1,0 +1,19 @@
+{%- doc -%}
+  Prints the page direction for the visitor's language: `rtl` for Arabic and
+  other right-to-left languages when Theme settings > Dressar > "Right-to-left
+  layout" is on, otherwise `ltr`. Used on <html dir> in both layouts.
+
+  @example
+  {%- capture dsr_dir -%}{%- render 'dsr-direction' -%}{%- endcapture -%}
+{%- enddoc -%}
+{%- liquid
+  assign dsr_lang = request.locale.iso_code | split: '-' | first
+  assign dsr_dir = 'ltr'
+  if settings.rtl_enabled
+    case dsr_lang
+      when 'ar', 'fa', 'he', 'ur'
+        assign dsr_dir = 'rtl'
+    endcase
+  endif
+  echo dsr_dir
+-%}

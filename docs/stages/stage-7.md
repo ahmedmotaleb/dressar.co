@@ -83,7 +83,22 @@ The AI slideshow (`178387929947731171`) and AI product grid (`blocks_QqFNpk`) we
 
 Desktop now shows **3 columns** (was 2): six categories in two rows instead of three rows of very tall tiles (about 2,200 px of page at 1280 px wide). Phones keep 2 columns. To change it, use Customize → Collection list → Number of columns on desktop.
 
-## 6. What it weighs (test harness, homepage `<main>`)
+## 6. Brand positioning (merchant copy, not changed)
+
+The homepage words are the merchant's, and the theme doesn't rewrite them. Against the brief:
+
+| Message | On the homepage today |
+|---|---|
+| Elegant modest fashion | Implied by the photography; not said in words |
+| Loose silhouettes | "Why Dressar": «قصّات واسعة مدروسة» (loose, considered cuts) |
+| Coverage and opacity | "Why Dressar": «خامات مبطّنة غير شفافة» (lined, not see-through) |
+| Pieces that work together | "Why Dressar": «كل قطعة تليق على التانية», plus the footer's about text |
+| Hijab-friendly styling, maxi coverage | **Not mentioned anywhere** |
+| Generic "luxury" wording | None found (no "luxury"/«فاخر» in the homepage or footer) |
+
+**Suggestion:** name hijab-friendly styling and maxi lengths somewhere above the fold. For example, use the hero's second slide subheading, or a fourth "Why Dressar" column ("maxi lengths, hijab-friendly necklines").
+
+## 7. What it weighs (test harness, homepage `<main>`)
 
 | | Before | After |
 |---|---|---|
@@ -96,7 +111,7 @@ Desktop now shows **3 columns** (was 2): six categories in two rows instead of t
 
 Stylesheets: each Dawn row links the card and slider CSS again, which is Dawn's standard behaviour; the browser loads each file once.
 
-## 7. Files
+## 8. Files
 
 | File | Change |
 |---|---|
@@ -104,7 +119,7 @@ Stylesheets: each Dawn row links the card and slider CSS again, which is Dawn's 
 | `sections/featured-collection.liquid` (Dawn) | Rows below the second section load every photo lazily |
 | `assets/component-card.css` | Stage 2's `!important` ambient override removed |
 
-## 8. Tests and results
+## 9. Tests and results
 
 `tests/home.test.js` (new), at 360/390/430/768/990/1280/1440 px, checks:
 - **Template:** the Stage 7 order; no AI carousel renders; the replaced ones are kept off; five rows at 3:4 with 8 products, sliders and "View all"; slideshows still.
@@ -156,7 +171,7 @@ Harness additions (`tests/lib/`):
 
 **Visual QA:** the full homepage at 390 and 1280 px, **in the test harness**, with placeholder colours for photos. The real photos, videos, Judge.me widget and storefront could not be loaded from this environment.
 
-## 9. Manual checks and merchant actions
+## 10. Manual checks and merchant actions
 
 1. **On the preview:** scroll the homepage on a phone.
    - Check the real photos in the 3:4 crops, especially the campaign row.
@@ -166,7 +181,7 @@ Harness additions (`tests/lib/`):
 3. **Headings:** they are plain text now. If a collection is renamed, edit its row's heading.
 4. **Judge.me testimonials:** check they still show under the service icons.
 
-## 10. Risks and rollback
+## 11. Risks and rollback
 
 - **Rows show what the collection holds.** If a collection is sorted badly or has sold-out products first, the row shows that. Sort the collection in admin.
 - **Rollback, per row:** switch the Dawn row off and the old AI section on, in the editor.

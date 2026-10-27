@@ -185,9 +185,14 @@
             "icon": "leather",
             "open": false
           }
+        },
+        "dsr_breadcrumbs": {
+          "type": "dsr_breadcrumbs",
+          "settings": {}
         }
       },
       "block_order": [
+        "dsr_breadcrumbs",
         "title",
         "price",
         "judge_me_reviews_preview_badge_amPJgp",

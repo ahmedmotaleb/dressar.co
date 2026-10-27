@@ -12,9 +12,8 @@ document.addEventListener('shopify:block:select', function (event) {
   parentSlideshowComponent.pause();
 
   setTimeout(function () {
-    parentSlideshowComponent.slider.scrollTo({
-      left: event.target.offsetLeft,
-    });
+    // Dressar: direction-aware (global.js SliderComponent).
+    parentSlideshowComponent.scrollToStart(parentSlideshowComponent.itemStart(event.target));
   }, 200);
 });
 

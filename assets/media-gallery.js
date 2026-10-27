@@ -54,7 +54,12 @@ if (!customElements.get('media-gallery')) {
         this.preventStickyHeader();
         window.setTimeout(() => {
           if (!this.mql.matches || this.elements.thumbnails) {
-            activeMedia.parentElement.scrollTo({ left: activeMedia.offsetLeft });
+            // Dressar: on right-to-left pages the slider scrolls towards negative scrollLeft.
+            const slider = activeMedia.parentElement;
+            const rtl = getComputedStyle(slider).direction === 'rtl';
+            slider.scrollTo({
+              left: rtl ? activeMedia.offsetLeft + activeMedia.clientWidth - slider.clientWidth : activeMedia.offsetLeft,
+            });
           }
           const activeMediaRect = activeMedia.getBoundingClientRect();
           // Don't scroll if the image is already in view
@@ -79,7 +84,8 @@ if (!customElements.get('media-gallery')) {
         thumbnail.querySelector('button').setAttribute('aria-current', true);
         if (this.elements.thumbnails.isSlideVisible(thumbnail, 10)) return;
 
-        this.elements.thumbnails.slider.scrollTo({ left: thumbnail.offsetLeft });
+        // Dressar: direction-aware (global.js SliderComponent).
+        this.elements.thumbnails.scrollToStart(this.elements.thumbnails.itemStart(thumbnail));
       }
 
       announceLiveRegion(activeItem, position) {
