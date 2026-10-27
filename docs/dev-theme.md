@@ -4,8 +4,8 @@
 |---|---|
 | Live theme (never written) | `#167717929191` "Updated copy of DRESSAR — Sales Optimized (DRAFT for review)" |
 | Dev theme | `#167837270247` "DRESSAR DEV (Claude) — from live 2026-10-26", unpublished, duplicated from live on 2026-10-26 |
-| Last synced commit | `7da521a` (Stage 6: cart, Complete the look) |
-| Sync check | The 45 Stage 6 files are byte-identical to the commit (MD5). The dev theme had not been edited since the previous sync. Live theme `updatedAt` unchanged (2026-10-26 18:16 UTC). |
+| Last synced commit | `b55b350` (Stage 7: homepage) |
+| Sync check | The 3 Stage 7 files are byte-identical to the commit (MD5). Before the upload, the dev theme's `templates/index.json` still had the live theme's checksum (unedited since the duplicate; the repo snapshot is the same content serialized differently). Live theme `updatedAt` unchanged (2026-10-26 18:16 UTC). |
 
 Sync history:
 
@@ -16,6 +16,7 @@ Sync history:
 | `049423e` | Stage 4: 21 theme files (cards, collection, swatch CSS, settings, templates) and 32 locale files | 2026-10-26 |
 | `135cf8f` + `97560ae` | Stage 5: product section, template, price snippet, two new snippets, `dsr-product.css`, 32 locale files | 2026-10-27 |
 | `7da521a` | Stage 6: cart drawer and footer, free-shipping snippet, related products, product section and template, card snippet and CSS, layout, settings schema, 32 locale files | 2026-10-27 |
+| `b55b350` | Stage 7: `templates/index.json`, `sections/featured-collection.liquid`, `assets/component-card.css` | 2026-10-27 |
 
 ## How changes reach the dev theme today
 
