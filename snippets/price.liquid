@@ -123,7 +123,7 @@
     {%- if show_badges -%}
       <span class="badge price__badge-sale color-{{ settings.sale_badge_color_scheme }}">
         {%- if savings_money != '' -%}
-          خصم {{ savings_percent }}% · وفّري {{ savings_money }}
+          {{- 'dressar.product.sale_badge' | t: percent: savings_percent, amount: savings_money -}}
         {%- else -%}
           {{ 'products.product.on_sale' | t }}
         {%- endif -%}

@@ -18,6 +18,8 @@ const schemaOf = (source) => {
 const handleize = (s) =>
   String(s).toLowerCase().trim().replace(/['"]/g, '').replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-+|-+$/g, '');
 const attr = (s) => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+// Marks a string as HTML-safe, like Shopify's own tag filters return.
+const html = (s) => Object.assign(new String(s), { __html: true });
 
 // ---------- Shopify-shaped objects ----------
 
@@ -337,8 +339,10 @@ function createHarness({ root, fixtures, locale = 'en.default', origin = 'http:/
         .filter((k) => o[k] !== undefined && o[k] !== false)
         .map((k) => ` ${k}="${attr(k === 'height' || k === 'width' ? Math.round(Number(o[k])) : o[k])}"`)
         .join('');
-      return `<img src="${url}"${extra}>`;
+      return html(`<img src="${url}"${extra}>`);
     },
+    // Shopify leaves HTML-safe filter output (image_tag and friends) alone; Dawn relies on it.
+    escape: (v) => (v && v.__html ? v : v == null ? '' : String(v instanceof Drop ? v.valueOf() : v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')),
     placeholder_svg_tag: (name, cls = '') => `<svg class="${cls}" viewBox="0 0 525 525"></svg>`,
     money: moneyFormat,
     money_with_currency: moneyFormat,
@@ -356,6 +360,24 @@ function createHarness({ root, fixtures, locale = 'en.default', origin = 'http:/
     color_lighten: (c, n) => shiftLightness(c, Number(n)),
     color_darken: (c, n) => shiftLightness(c, -Number(n)),
     standard_event_data: () => '{}',
+    structured_data: () => '{}',
+    // Shopify's `json` filter, without the harness's own back-references.
+    json: (value) => {
+      const seen = new WeakSet();
+      return JSON.stringify(value, (key, v) => {
+        if (key === '__raw' || key === 'preview_image') return undefined;
+        if (v && typeof v === 'object') {
+          if (seen.has(v)) return undefined;
+          seen.add(v);
+          if (typeof v.valueOf === 'function' && v.filename) return { id: v.id, src: v.valueOf(), width: v.width, height: v.height, alt: v.alt, aspect_ratio: v.aspect_ratio };
+        }
+        return v;
+      });
+    },
+    payment_button: () => '<div class="shopify-payment-button" data-test="dynamic-checkout"><button type="button" class="shopify-payment-button__button">Buy it now</button></div>',
+    within: (url) => url,
+    default_errors: () => '',
+    file_url: (name) => `/files/${name}`,
     item_count_for_variant: () => 0,
     unit_price_with_measurement: () => '',
     metafield_tag: () => '',
@@ -438,12 +460,15 @@ function createHarness({ root, fixtures, locale = 'en.default', origin = 'http:/
           if (!def.id) continue;
           let v = values[def.id] !== undefined ? values[def.id] : def.default;
           if (def.type === 'link_list') v = v ? globals.__menus[v] || null : null;
+          if (def.type === 'page') v = v ? (globals.__pages || {})[v] || null : null;
+          if (def.type === 'image_picker' && v === '') v = null;
           out[def.id] = v;
         }
         return out;
       };
+      // App blocks (shopify://apps/...) are left out: their code lives in the app.
       const blocks = (json.block_order || Object.keys(json.blocks || {}))
-        .filter((bid) => !json.blocks[bid].disabled)
+        .filter((bid) => !json.blocks[bid].disabled && !json.blocks[bid].type.startsWith('shopify://'))
         .map((bid) => {
           const b = json.blocks[bid];
           const bdef = (schema.blocks || []).find((d) => d.type === b.type) || {};
@@ -453,6 +478,15 @@ function createHarness({ root, fixtures, locale = 'en.default', origin = 'http:/
     },
     async renderSection(type, id, json, globals, { groupClass = '' } = {}) {
       const { source, schema, section } = harness.sectionObject(type, id, json, globals);
+      // Settings of type liquid are Liquid themselves; Shopify renders them first.
+      for (const block of section.blocks) {
+        const defs = ((schema.blocks || []).find((d) => d.type === block.type) || {}).settings || [];
+        for (const def of defs) {
+          if (def.type === 'liquid' && block.settings[def.id]) {
+            block.settings[def.id] = await engine.parseAndRender(String(block.settings[def.id]), {}, { globals: { ...globals, block } });
+          }
+        }
+      }
       const html = await engine.parseAndRender(source, {}, { globals: { ...globals, section } });
       const cls = ['shopify-section', groupClass, schema.class].filter(Boolean).join(' ');
       return `<div id="shopify-section-${id}" class="${cls}">${html}</div>`;

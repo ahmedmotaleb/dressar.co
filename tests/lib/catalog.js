@@ -72,8 +72,19 @@ function buildProduct(p, n = 0) {
       price,
       compare_at_price: compareAt,
       available: Boolean(available),
+      // A low count on some variants, so Dawn's "low stock" line shows up.
+      inventory_quantity: available ? 1 + (hash(handle + i) % 6) : 0,
+      inventory_management: 'shopify',
+      inventory_policy: 'deny',
+      sku: `${p.handle}-${i}`.toUpperCase(),
+      barcode: null,
       featured_media: mediaIndex == null ? null : media[mediaIndex],
       unit_price_measurement: null,
+      requires_selling_plan: false,
+      selling_plan_allocations: [],
+      quantity_price_breaks: [],
+      store_availabilities: [],
+      requires_shipping: true,
       quantity_rule: { min: 1, max: null, increment: 1 },
     };
     v.url = `/products/${handle}?variant=${v.id}`;
@@ -82,36 +93,19 @@ function buildProduct(p, n = 0) {
   const first = variants.find((v) => v.available) || variants[0];
   const prices = variants.map((v) => v.price);
   const compares = variants.map((v) => v.compare_at_price).filter(Boolean);
-  const options = p.options.map((o, oi) => {
-    const values = o.values.map((raw) => {
-      const [name, hex, swatchImage] = Array.isArray(raw) ? raw : [raw];
-      const key = `option${oi + 1}`;
-      const others = (v) => p.options.every((_, j) => j === oi || v[`option${j + 1}`] === first[`option${j + 1}`]);
-      const variant = variants.find((v) => v[key] === name && others(v)) || variants.find((v) => v[key] === name);
-      const swatch = hex
-        ? {
-            color: new ColorDrop(hex),
-            image: swatchImage ? new MediaDrop({ id: 1, filename: `${swatchImage}.jpg`, width: 500, height: 667, alt: name }) : null,
-          }
-        : null;
-      return new OptionValueDrop({
-        name,
-        swatch,
-        variant,
-        available: variants.some((v) => v[key] === name && v.available),
-        selected: first[key] === name,
-        product_url: variant ? variant.url : `/products/${handle}`,
-      });
-    });
-    return { name: o.name, position: oi + 1, values, selected_value: first[`option${oi + 1}`] };
-  });
-  return {
+  const metafields = { shopify: {}, custom: {}, reviews: {} };
+  for (const [key, labels] of Object.entries(p.facts || {})) {
+    metafields.shopify[key] = { value: labels.map((label) => ({ label: { value: label } })) };
+  }
+  const product = {
     id: idBase,
     handle,
     title,
     url: `/products/${handle}`,
     vendor: 'Dressar',
     type: p.type,
+    description: p.description || '',
+    tags: [],
     created: p.created * 1000 + (1000 - n),
     available: variants.some((v) => v.available),
     price: Math.min(...prices),
@@ -124,15 +118,59 @@ function buildProduct(p, n = 0) {
     compare_at_price_varies: compares.length ? Math.min(...compares) !== Math.max(...compares) : false,
     featured_media: media[0] || null,
     media,
+    images: media,
     options: p.options.map((o) => o.name),
-    options_with_values: options,
     variants,
     variants_count: variants.length,
-    selected_or_first_available_variant: first,
     has_only_default_variant: false,
+    requires_selling_plan: false,
+    selling_plan_groups: [],
+    'gift_card?': false,
     'quantity_price_breaks_configured?': false,
-    metafields: {},
+    metafields,
+    __raw: p,
   };
+  return selectVariant(product, null);
+}
+
+// The product as Shopify renders it with `variant` selected (null: none chosen,
+// so the first available variant is used). Option values follow Shopify's rules:
+// `available` given the values selected in the earlier options, `variant` the
+// one combining this value with the other selected values.
+function selectVariant(product, variant) {
+  const { variants } = product;
+  const current = variant || variants.find((v) => v.available) || variants[0];
+  const options = product.__raw.options.map((o, oi) => {
+    const key = `option${oi + 1}`;
+    const values = o.values.map((raw, vi) => {
+      const [name, hex, swatchImage] = Array.isArray(raw) ? raw : [raw];
+      const others = (v) => product.__raw.options.every((_, j) => j === oi || v[`option${j + 1}`] === current[`option${j + 1}`]);
+      const previous = (v) => product.__raw.options.every((_, j) => j >= oi || v[`option${j + 1}`] === current[`option${j + 1}`]);
+      const match = variants.find((v) => v[key] === name && others(v));
+      const swatch = hex
+        ? {
+            color: new ColorDrop(hex),
+            image: swatchImage ? new MediaDrop({ id: 1, filename: `${swatchImage}.jpg`, width: 500, height: 667, alt: name }) : null,
+          }
+        : null;
+      return new OptionValueDrop({
+        id: product.id * 100 + oi * 10 + vi,
+        name,
+        swatch,
+        variant: match || null,
+        available: variants.some((v) => v[key] === name && previous(v) && v.available),
+        selected: current[key] === name,
+        product_url: product.url,
+      });
+    });
+    return { name: o.name, position: oi + 1, values, selected_value: current[key] };
+  });
+  return Object.assign({}, product, {
+    options_with_values: options,
+    options_by_name: Object.fromEntries(options.map((o) => [o.name.toLowerCase(), o])),
+    selected_variant: variant,
+    selected_or_first_available_variant: current,
+  });
 }
 
 function hash(s) {
@@ -294,4 +332,4 @@ function buildCollection(catalog, handle, query = new URLSearchParams()) {
   };
 }
 
-module.exports = { buildProduct, buildCollection, MediaDrop, ColorDrop };
+module.exports = { buildProduct, selectVariant, buildCollection, MediaDrop, ColorDrop };

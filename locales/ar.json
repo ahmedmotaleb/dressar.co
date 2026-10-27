@@ -2231,12 +2231,23 @@
     },
     "product": {
       "model_size": "البنت اللي في الصورة لابسة مقاس {{ size }}",
-      "pick_size": "اختاري مقاسك"
+      "pick_size": "اختاري مقاسك",
+      "sale_badge": "خصم {{ percent }}% · وفّري {{ amount }}",
+      "size_help": "مش متأكدة من مقاسك؟ ابعتيلنا طولك ووزنك على واتساب",
+      "facts": {
+        "fabric": "الخامة",
+        "fit": "القَصّة",
+        "length": "الطول",
+        "sleeve": "الأكمام",
+        "neckline": "الياقة",
+        "care": "العناية"
+      }
     },
     "whatsapp": {
       "label": "كلمنا على واتساب",
       "message_product": "السلام عليكم، حابب أستفسر عن: {{ title }}",
-      "message_general": "السلام عليكم، حابب أستفسر عن منتجات {{ shop }}"
+      "message_general": "السلام عليكم، حابب أستفسر عن منتجات {{ shop }}",
+      "message_size": "السلام عليكم، محتاجة أعرف مقاسي في: {{ title }}"
     },
     "collection": {
       "read_more": "اقرئي أكتر",

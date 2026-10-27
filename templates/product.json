@@ -91,7 +91,7 @@
         "buy_buttons": {
           "type": "buy_buttons",
           "settings": {
-            "show_dynamic_checkout": true,
+            "show_dynamic_checkout": false,
             "show_gift_card_recipient": false
           }
         },
@@ -152,26 +152,62 @@
           "type": "custom_liquid",
           "settings": {
             "custom_liquid": "<div class=\"dsr-trust\" dir=\"rtl\">\n  <ul class=\"dsr-trust__list\" role=\"list\">\n    <li><span aria-hidden=\"true\">💵</span>الدفع عند الاستلام</li>\n    <li><span aria-hidden=\"true\">👀</span>معاينة قبل ما تدفعي</li>\n    <li><span aria-hidden=\"true\">🔄</span>استبدال خلال ٣ أيام</li>\n    <li><span aria-hidden=\"true\">🚚</span>توصيل لكل محافظات مصر</li>\n  </ul>\n  {%- capture dsr_wa_text -%}السلام عليكم، محتاجة أعرف مقاسي في: {{ product.title }} {{ shop.url }}{{ product.url }}{%- endcapture -%}\n  <a class=\"dsr-trust__help\" href=\"https://wa.me/201020676173?text={{ dsr_wa_text | url_encode }}\" target=\"_blank\" rel=\"noopener\">💬 مش متأكدة من مقاسك؟ ابعتيلنا طولك ووزنك على واتساب</a>\n</div>"
+          },
+          "disabled": true
+        },
+        "size_guide": {
+          "type": "popup",
+          "settings": {
+            "text": "جدول المقاسات | Size Chart",
+            "page": "size-chart"
+          }
+        },
+        "dsr_size_help": {
+          "type": "dsr_size_help",
+          "settings": {}
+        },
+        "dsr_reassurance": {
+          "type": "icon-with-text",
+          "settings": {
+            "layout": "horizontal",
+            "icon_1": "price_tag",
+            "heading_1": "الدفع عند الاستلام بعد المعاينة",
+            "icon_2": "return",
+            "heading_2": "استبدال خلال ٣ أيام",
+            "icon_3": "truck",
+            "heading_3": "توصيل لكل محافظات مصر"
+          }
+        },
+        "dsr_facts": {
+          "type": "dsr_facts",
+          "settings": {
+            "heading": "الخامة والقَصّة | Fabric & Fit",
+            "icon": "leather",
+            "open": false
           }
         }
       },
       "block_order": [
         "title",
-        "judge_me_reviews_preview_badge_amPJgp",
         "price",
+        "judge_me_reviews_preview_badge_amPJgp",
         "sku_r8AL6g",
         "rating_izydnW",
         "variant_picker",
+        "size_guide",
+        "dsr_size_help",
+        "dsr_model_size",
         "inventory_dsr",
         "quantity_selector",
         "buy_buttons",
+        "dsr_reassurance",
         "dsr_trust",
         "cod_note",
         "description",
-        "dsr_model_size",
+        "dsr_facts",
         "collapsible_tab_RC7gzi",
-        "collapsible_tab_CYGWxM",
         "collapsible_tab_qDAwhz",
+        "collapsible_tab_CYGWxM",
         "share"
       ],
       "settings": {
@@ -308,10 +344,10 @@
     "17851584660d57e669",
     "main",
     "disclosures",
-    "17835520174d0243a5",
-    "17851581515604d190",
     "related-products",
     "178648157455ed3771",
+    "17851581515604d190",
+    "17835520174d0243a5",
     "dsr_product_boost"
   ]
 }

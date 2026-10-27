@@ -3,9 +3,10 @@
   "private": true,
   "description": "Local checks for the DRESSAR theme. Not part of the theme; Shopify ignores this folder.",
   "scripts": {
-    "test": "node liquid-logic.test.js .. && node pdp-sticky-sympl.test.js .. && node header.test.js .. && node collection.test.js ..",
+    "test": "node liquid-logic.test.js .. && node pdp-sticky-sympl.test.js .. && node header.test.js .. && node collection.test.js .. && node product.test.js ..",
     "theme-check": "node theme-check.js .. theme-check.json",
-    "sync-locales": "python3 sync_locales.py .."
+    "sync-locales": "python3 sync_locales.py ..",
+    "fixtures": "python3 fixtures/build_catalog.py fixtures/store.json fixtures/catalog.json"
   },
   "devDependencies": {
     "@fontsource/poppins": "5.3.0",

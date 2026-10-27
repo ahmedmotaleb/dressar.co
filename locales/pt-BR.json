@@ -566,12 +566,23 @@
     },
     "product": {
       "model_size": "The model is wearing size {{ size }}",
-      "pick_size": "Choose your size"
+      "pick_size": "Choose your size",
+      "sale_badge": "{{ percent }}% off · save {{ amount }}",
+      "size_help": "Not sure of your size? Send us your height and weight on WhatsApp",
+      "facts": {
+        "fabric": "Fabric",
+        "fit": "Fit",
+        "length": "Length",
+        "sleeve": "Sleeves",
+        "neckline": "Neckline",
+        "care": "Care"
+      }
     },
     "whatsapp": {
       "label": "Chat with us on WhatsApp",
       "message_product": "Hello, I'd like to ask about: {{ title }}",
-      "message_general": "Hello, I'd like to ask about {{ shop }} products"
+      "message_general": "Hello, I'd like to ask about {{ shop }} products",
+      "message_size": "Hello, I'd like help choosing my size for: {{ title }}"
     },
     "collection": {
       "read_more": "Read more",

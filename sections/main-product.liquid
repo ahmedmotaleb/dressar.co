@@ -15,6 +15,7 @@
   {{ 'component-slider.css' | asset_url | stylesheet_tag }}
   {{ 'component-rating.css' | asset_url | stylesheet_tag }}
   {{ 'component-deferred-media.css' | asset_url | stylesheet_tag }}
+  {{ 'dsr-product.css' | asset_url | stylesheet_tag }}
 
   {% unless product.has_only_default_variant %}
     {{ 'component-product-variant-picker.css' | asset_url | stylesheet_tag }}
@@ -690,6 +691,22 @@
                   </product-recommendations>
                 {%- when 'icon-with-text' -%}
                   {% render 'icon-with-text', block: block %}
+                {%- comment -%} Dressar blocks (docs/stages/stage-5.md) {%- endcomment -%}
+                {%- when 'dsr_size_help' -%}
+                  <div class="dsr-size-help-block" {{ block.shopify_attributes }}>
+                    {%- render 'dsr-size-help', product: product -%}
+                  </div>
+                {%- when 'dsr_facts' -%}
+                  <div {{ block.shopify_attributes }}>
+                    {%- assign dsr_facts_id = block.id | append: '-' | append: section.id -%}
+                    {%- render 'dsr-product-facts',
+                      product: product,
+                      heading: block.settings.heading,
+                      icon: block.settings.icon,
+                      open: block.settings.open,
+                      id: dsr_facts_id
+                    -%}
+                  </div>
               {%- endcase -%}
             {%- endfor -%}
             <a href="{{ product.url }}" class="link product__view-details animate-arrow">
@@ -721,7 +738,8 @@
               {{- 'icon-close.svg' | inline_asset_content -}}
             </button>
             <div class="product-popup-modal__content-info">
-              <h1 class="h2">{{ block.settings.page.title | escape }}</h1>
+              {%- comment -%} Dressar: h2, so the product title stays the page's only h1. {%- endcomment -%}
+              <h2 class="h2">{{ block.settings.page.title | escape }}</h2>
               {{ block.settings.page.content }}
             </div>
           </div>
@@ -1524,6 +1542,53 @@
           "type": "checkbox",
           "id": "enable_quick_add",
           "label": "t:sections.main-product.blocks.complementary_products.settings.enable_quick_add.label",
+          "default": false
+        }
+      ]
+    },
+    {
+      "type": "dsr_size_help",
+      "name": "Dressar: WhatsApp size help",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Opens WhatsApp with the product named. Number: Theme settings > Dressar > WhatsApp."
+        }
+      ]
+    },
+    {
+      "type": "dsr_facts",
+      "name": "Dressar: Fabric and fit",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Lists fabric, fit, length, sleeves, neckline and care from the product's category metafields. Hidden when a product has none of them."
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Fabric and fit"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "none", "label": "None" },
+            { "value": "ruler", "label": "Ruler" },
+            { "value": "shirt", "label": "Shirt" },
+            { "value": "leather", "label": "Fabric" },
+            { "value": "washing", "label": "Washing" }
+          ],
+          "default": "ruler"
+        },
+        {
+          "type": "checkbox",
+          "id": "open",
+          "label": "Open by default",
           "default": false
         }
       ]

@@ -1,5 +1,5 @@
 {
- "_source": "Products 1-11: options, swatch colours, variant prices, stock and photo sizes copied from the store's Admin API on 2026-10-26 (read-only). Products 12-20: titles, prices, stock and photo sizes from tests/fixtures/store.json, with sizes M-3XL added. Collections are built from these in tests/lib/theme-harness.js. Test data only; the theme never reads it.",
+ "_source": "Products 1-11: options, swatch colours, variant prices, stock, photo sizes and category metafields (facts) copied from the store's Admin API on 2026-10-26 (read-only). Products 12-20: titles, prices, stock and photo sizes from tests/fixtures/store.json, with sizes M-3XL added. Collections are built from these in tests/lib/theme-harness.js. Test data only; the theme never reads it.",
  "products": [
   {
    "handle": "linen-maxi-skirt-with-front-pockets",
@@ -281,7 +281,16 @@
      0,
      3
     ]
-   ]
+   ],
+   "facts": {
+    "fabric": [
+     "Linen"
+    ],
+    "skirt-dress-length-type": [
+     "Maxi"
+    ]
+   },
+   "description": "<p>Test description, not the real product copy.</p>"
   },
   {
    "handle": "long-linen-shirt",
@@ -524,7 +533,18 @@
      0,
      0
     ]
-   ]
+   ],
+   "facts": {
+    "skirt-dress-length-type": [
+     "Maxi"
+    ],
+    "sleeve-length-type": [
+     "Long"
+    ],
+    "fabric": [
+     "Linen"
+    ]
+   }
   },
   {
    "handle": "linen-suit",
@@ -810,7 +830,15 @@
      0,
      3
     ]
-   ]
+   ],
+   "facts": {
+    "skirt-dress-length-type": [
+     "Maxi"
+    ],
+    "fabric": [
+     "Linen"
+    ]
+   }
   },
   {
    "handle": "linen-pajama-set",
@@ -973,7 +1001,18 @@
      1,
      1
     ]
-   ]
+   ],
+   "facts": {
+    "sleeve-length-type": [
+     "Long"
+    ],
+    "top-length-type": [
+     "Medium"
+    ],
+    "fabric": [
+     "Linen"
+    ]
+   }
   },
   {
    "handle": "471",
@@ -1253,7 +1292,12 @@
      0,
      1
     ]
-   ]
+   ],
+   "facts": {
+    "fabric": [
+     "Linen"
+    ]
+   }
   },
   {
    "handle": "510",
