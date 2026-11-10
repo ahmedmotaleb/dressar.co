@@ -146,3 +146,23 @@
 :lang(ar) .product-count__text {
   letter-spacing: 0;
 }
+
+
+/* Merchant-selectable collection banner alignment. The title and description
+   can be positioned independently; content stays inside the page width. */
+.dsr-collection-hero--title-left .collection-hero__title { text-align: left; }
+.dsr-collection-hero--title-center .collection-hero__title { text-align: center; }
+.dsr-collection-hero--title-right .collection-hero__title { text-align: right; }
+
+.dsr-collection-hero--description-left .dsr-read-more { text-align: left; }
+.dsr-collection-hero--description-center .dsr-read-more { text-align: center; }
+.dsr-collection-hero--description-right .dsr-read-more { text-align: right; }
+
+.dsr-collection-hero--description-left .collection-hero__description { margin-left: 0; margin-right: auto; }
+.dsr-collection-hero--description-center .collection-hero__description { margin-inline: auto; }
+.dsr-collection-hero--description-right .collection-hero__description { margin-left: auto; margin-right: 0; }
+
+.dsr-collection-hero--title-center .collection-hero__title,
+.dsr-collection-hero--description-center .collection-hero__description {
+  overflow-wrap: anywhere;
+}
