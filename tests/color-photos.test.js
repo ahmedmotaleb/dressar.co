@@ -431,24 +431,53 @@ async function main() {
       await page.closeAll();
     }
 
-    // ---------- In the quick-add dialog ----------
+    // ---------- Product page only: the quick-add dialog keeps Dawn's swatches ----------
     {
       const page = await open(390, '/collections/skirts');
+      // Watch the dialog from before it opens: the photos must never be in it, not even for a moment.
+      await page.evaluate(() => {
+        window.__photosInDialog = 0;
+        new MutationObserver(() => {
+          if (document.querySelector('quick-add-modal .product-form__input--dsr-photos, quick-add-modal .dsr-color-photo')) window.__photosInDialog++;
+        }).observe(document.body, { subtree: true, childList: true });
+      });
       const opener = page.locator('#product-grid .dsr-quick-add__button[data-product-url*="linen-maxi-skirt-with-front-pockets"]').first();
       if (await opener.count()) {
         await opener.scrollIntoViewIfNeeded();
         await opener.click();
-        await page.waitForSelector('quick-add-modal[open] .product-form__input--dsr-photos', { timeout: 5000 }).catch(() => {});
+        await page.waitForSelector('quick-add-modal[open] variant-selects', { timeout: 5000 }).catch(() => {});
         await page.waitForTimeout(400);
-        const inDialog = await page.evaluate(() => document.querySelectorAll('quick-add-modal[open] .product-form__input--dsr-photos .dsr-color-photo img').length);
-        check(`${L} [390] quick-add dialog shows the colour photos too`, inDialog === 4, inDialog);
-        await page.locator('quick-add-modal[open] label.dsr-color-photo:has(.visually-hidden:text-is("Genzari"))').click();
-        await page.waitForTimeout(800);
-        const picked = await page.evaluate(() => (document.querySelector('quick-add-modal[open] .product-form__input--dsr-photos input:checked') || {}).value);
-        check(`${L} [390] quick-add dialog: choosing a colour photo works`, picked === 'Genzari' && page.errors.length === 0, `${picked} ${page.errors.join(' | ')}`);
+        const dialog = () =>
+          page.evaluate(() => {
+            const d = document.querySelector('quick-add-modal[open]');
+            return {
+              circles: d.querySelectorAll('.product-form__input--swatch .swatch-input__input').length,
+              photos: d.querySelectorAll('.product-form__input--dsr-photos, .dsr-color-photo').length,
+              templates: d.querySelectorAll('template[data-dsr-dawn-picker]').length,
+              checked: (d.querySelector('.product-form__input--swatch input:checked') || {}).value,
+              legend: (d.querySelector('.product-form__input--swatch legend') || {}).textContent?.replace(/\s+/g, ' ').trim(),
+              fieldsets: d.querySelectorAll('variant-selects fieldset').length,
+              ever: window.__photosInDialog,
+            };
+          });
+        let d = await dialog();
+        check(`${L} [390] quick-add dialog: Dawn's colour swatches, as before (4 colours)`, d.circles === 4 && d.photos === 0 && d.templates === 0, JSON.stringify(d));
+        check(`${L} [390] quick-add dialog: the photos never showed in it`, d.ever === 0, d.ever);
+        await page.locator('quick-add-modal[open] label.swatch-input__label[title="Genzari"]').click();
+        await page.waitForTimeout(900);
+        d = await dialog();
+        check(`${L} [390] quick-add dialog: choosing a colour works, and it stays Dawn's swatches after the redraw`, d.checked === 'Genzari' && /Genzari/.test(d.legend) && d.circles === 4 && d.photos === 0 && d.fieldsets === 3 && d.ever === 0 && page.errors.length === 0, `${JSON.stringify(d)} ${page.errors.join(' | ')}`);
       } else {
         check(`${L} [390] quick-add dialog: linen skirt card found`, false);
       }
+      await page.closeAll();
+    }
+
+    // ---------- Product page only: other sections keep Dawn's picker ----------
+    {
+      const page = await open(390, '/products/black-pocket-maxi-skirt');
+      const outside = await page.evaluate(() => document.querySelectorAll('.product-form__input--dsr-photos:not(#MainProduct-template--1__main *)').length);
+      check(`${L} [390] colour photos only in the product section`, outside === 0, outside);
       await page.closeAll();
     }
   }

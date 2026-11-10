@@ -119,6 +119,13 @@
   max-width: 100%;
 }
 
+/* Product page only: the quick-add dialog shows Dawn's own swatches
+   (assets/dsr-color-photos.js swaps them in); never the photos, even for a
+   moment. */
+quick-add-modal .product-form__input--dsr-photos {
+  display: none;
+}
+
 .product-form__input--dsr-photos .form__label {
   margin-bottom: 0.8rem;
 }

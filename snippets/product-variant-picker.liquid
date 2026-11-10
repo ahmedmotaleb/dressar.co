@@ -94,14 +94,9 @@
             assign picker_type = 'swatch'
           endif
         endif
-
-        if dsr_photos and option.position == dsr_color_position
-          assign picker_type = 'dsr_photo'
-        endif
       -%}
-      {%- if picker_type == 'dsr_photo' -%}
-        {%- render 'dsr-color-photos', product: product, block: block, option: option, links: dsr_links -%}
-      {%- elsif picker_type == 'swatch' -%}
+      {%- capture dawn_option -%}
+      {%- if picker_type == 'swatch' -%}
         <fieldset class="js product-form__input product-form__input--swatch">
           <legend class="form__label">
             {{ option.name }}:
@@ -155,6 +150,19 @@
             </span>
           </div>
         </div>
+      {%- endif -%}
+      {%- endcapture -%}
+      {%- if dsr_photos and option.position == dsr_color_position -%}
+        {%- comment -%}
+          Dressar: the colour photos, on the product page only. Dawn's own
+          picker for this option follows, inert in a template. In the
+          quick-add dialog (which shows this same section),
+          assets/dsr-color-photos.js swaps the photos for it.
+        {%- endcomment -%}
+        {%- render 'dsr-color-photos', product: product, block: block, option: option, links: dsr_links -%}
+        <template data-dsr-dawn-picker>{{ dawn_option }}</template>
+      {%- else -%}
+        {{ dawn_option }}
       {%- endif -%}
     {%- endfor -%}
 

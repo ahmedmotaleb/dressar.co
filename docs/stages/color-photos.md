@@ -2,6 +2,8 @@
 
 **Status:** on the branch and the preview theme `#168303165671` (unpublished). Not on the live theme.
 
+**Scope: the product page only.** Product cards, the quick-add button and its dialog, homepage rows and search results are unchanged. The quick-add dialog keeps Dawn's colour circles (see "Product page only" below).
+
 ## What changed
 
 On the product page, each colour is now shown as its own product photo instead of a colour circle. This follows the H&M pattern the owner asked for. (The reference image itself did not come through with the request, so this follows its written description.)
@@ -49,11 +51,25 @@ The product's own colours are still Dawn's radio inputs, inside Dawn's `variant-
 - the sticky add-to-cart bar
 - the Sympl instalment widget
 
-Nothing of Dawn's is replaced. Only the colour labels look different. The same selector shows in the quick-add dialog, which uses the product page's section.
+Nothing of Dawn's is replaced. Only the colour labels look different.
+
+### Product page only
+
+Dawn's quick-add dialog shows the product page's own section, fetched from the product's URL, and Liquid can't tell the two apart. So the photos are kept out of the dialog like this:
+
+- **Dawn's original picker for the colour option** is rendered too, inert inside a `<template>` right after the photos. On the product page, nothing reads it: Dawn's scripts and the sticky bar only see live elements.
+- **In the dialog,** `assets/dsr-color-photos.js` swaps the photos for that template's content as soon as they are inserted, and again after each variant change, since Dawn redraws the picker. The dialog therefore shows exactly Dawn's circles, with the same inputs, IDs and behaviour.
+  - The script loads with the quick-add scripts in `layout/theme.liquid`, so it is ready before any dialog opens.
+  - `assets/dsr-product.css` hides the photos inside `quick-add-modal` as a guard.
+- **Nothing in the quick-add or card files changed.**
+
+Two commits:
+- `3678958`: the selector.
+- `feat(pdp): add image-based color selector`: limits it to the product page.
 
 | File | Change |
 |---|---|
-| `snippets/product-variant-picker.liquid` (Dawn) | Finds the colour option: the one Dawn shows as swatches, or, when other colours are linked, the option those products use for colour. Shows the photo row there, or on its own when there is no colour option. |
+| `snippets/product-variant-picker.liquid` (Dawn) | Finds the colour option: the one Dawn shows as swatches, or, when other colours are linked, the option those products use for colour. Shows the photo row there, followed by Dawn's own markup for that option in an inert `<template>` for the quick-add dialog; or shows the row on its own when there is no colour option. |
 | `snippets/product-variant-options.liquid` (Dawn) | New picker type `dsr_photo`: Dawn's own radio input (same IDs, names and data), with the colour's photo as its label |
 | `snippets/dsr-color-photos.liquid` (new) | The row: heading with the selected name, this product's colours and the linked products in the metafield's order |
 | `snippets/dsr-color-link.liquid` (new) | One linked product's colour links |
@@ -61,6 +77,7 @@ Nothing of Dawn's is replaced. Only the colour labels look different. The same s
 | `assets/dsr-color-photos.js` (new) | Keeps the row's scroll position, and the selected colour in view, when Dawn redraws the picker after a choice |
 | `assets/dsr-product.css` | Styles |
 | `sections/main-product.liquid` (Dawn) | Loads the script. New variant picker setting **"Dressar: colour photos"** (on); switch it off to get Dawn's circles back. |
+| `layout/theme.liquid` | Loads `dsr-color-photos.js` with the quick-add scripts on other pages, so the dialog keeps Dawn's circles from its first paint |
 | `locales/*.json` | `dressar.product.colour` ("Colour" / "اللون") for the row without a colour option |
 
 ## Found on the way
@@ -69,7 +86,7 @@ Nothing of Dawn's is replaced. Only the colour labels look different. The same s
 
 ## Tests
 
-`tests/color-photos.test.js` (new), 232 checks: English at 360, 390, 430, 768, 1280 and 1440 px, Arabic at 390 and 1280.
+`tests/color-photos.test.js` (new), 236 checks: English at 360, 390, 430, 768, 1280 and 1440 px, Arabic at 390 and 1280.
 
 - **Several colours:**
   - one selector, no circles, the colour row first
@@ -94,7 +111,10 @@ Nothing of Dawn's is replaced. Only the colour labels look different. The same s
   - no variant photos (Dawn's circles stay)
   - no colour option with linked products (row on its own)
 - **Accessibility:** axe finds nothing in the picker on three product pages, and every photo is named by its colour.
-- **Quick-add dialog:** shows the photos, and choosing one works.
+- **Product page only:**
+  - The quick-add dialog shows Dawn's 4 colour circles, and the photos are never in it, as watched from before it opens.
+  - Choosing a colour there works, and it stays circles after Dawn's redraw.
+  - No colour photos outside the product section.
 
 Existing suites are unchanged and pass in both languages.
 
@@ -102,7 +122,7 @@ Existing suites are unchanged and pass in both languages.
 
 | Suite | en | ar (right to left) |
 |---|---|---|
-| color-photos (new) | 232/232, both languages in one run | |
+| color-photos (new) | 236/236, both languages in one run | |
 | schema, liquid-logic, pdp-sticky-sympl | 6/6, 15/15, 47/47 | |
 | header | 210/210 | 210/210 |
 | collection | 293/293 | 293/293 |

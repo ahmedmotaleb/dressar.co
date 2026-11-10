@@ -433,12 +433,17 @@
       without which the dialog's colour and size choices change nothing),
       loaded once here because cards also arrive by fetch. Product pages
       already load product-info.js and product-form.js.
+      dsr-color-photos.js keeps the product page's colour photos out of the
+      dialog (it shows Dawn's own swatches there instead); loaded before any
+      dialog opens so the photos never show in it. Product pages load it with
+      the product section.
     {%- endcomment -%}
     {%- if settings.card_quick_add -%}
       <script src="{{ 'quick-add.js' | asset_url }}" defer="defer"></script>
       {%- unless request.page_type == 'product' -%}
         <script src="{{ 'product-info.js' | asset_url }}" defer="defer"></script>
         <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+        <script src="{{ 'dsr-color-photos.js' | asset_url }}" defer="defer"></script>
       {%- endunless -%}
     {%- endif -%}
 
