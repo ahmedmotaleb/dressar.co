@@ -281,6 +281,94 @@
   }
 }
 
+/* ---------- Photo slideshow (snippets/dsr-card-slides.liquid) ---------- */
+
+/* Inside the photo box (Dawn's .media makes it cover the photo), so it never
+   changes the card's size, and the sale badge and the "+" stay on top. */
+dsr-card-slides {
+  pointer-events: none;
+}
+
+.dsr-card-slides__track {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.dsr-card-slides__slide {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+/* Desktop with a mouse: the images fade in over the card's photo, one at a time. */
+@media (hover: hover) and (pointer: fine) {
+  .dsr-card-slides__slide {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .dsr-card-slides__slide.is-active {
+    opacity: 1;
+  }
+
+  .dsr-card-slides__slide--first {
+    display: none;
+  }
+
+  .dsr-card-slides--instant .dsr-card-slides__slide {
+    transition: none;
+  }
+}
+
+/* Touch screens: a row of photos to swipe through. The photo box sits above
+   the card link (the class is set by assets/dsr-card-slides.js, so without
+   the script the link works as before); a tap opens the product. */
+@media not all and (hover: hover) and (pointer: fine) {
+  .dsr-card--slides .card__inner {
+    z-index: 2;
+  }
+
+  /* Dawn's badge layer covers the photo; it is still drawn on top, but lets
+     touches through to the photos (the badge is only a label). */
+  .dsr-card--slides .card__inner > .card__content {
+    pointer-events: none;
+  }
+
+  .dsr-card--slides dsr-card-slides {
+    pointer-events: auto;
+  }
+
+  .dsr-card-slides__track {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    cursor: pointer;
+  }
+
+  .dsr-card-slides__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .dsr-card-slides__slide {
+    position: relative;
+    inset: auto;
+    flex: 0 0 100%;
+    height: 100%;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dsr-card-slides__slide {
+    transition: none;
+  }
+}
+
 /* ---------- Second image ---------- */
 
 /* Dawn swaps to the second photo on hover from 990px. On touch screens that

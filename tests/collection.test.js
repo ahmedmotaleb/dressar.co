@@ -246,21 +246,25 @@ async function main() {
     check(`${tag} pressed state follows the pick`, picked.pressed === 'false,true,false,false', picked.pressed);
 
     if (desktop) {
-      // Second photo on hover (mouse), only for products that have one.
+      // Hover (mouse) plays the product's photos: the second one comes in after
+      // 800ms (the slideshow, tests/card-slides.test.js), only for products with more than one.
       const shirt = cardFor('long-linen-shirt');
       await page.hover(`${shirt} .card__media`, { force: true });
-      await page.waitForTimeout(450);
+      await page.waitForTimeout(800 + 450);
       const hover = await page.evaluate((sel) => {
-        const imgs = document.querySelectorAll(`${sel} .card__media img`);
-        return [...imgs].map((i) => getComputedStyle(i).opacity);
+        const active = document.querySelector(`${sel} .dsr-card-slides__slide.is-active img`);
+        return active ? [getComputedStyle(active.parentElement).opacity, active.getAttribute('src') || ''] : ['none', ''];
       }, shirt);
-      check(`${tag} hover shows the second photo`, hover.length === 2 && hover[0] === '0' && hover[1] === '1', hover.join());
+      check(`${tag} hover shows the second photo`, hover[0] === '1' && /long-linen-shirt-1\.jpg/.test(hover[1]), hover.join());
       const oneImage = await page.evaluate((sel) => document.querySelectorAll(`${sel} .card__media img`).length, cardFor('510'));
       check(`${tag} product with one photo has no hover photo`, oneImage === 1, String(oneImage));
       await page.hover(`${cardFor('linen-maxi-skirt-with-front-pockets')} .card__media`, { force: true });
-      await page.waitForTimeout(450);
-      const keep = await page.evaluate((sel) => [...document.querySelectorAll(`${sel} .card__media img`)].map((i) => getComputedStyle(i).opacity + ':' + getComputedStyle(i).display), cardFor('linen-maxi-skirt-with-front-pockets'));
-      check(`${tag} after picking a colour, hover keeps that photo`, keep[0] === '1:block' && (!keep[1] || keep[1].endsWith('none')), keep.join());
+      await page.waitForTimeout(800 + 450);
+      const keep = await page.evaluate((sel) => {
+        const photo = document.querySelector(`${sel} .card__media .media > img`);
+        return [getComputedStyle(photo).opacity + ':' + getComputedStyle(photo).display, document.querySelectorAll(`${sel} .dsr-card-slides__slide.is-active`).length, photo.getAttribute('src')];
+      }, cardFor('linen-maxi-skirt-with-front-pockets'));
+      check(`${tag} after picking a colour, hover keeps that photo`, keep[0] === '1:block' && keep[1] === 0 && /front-pockets-2\.jpg/.test(keep[2]), keep.join());
     }
 
     // Filters.

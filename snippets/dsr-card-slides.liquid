@@ -1,0 +1,66 @@
+{%- doc -%}
+  Photo slideshow on a collection card (assets/dsr-card-slides.js): the
+  product's own images, up to 5 with the card's photo, from its Shopify media.
+
+  - Desktop with a mouse: while the pointer is over the photo, the next
+    images fade in over it every 800ms. Only that card plays. It resets to
+    the first photo as soon as the pointer leaves.
+  - Touch screens: the images are a row to swipe sideways. A tap opens the
+    product.
+
+  The first slide is a copy of the card's photo (filled in by the script,
+  following a picked colour). The others carry their image in data-src and
+  data-srcset, and load only on the first hover or touch. The whole thing is
+  hidden from screen readers: the card's own photo, title and link already
+  describe the product.
+
+  @param {product} card_product - The product on the card.
+  @param {string} sizes - The card photo's `sizes`, reused so the images load at the same width.
+
+  @example
+  {%- render 'dsr-card-slides', card_product: card_product, sizes: image_sizes -%}
+{%- enddoc -%}
+{%- liquid
+  assign slide_images = card_product.media | where: 'media_type', 'image'
+  assign slide_count = 1
+-%}
+<dsr-card-slides class="dsr-card-slides" aria-hidden="true">
+  <div class="dsr-card-slides__track" tabindex="-1">
+    <span class="dsr-card-slides__slide dsr-card-slides__slide--first">
+      <img
+        class="dsr-card-slides__img"
+        alt=""
+        width="{{ card_product.featured_media.width }}"
+        height="{{ card_product.featured_media.height }}"
+        data-dsr-copy
+      >
+    </span>
+    {%- for image in slide_images -%}
+      {%- if image.id == card_product.featured_media.id -%}
+        {%- continue -%}
+      {%- endif -%}
+      <span class="dsr-card-slides__slide">
+        <img
+          class="dsr-card-slides__img"
+          alt=""
+          width="{{ image.width }}"
+          height="{{ image.height }}"
+          sizes="{{ sizes }}"
+          data-src="{{ image | image_url: width: 533 }}"
+          data-srcset="
+            {%- if image.width >= 165 -%}{{ image | image_url: width: 165 }} 165w,{%- endif -%}
+            {%- if image.width >= 360 -%}{{ image | image_url: width: 360 }} 360w,{%- endif -%}
+            {%- if image.width >= 533 -%}{{ image | image_url: width: 533 }} 533w,{%- endif -%}
+            {%- if image.width >= 720 -%}{{ image | image_url: width: 720 }} 720w,{%- endif -%}
+            {%- if image.width >= 940 -%}{{ image | image_url: width: 940 }} 940w,{%- endif -%}
+            {{ image | image_url }} {{ image.width }}w
+          "
+        >
+      </span>
+      {%- assign slide_count = slide_count | plus: 1 -%}
+      {%- if slide_count >= 5 -%}
+        {%- break -%}
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+</dsr-card-slides>

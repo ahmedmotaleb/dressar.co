@@ -5,6 +5,7 @@
   @param {string} [media_aspect_ratio] - The product image aspect ratio. Allowed values are `adapt`, `portrait` (4:5), `tall` (3:4, Dressar), and `square`. Defaults to `square`.
   @param {string} [image_shape] - The product image mask. Allowed values are `default`, `arch`, `blob`, `chevronleft`, `chevronright`, `diamond`, `parallelogram`, and `round`. Defaults to `default`.
   @param {boolean} [show_secondary_image] - Whether to show the second product image on hover. Defaults to `false`.
+  @param {boolean} [image_slideshow] - Dressar: play the product's images (up to 5) while the mouse is over the photo, swipe through them on touch screens (snippets/dsr-card-slides.liquid). Replaces the second-image hover. Defaults to `false`.
   @param {boolean} [show_vendor] - Whether to show the product vendor. Defaults to `false`.
   @param {boolean} [show_rating] - Whether to show the product rating. Defaults to `false`.
   @param {boolean} [extend_height] - Whether the card fills its available container space. Defaults to `false`.
@@ -86,8 +87,18 @@
           style="--ratio-percent: {{ 1 | divided_by: ratio | times: 100 }}%;"
         >
           {%- if card_product.featured_media -%}
+            {%- liquid
+              # Dressar: the photo slideshow (collection grids), for products with more than one image.
+              assign dsr_slides = false
+              if image_slideshow
+                assign dsr_slide_images = card_product.media | where: 'media_type', 'image'
+                if dsr_slide_images.size > 1
+                  assign dsr_slides = true
+                endif
+              endif
+            -%}
             <div class="card__media{% if image_shape and image_shape != 'default' %} shape--{{ image_shape }} color-{{ settings.card_color_scheme }} gradient{% endif %}">
-              <div class="media media--transparent media--hover-effect">
+              <div class="media media--transparent{% unless dsr_slides %} media--hover-effect{% endunless %}">
                 {% comment %}theme-check-disable ImgLazyLoading{% endcomment %}
                 <img
                   srcset="
@@ -111,7 +122,12 @@
                 >
                 {% comment %}theme-check-enable ImgLazyLoading{% endcomment %}
 
-                {%- if card_product.media[1] != null and show_secondary_image -%}
+                {%- if dsr_slides -%}
+                  {%- capture dsr_image_sizes -%}
+                    (min-width: {{ settings.page_width }}px) {{ settings.page_width | minus: 130 | divided_by: 4 }}px, (min-width: 990px) calc((100vw - 130px) / 4), (min-width: 750px) calc((100vw - 120px) / 3), calc((100vw - 35px) / 2)
+                  {%- endcapture -%}
+                  {%- render 'dsr-card-slides', card_product: card_product, sizes: dsr_image_sizes -%}
+                {%- elsif card_product.media[1] != null and show_secondary_image -%}
                   <img
                     srcset="
                       {%- if card_product.media[1].width >= 165 -%}{{ card_product.media[1] | image_url: width: 165 }} 165w,{%- endif -%}
