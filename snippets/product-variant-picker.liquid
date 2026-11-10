@@ -9,7 +9,66 @@
   @example
   {% render 'product-variant-picker', product: product, block: block, product_form_id: product_form_id %}
 {%- enddoc -%}
-{%- unless product.has_only_default_variant -%}
+{%- liquid
+  # Dressar colour photos (snippets/dsr-color-photos.liquid), when the block's
+  # "Colour photos" setting is on. The colour option is the one Dawn would show
+  # as swatches; with linked colour products and no swatches, the option those
+  # products use for their colour. The photos replace the swatches when the
+  # product's variants have photos or other colours are linked; otherwise
+  # Dawn's swatches stay.
+  assign dsr_photos = false
+  assign dsr_links = null
+  assign dsr_color_position = 0
+  assign dsr_link_count = 0
+  if block.settings.dsr_color_photos
+    assign dsr_links = product.metafields.custom.color_products.value
+    for linked in dsr_links
+      if linked.id != product.id
+        assign dsr_link_count = dsr_link_count | plus: 1
+      endif
+    endfor
+
+    for option in product.options_with_values
+      assign dsr_swatches = option.values | map: 'swatch' | compact | size
+      if dsr_swatches > 0 and block.settings.swatch_shape != 'none' and block.settings.picker_type != 'dropdown'
+        assign dsr_color_position = option.position
+        break
+      endif
+    endfor
+
+    if dsr_color_position == 0 and dsr_link_count > 0
+      for linked in dsr_links
+        for linked_option in linked.options_with_values
+          assign dsr_swatches = linked_option.values | map: 'swatch' | compact | size
+          if dsr_swatches > 0
+            assign dsr_linked_name = linked_option.name | downcase
+            for option in product.options_with_values
+              assign dsr_own_name = option.name | downcase
+              if dsr_own_name == dsr_linked_name
+                assign dsr_color_position = option.position
+                break
+              endif
+            endfor
+            break
+          endif
+        endfor
+        if dsr_color_position > 0
+          break
+        endif
+      endfor
+    endif
+
+    assign dsr_variant_photos = product.variants | map: 'featured_media' | compact | size
+    if dsr_variant_photos > 0 or dsr_link_count > 0
+      assign dsr_photos = true
+    endif
+  endif
+-%}
+{%- if product.has_only_default_variant -%}
+  {%- if dsr_photos and dsr_link_count > 0 -%}
+    {%- render 'dsr-color-photos', product: product, block: block, links: dsr_links -%}
+  {%- endif -%}
+{%- else -%}
   <variant-selects
     id="variant-selects-{{ section.id }}"
     data-section="{{ section.id }}"
@@ -20,6 +79,9 @@
     data-selected-price-amount="{{ product.selected_or_first_available_variant.price | default: 0 | money_amount | escape }}"
     {{ block.shopify_attributes }}
   >
+    {%- if dsr_photos and dsr_color_position == 0 and dsr_link_count > 0 -%}
+      {%- render 'dsr-color-photos', product: product, block: block, links: dsr_links -%}
+    {%- endif -%}
     {%- for option in product.options_with_values -%}
       {%- liquid
         assign swatch_count = option.values | map: 'swatch' | compact | size
@@ -32,8 +94,14 @@
             assign picker_type = 'swatch'
           endif
         endif
+
+        if dsr_photos and option.position == dsr_color_position
+          assign picker_type = 'dsr_photo'
+        endif
       -%}
-      {%- if picker_type == 'swatch' -%}
+      {%- if picker_type == 'dsr_photo' -%}
+        {%- render 'dsr-color-photos', product: product, block: block, option: option, links: dsr_links -%}
+      {%- elsif picker_type == 'swatch' -%}
         <fieldset class="js product-form__input product-form__input--swatch">
           <legend class="form__label">
             {{ option.name }}:
@@ -94,4 +162,4 @@
       {{ product.selected_or_first_available_variant | json }}
     </script>
   </variant-selects>
-{%- endunless -%}
+{%- endif -%}

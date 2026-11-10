@@ -388,7 +388,7 @@ function createHarness({ root, fixtures, locale = 'en.default', origin = 'http:/
       }
       const extraAlt = ` alt="${attr(o.alt)}"`;
       delete o.alt;
-      const extra = ['class', 'alt', 'sizes', 'loading', 'fetchpriority', 'width', 'height']
+      const extra = ['class', 'alt', 'sizes', 'loading', 'fetchpriority', 'width', 'height', 'style']
         .filter((k) => o[k] !== undefined && o[k] !== false)
         .map((k) => ` ${k}="${attr(k === 'height' || k === 'width' ? Math.round(Number(o[k])) : o[k])}"`)
         .join('');

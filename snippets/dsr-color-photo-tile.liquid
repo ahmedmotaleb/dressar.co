@@ -1,0 +1,62 @@
+{%- doc -%}
+  The picture inside one colour of the Dressar colour photo selector
+  (snippets/dsr-color-photos.liquid): the colour's real product photo, cropped
+  to 3:4. A colour with no photo shows its swatch from the product's colour
+  data (Shopify's colour metaobject), or else its name; never a made-up image.
+
+  The photo is decorative (alt=""): the colour name is in the label or link
+  text next to it.
+
+  @param {media} [media] - The colour's photo: its variant's featured media.
+  @param {object} [swatch] - The option value's swatch, used when there is no photo.
+  @param {string} name - The colour name, shown in the tile when there is neither.
+
+  @example
+  {%- render 'dsr-color-photo-tile', media: photo, swatch: value.swatch, name: value.name -%}
+{%- enddoc -%}
+{%- if media -%}
+  {%- if media.presentation.focal_point -%}
+    {%- assign photo_style = 'object-position: ' | append: media.presentation.focal_point -%}
+    {{
+      media
+      | image_url: width: 228
+      | image_tag:
+        widths: '76, 152, 228',
+        sizes: '(min-width: 750px) 76px, 68px',
+        loading: 'lazy',
+        alt: '',
+        class: 'dsr-color-photo__img',
+        style: photo_style
+    }}
+  {%- else -%}
+    {{
+      media
+      | image_url: width: 228
+      | image_tag:
+        widths: '76, 152, 228',
+        sizes: '(min-width: 750px) 76px, 68px',
+        loading: 'lazy',
+        alt: '',
+        class: 'dsr-color-photo__img'
+    }}
+  {%- endif -%}
+{%- else -%}
+  {%- liquid
+    assign swatch_value = null
+    if swatch.image
+      assign swatch_url = swatch.image | image_url: width: 152
+      assign swatch_value = 'url(' | append: swatch_url | append: ')'
+    elsif swatch.color
+      assign swatch_value = 'rgb(' | append: swatch.color.rgb | append: ')'
+    endif
+  -%}
+  <span
+    class="dsr-color-photo__swatch{% unless swatch_value %} dsr-color-photo__swatch--name{% endunless %}"
+    {% if swatch_value %}
+      style="--dsr-swatch: {{ swatch_value }};"
+    {% endif %}
+    aria-hidden="true"
+  >
+    {%- unless swatch_value -%}{{ name | escape }}{%- endunless -%}
+  </span>
+{%- endif -%}

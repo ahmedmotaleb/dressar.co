@@ -108,3 +108,164 @@
   margin: 0;
   color: rgb(var(--color-foreground));
 }
+
+/* ---------- Colour photos (snippets/dsr-color-photos.liquid) ---------- */
+
+/* Each colour is its own product photo, 3:4: 68px wide on phones, 76px from
+   750px. Below 990px the row scrolls sideways; from 990px it wraps. Sizes in px
+   on purpose: this theme sets html { font-size: 11px }. */
+.product-form__input--dsr-photos {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.product-form__input--dsr-photos .form__label {
+  margin-bottom: 0.8rem;
+}
+
+.dsr-color-photos {
+  display: block;
+}
+
+/* The padding leaves room for the focus ring, which the scrolling row would
+   otherwise cut off. */
+.dsr-color-photos__track {
+  position: relative;
+  display: flex;
+  gap: 8px;
+  margin: -4px;
+  padding: 4px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: 4px;
+  scrollbar-width: none;
+}
+
+.dsr-color-photos__track::-webkit-scrollbar {
+  display: none;
+}
+
+/* A colour of this product: Dawn's hidden radio and its photo. The radio sits
+   on the photo, so focusing it scrolls the row to that photo. */
+.dsr-color-photos__item {
+  position: relative;
+  display: block;
+  flex: 0 0 auto;
+}
+
+.dsr-color-photo {
+  position: relative;
+  display: block;
+  flex: 0 0 68px;
+  width: 68px;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  border: 1px solid rgba(var(--color-foreground), 0.15);
+  border-radius: 0;
+  background-color: rgba(var(--color-foreground), 0.04);
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  scroll-snap-align: start;
+  transition: border-color var(--duration-short) ease;
+}
+
+.dsr-color-photo:hover {
+  border-color: rgba(var(--color-foreground), 0.5);
+}
+
+/* The selected colour: a thin black frame. */
+.product-form__input--dsr-photos input[type='radio']:checked + .dsr-color-photo,
+.dsr-color-photo--current,
+.dsr-color-photo--current:hover {
+  border-color: rgb(var(--color-foreground));
+}
+
+.dsr-color-photo--current {
+  cursor: default;
+}
+
+.product-form__input--dsr-photos input[type='radio']:focus-visible + .dsr-color-photo,
+.dsr-color-photo--link:focus-visible {
+  outline: 2px solid rgb(var(--color-foreground));
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+.dsr-color-photo__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* No photo for this colour: its swatch from the colour data, or its name. */
+.dsr-color-photo__swatch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: var(--dsr-swatch, transparent) center / cover no-repeat;
+}
+
+.dsr-color-photo__swatch--name {
+  padding: 4px;
+  font-size: 11px;
+  line-height: 1.2;
+  text-align: center;
+  overflow-wrap: anywhere;
+  color: rgba(var(--color-foreground), 0.75);
+}
+
+/* Sold out (in every size, or in the size already chosen): faded and struck
+   through, still selectable so its page and photos stay one tap away. */
+.dsr-color-photo--sold-out .dsr-color-photo__img,
+.dsr-color-photo--sold-out .dsr-color-photo__swatch {
+  opacity: 0.45;
+}
+
+.dsr-color-photo--sold-out::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to top right,
+    transparent calc(50% - 0.5px),
+    rgba(var(--color-foreground), 0.7) calc(50% - 0.5px),
+    rgba(var(--color-foreground), 0.7) calc(50% + 0.5px),
+    transparent calc(50% + 0.5px)
+  );
+}
+
+@media screen and (min-width: 750px) {
+  .dsr-color-photo {
+    flex-basis: 76px;
+    width: 76px;
+  }
+}
+
+@media screen and (min-width: 990px) {
+  .dsr-color-photos__track {
+    flex-wrap: wrap;
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dsr-color-photo {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .product-form__input--dsr-photos input[type='radio']:checked + .dsr-color-photo,
+  .dsr-color-photo--current {
+    border-width: 3px;
+  }
+}

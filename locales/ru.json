@@ -589,7 +589,8 @@
         "sleeve": "Sleeves",
         "neckline": "Neckline",
         "care": "Care"
-      }
+      },
+      "colour": "Colour"
     },
     "whatsapp": {
       "label": "Chat with us on WhatsApp",

@@ -1,0 +1,89 @@
+{%- doc -%}
+  One product from the "Other colours" metafield (custom.color_products) in
+  the Dressar colour photo selector (snippets/dsr-color-photos.liquid): a link
+  to that product, shown as its colour's photo.
+
+  - Its colour comes from its own colour option (the option with swatches),
+    one link per colour it has. A product with several colours links each one
+    to its first in-stock variant of that colour, with pick=color so the
+    product page still asks for a size (sections/dsr-product-boost.liquid).
+  - A product with no colour option is one link: its featured photo, named by
+    its Color category metafield (shopify.color-pattern), else its title.
+  - Sold out: shown faded and struck through, and still a link, so its page
+    stays one tap away.
+
+  Nothing is inferred from titles: which products are colours of each other is
+  only what the merchant listed in the metafield.
+
+  @param {product} link_product - The linked product.
+
+  @example
+  {%- render 'dsr-color-link', link_product: linked -%}
+{%- enddoc -%}
+{%- liquid
+  assign color_option = null
+  for candidate in link_product.options_with_values
+    assign candidate_swatches = candidate.values | map: 'swatch' | compact | size
+    if candidate_swatches > 0
+      assign color_option = candidate
+      break
+    endif
+  endfor
+  assign sold_out_text = 'products.product.sold_out' | t
+-%}
+{%- if color_option -%}
+  {%- assign option_index = color_option.position | minus: 1 -%}
+  {%- for value in color_option.values -%}
+    {%- liquid
+      assign photo = null
+      assign target = null
+      assign in_stock = false
+      for candidate in link_product.variants
+        if candidate.options[option_index] == value.name
+          if photo == null and candidate.featured_media
+            assign photo = candidate.featured_media
+          endif
+          if target == null
+            assign target = candidate
+          endif
+          if candidate.available and in_stock == false
+            assign in_stock = true
+            assign target = candidate
+          endif
+        endif
+      endfor
+
+      assign href = link_product.url
+      if color_option.values.size > 1 and target
+        assign href = link_product.url | append: '?variant=' | append: target.id | append: '&pick=color'
+      endif
+    -%}
+    <a
+      href="{{ href }}"
+      class="dsr-color-photo dsr-color-photo--link{% unless in_stock %} dsr-color-photo--sold-out{% endunless %}"
+    >
+      {%- render 'dsr-color-photo-tile', media: photo, swatch: value.swatch, name: value.name -%}
+      <span class="visually-hidden">
+        {{- value.name | escape -}}
+        {%- unless in_stock %}, {{ sold_out_text }}{% endunless -%}
+      </span>
+    </a>
+  {%- endfor -%}
+{%- else -%}
+  {%- liquid
+    assign link_name = link_product.metafields.shopify['color-pattern'].value.first.label.value
+    if link_name == blank
+      assign link_name = link_product.title
+    endif
+  -%}
+  <a
+    href="{{ link_product.url }}"
+    class="dsr-color-photo dsr-color-photo--link{% unless link_product.available %} dsr-color-photo--sold-out{% endunless %}"
+  >
+    {%- render 'dsr-color-photo-tile', media: link_product.featured_media, name: link_name -%}
+    <span class="visually-hidden">
+      {{- link_name | escape -}}
+      {%- unless link_product.available %}, {{ sold_out_text }}{% endunless -%}
+    </span>
+  </a>
+{%- endif -%}

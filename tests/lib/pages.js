@@ -20,12 +20,18 @@ function storefront({ root, harness, cartLines = [], catalog: catalogOverride })
   const catalog = catalogOverride || readJson(path.join(root, 'tests/fixtures/catalog.json'));
   const collections = (handle) => buildCollection(catalog, handle);
   // A fixture product, or one of the numbered copies collections make of it (handle-1, handle-2).
+  // `colorProducts` (handles) fills the "Other colours" metafield, custom.color_products.
   const product = (handle) => {
     const exact = catalog.products.find((p) => p.handle === handle);
-    if (exact) return buildProduct(exact);
-    const m = /^(.*)-(\d+)$/.exec(handle);
+    const m = !exact && /^(.*)-(\d+)$/.exec(handle);
     const base = m && catalog.products.find((p) => p.handle === m[1]);
-    return base ? buildProduct(base, Number(m[2])) : null;
+    const built = exact ? buildProduct(exact) : base ? buildProduct(base, Number(m[2])) : null;
+    const raw = exact || base;
+    if (built && raw.colorProducts) {
+      const linked = raw.colorProducts.map((h) => catalog.products.find((p) => p.handle === h)).filter(Boolean).map((p) => buildProduct(p));
+      built.metafields.custom.color_products = { value: linked };
+    }
+    return built;
   };
   const cart = () => harness.makeCart(cartLines);
   const globals = (pagePath, pageType, overrides = {}) =>

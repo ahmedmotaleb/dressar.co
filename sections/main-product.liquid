@@ -16,6 +16,7 @@
   {{ 'component-rating.css' | asset_url | stylesheet_tag }}
   {{ 'component-deferred-media.css' | asset_url | stylesheet_tag }}
   {{ 'dsr-product.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'dsr-color-photos.js' | asset_url }}" defer="defer"></script>
 
   {% unless product.has_only_default_variant %}
     {{ 'component-product-variant-picker.css' | asset_url | stylesheet_tag }}
@@ -960,6 +961,13 @@
             }
           ],
           "default": "circle"
+        },
+        {
+          "type": "checkbox",
+          "id": "dsr_color_photos",
+          "label": "Dressar: colour photos",
+          "info": "Shows each colour as its own product photo instead of a swatch. Colours sold as separate products are added from the product's \"Other colours\" metafield.",
+          "default": true
         }
       ]
     },
