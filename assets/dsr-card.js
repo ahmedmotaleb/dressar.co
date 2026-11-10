@@ -2,6 +2,7 @@
 // Picking a colour shows that variant's photo on the card and points the
 // card's links at the first in-stock variant in that colour, with
 // `pick=color` so the product page knows the size is still to be chosen.
+// The card's quick-add dialog then opens on that colour too.
 // On devices with a mouse, hovering a swatch previews its photo.
 // Loaded once from layout/theme.liquid; safe to load twice.
 if (!customElements.get('dsr-card-swatches')) {
@@ -18,6 +19,8 @@ if (!customElements.get('dsr-card-swatches')) {
           link,
           href: link.getAttribute('href'),
         }));
+        this.quickAdd = this.card.querySelector('.dsr-quick-add [data-product-url]');
+        this.quickAddUrl = this.quickAdd && this.quickAdd.getAttribute('data-product-url');
 
         this.onClick = this.onClick.bind(this);
         this.onPreview = this.onPreview.bind(this);
@@ -52,6 +55,11 @@ if (!customElements.get('dsr-card-swatches')) {
           url.searchParams.set('pick', 'color');
           link.setAttribute('href', url.pathname + url.search);
         });
+        if (this.quickAdd) {
+          const url = new URL(this.quickAddUrl, window.location.origin);
+          url.searchParams.set('variant', button.dataset.variantId);
+          this.quickAdd.setAttribute('data-product-url', url.pathname + url.search);
+        }
       }
 
       onPreview(event) {

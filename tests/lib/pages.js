@@ -14,10 +14,19 @@ const PAGES = {
   'care-instructions': { title: 'Care', handle: 'care-instructions', url: '/pages/care-instructions', content: '<p>Care page.</p>' },
 };
 
-function storefront({ root, harness, cartLines = [] }) {
-  const catalog = readJson(path.join(root, 'tests/fixtures/catalog.json'));
+// catalog: optional, a catalog object to use instead of tests/fixtures/catalog.json.
+// cartLines: the cart's lines, read on every render, so a test can change them.
+function storefront({ root, harness, cartLines = [], catalog: catalogOverride }) {
+  const catalog = catalogOverride || readJson(path.join(root, 'tests/fixtures/catalog.json'));
   const collections = (handle) => buildCollection(catalog, handle);
-  const product = (handle) => buildProduct(catalog.products.find((p) => p.handle === handle));
+  // A fixture product, or one of the numbered copies collections make of it (handle-1, handle-2).
+  const product = (handle) => {
+    const exact = catalog.products.find((p) => p.handle === handle);
+    if (exact) return buildProduct(exact);
+    const m = /^(.*)-(\d+)$/.exec(handle);
+    const base = m && catalog.products.find((p) => p.handle === m[1]);
+    return base ? buildProduct(base, Number(m[2])) : null;
+  };
   const cart = () => harness.makeCart(cartLines);
   const globals = (pagePath, pageType, overrides = {}) =>
     harness.globals({ path: pagePath, pageType, cart: cart(), overrides: { __collections: collections, __pages: PAGES, ...overrides } });
@@ -43,8 +52,16 @@ function storefront({ root, harness, cartLines = [] }) {
     m = /^(?:\/collections\/([\w-]+))?\/products\/([\w-]+)$/.exec(url.pathname);
     if (m) {
       let p = product(m[2]);
+      if (!p) return null;
       const variantId = url.searchParams.get('variant');
       if (variantId) p = selectVariant(p, p.variants.find((v) => String(v.id) === variantId));
+      // Dawn's variant picker asks for the section by option value IDs.
+      const optionValues = url.searchParams.get('option_values');
+      if (optionValues) {
+        const ids = optionValues.split(',').map(Number);
+        const names = p.options_with_values.map((o) => (o.values.find((v) => ids.includes(v.id)) || {}).name);
+        p = selectVariant(p, p.variants.find((v) => names.every((n, i) => v[`option${i + 1}`] === n)) || null);
+      }
       const within = m[1] ? { collection: buildCollection(catalog, m[1]) } : {};
       return render('product', globals(url.pathname, 'product', { product: p, ...within, __query: url.search.slice(1), __path: url.pathname }));
     }

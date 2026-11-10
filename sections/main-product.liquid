@@ -99,7 +99,7 @@
                     {{- block.settings.text -}}
                   </p>
                 {%- when 'dsr_breadcrumbs' -%}
-                  <div {{ block.shopify_attributes }}>
+                  <div class="quick-add-hidden" {{ block.shopify_attributes }}>
                     {% render 'dsr-breadcrumbs' %}
                   </div>
                 {%- when 'title' -%}
@@ -718,7 +718,7 @@
                     {%- render 'dsr-size-help', product: product -%}
                   </div>
                 {%- when 'dsr_facts' -%}
-                  <div {{ block.shopify_attributes }}>
+                  <div class="quick-add-hidden" {{ block.shopify_attributes }}>
                     {%- assign dsr_facts_id = block.id | append: '-' | append: section.id -%}
                     {%- render 'dsr-product-facts',
                       product: product,

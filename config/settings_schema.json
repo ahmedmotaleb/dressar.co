@@ -1550,6 +1550,13 @@
         "default": true
       },
       {
+        "type": "checkbox",
+        "id": "card_quick_add",
+        "label": "Show quick add button",
+        "info": "A square + on each product photo. Products with one variant go straight to the cart; the others open their size and colour picker.",
+        "default": true
+      },
+      {
         "type": "text",
         "id": "card_color_option_names",
         "label": "Colour option names",

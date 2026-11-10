@@ -175,6 +175,112 @@
   text-decoration: line-through;
 }
 
+/* ---------- Quick add (snippets/dsr-card-quick-add.liquid) ---------- */
+
+/* A square "+" on the photo's bottom corner: bottom-right, or bottom-left on
+   right-to-left pages. .dsr-quick-add is a click-through frame the size of the
+   photo (the card's own --ratio-percent), above the card's full-card link
+   (z-index 1); only the button takes clicks, so the photo still opens the
+   product. Sizes in px on purpose: this theme sets html { font-size: 11px }. */
+.dsr-quick-add {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  z-index: 3;
+  padding-bottom: var(--ratio-percent);
+  pointer-events: none;
+}
+
+.dsr-quick-add__button {
+  position: absolute;
+  inset-block-end: 10px;
+  inset-inline-end: 10px;
+  z-index: 1;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #1f1f1f;
+  border-radius: 2px;
+  background: #ffffff;
+  box-shadow: none;
+  color: #000000;
+  cursor: pointer;
+}
+
+.dsr-quick-add__icon,
+.dsr-quick-add__icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.dsr-quick-add__button[disabled],
+.dsr-quick-add__button[aria-disabled='true'] {
+  cursor: not-allowed;
+}
+
+.dsr-quick-add__button[disabled] {
+  opacity: 0.4;
+}
+
+/* While Dawn's script works, the spinner takes the icon's place. */
+.dsr-quick-add__button.loading .dsr-quick-add__icon {
+  visibility: hidden;
+}
+
+.dsr-quick-add__button > .loading__spinner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+}
+
+.dsr-quick-add__button > .loading__spinner .spinner {
+  width: 18px;
+  height: 18px;
+}
+
+.dsr-quick-add__button > .loading__spinner .path {
+  stroke: #000000;
+}
+
+/* Horizontal cards (complementary products): at the card's end, centred. */
+.dsr-quick-add--horizontal {
+  inset-block-end: 0;
+  padding-bottom: 0;
+}
+
+.dsr-quick-add--horizontal .dsr-quick-add__button {
+  inset-block: 0;
+  margin-block: auto;
+}
+
+/* Desktop with a mouse: shown on hover and on keyboard focus. Phones, tablets
+   and touch screens: always shown. */
+@media screen and (min-width: 990px) and (hover: hover) {
+  .dsr-quick-add {
+    opacity: 0;
+    transition: opacity var(--duration-short) ease;
+  }
+
+  .card-wrapper:hover .dsr-quick-add,
+  .card-wrapper:focus-within .dsr-quick-add {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dsr-quick-add {
+    transition: none;
+  }
+}
+
 /* ---------- Second image ---------- */
 
 /* Dawn swaps to the second photo on hover from 990px. On touch screens that

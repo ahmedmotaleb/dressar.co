@@ -427,6 +427,21 @@
       <script src="{{ 'dsr-card.js' | asset_url }}" defer="defer"></script>
     {%- endif -%}
 
+    {%- comment -%}
+      Dressar card quick add (snippets/dsr-card-quick-add.liquid): Dawn's
+      quick-add dialog, product form and variant picker (product-info.js,
+      without which the dialog's colour and size choices change nothing),
+      loaded once here because cards also arrive by fetch. Product pages
+      already load product-info.js and product-form.js.
+    {%- endcomment -%}
+    {%- if settings.card_quick_add -%}
+      <script src="{{ 'quick-add.js' | asset_url }}" defer="defer"></script>
+      {%- unless request.page_type == 'product' -%}
+        <script src="{{ 'product-info.js' | asset_url }}" defer="defer"></script>
+        <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+      {%- endunless -%}
+    {%- endif -%}
+
     {%- if settings.whatsapp_button_enabled and settings.whatsapp_number != blank -%}
       {%- render 'whatsapp-button' -%}
     {%- endif -%}

@@ -243,7 +243,7 @@ function createHarness({ root, fixtures, locale = 'en.default', origin = 'http:/
         stream.start();
       },
       *render(ctx, emitter) {
-        emitter.write(typeof open === 'function' ? open(this.args) : open);
+        emitter.write(typeof open === 'function' ? open(this.args, ctx, this.liquid) : open);
         yield this.liquid.renderer.renderTemplates(this.tpls, ctx, emitter);
         emitter.write(close);
       },
@@ -251,17 +251,26 @@ function createHarness({ root, fixtures, locale = 'en.default', origin = 'http:/
   wrapBlock('style', '<style data-shopify>', '</style>');
   wrapBlock('stylesheet', '<style data-stylesheet-tag>', '</style>');
   wrapBlock('javascript', '<script data-javascript-tag>', '</script>');
+  // {% form 'type', object, id: …, class: …, data-type: … %}: named arguments
+  // become attributes, quoted or from variables, like Shopify's form tag.
   wrapBlock(
     'form',
-    (args) => {
-      const id = /id:\s*'([^']+)'/.exec(args);
-      const cls = /class:\s*'([^']+)'/.exec(args);
-      const type = /^\s*'([^']+)'/.exec(args);
+    (args, ctx, liquid) => {
+      const type = (/^\s*'([^']+)'/.exec(args) || [])[1];
+      const attrs = {};
+      for (const m of args.matchAll(/([\w-]+):\s*('([^']*)'|"([^"]*)"|[\w.\-\[\]]+)/g)) {
+        attrs[m[1]] = m[3] ?? m[4] ?? liquid.evalValueSync(m[2], ctx);
+      }
       // Where Shopify's form tag posts, by form type.
       const actions = { customer: '/contact', contact: '/contact', localization: '/localization', cart: '/cart', product: '/cart/add' };
-      const action = (type && actions[type[1]]) || `/${type ? type[1] : 'form'}`;
-      const formType = type ? `<input type="hidden" name="form_type" value="${type[1]}">` : '';
-      return `<form method="post" action="${action}${id ? `#${id[1]}` : ''}"${id ? ` id="${id[1]}"` : ''}${cls ? ` class="${cls[1]}"` : ''}>${formType}`;
+      const hash = attrs.id && (type === 'contact' || type === 'customer') ? `#${attrs.id}` : '';
+      const action = ((type && actions[type]) || `/${type || 'form'}`) + hash;
+      const extra = Object.entries(attrs)
+        .filter(([, v]) => v != null && v !== false)
+        .map(([k, v]) => ` ${k}="${attr(v)}"`)
+        .join('');
+      const formType = type ? `<input type="hidden" name="form_type" value="${type}">` : '';
+      return `<form method="post" action="${action}"${extra}>${formType}`;
     },
     '</form>'
   );

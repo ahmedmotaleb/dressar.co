@@ -550,7 +550,8 @@
         "other": "{{ count }} more colours"
       },
       "sizes_label": "Sizes",
-      "value_sold_out": "{{ value }}, sold out"
+      "value_sold_out": "{{ value }}, sold out",
+      "quick_add": "Quick add to cart"
     },
     "product": {
       "model_size": "The model is wearing size {{ size }}",
