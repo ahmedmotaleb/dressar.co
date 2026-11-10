@@ -3,7 +3,7 @@
   colour or image set on each value of a colour option linked to the
   "Color" category metafield. Nothing here maps colour names to hex codes.
 
-  - Products in a single colour show nothing.
+  - Products with a single configured colour show its actual swatch.
   - A colour option without swatch data (not linked in Shopify) shows a
     colour count instead, found by name: Theme settings > Dressar >
     "Colour option names".
@@ -28,9 +28,6 @@
   assign color_names = settings.card_color_option_names | downcase | split: ','
 
   for option in card_product.options_with_values
-    if option.values.size < 2
-      continue
-    endif
     for value in option.values
       if value.swatch
         assign color_option = option
