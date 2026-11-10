@@ -4,9 +4,10 @@
 |---|---|
 | **Published on 2026-11-10** | The Admin API shows the dev theme `#167837270247` as the **published (live) theme** since 2026-11-10, and the former live theme `#167717929191` as unpublished (its `updatedAt` moved to 2026-11-10 12:42 UTC, when it was swapped out). This publish was done in Shopify admin, not from this branch or this environment. `#167717929191` is kept unchanged, so republishing it is the rollback. **Since then, nothing from this branch is uploaded to `#167837270247`,** because it is now live. |
 | Former live theme (never written) | `#167717929191` "Updated copy of DRESSAR — Sales Optimized (DRAFT for review)", unpublished since 2026-11-10 |
-| Dev theme | `#167837270247` "DRESSAR DEV (Claude) — from live 2026-10-26", duplicated from live on 2026-10-26; unpublished until 2026-11-10, **live since** |
-| Last synced commit | `427724e` (Stage 9: release candidate) |
-| Sync check | The 3 Stage 9 files changed in place are byte-identical to the commit (MD5). They were unedited on the dev theme since the previous syncs. **Not removed on the dev theme:** the 19 files Stage 9 deleted (13 unreferenced AI blocks, 6 `dressar-*` stubs). This connector's safety policy refuses `themeFilesDelete` on any theme. Nothing references them, so they change nothing on the storefront; the 13 blocks still appear in the editor's block picker. See "Removing the deleted files" below. The then-live theme's `updatedAt` was unchanged at that sync (2026-10-26 18:16 UTC). |
+| Former dev theme, live since 2026-11-10 | `#167837270247` "DRESSAR DEV (Claude) — from live 2026-10-26", duplicated from live on 2026-10-26. **Not written since it was published.** |
+| **Preview theme (current dev theme)** | `#168303165671` "DRESSAR PREVIEW (Claude) — quick add 2026-11-10", unpublished. Duplicated from the live theme on 2026-11-10 19:06 UTC, on the owner's go-ahead, so it carries the live theme's current settings and content. Preview: `https://dnx31m-mi.myshopify.com/?preview_theme_id=168303165671` |
+| Last synced commit | `c6e59b1` (quick add), to the preview theme `#168303165671` |
+| Stage 9 sync check (on `#167837270247`, then unpublished) | The 3 Stage 9 files changed in place are byte-identical to the commit (MD5). They were unedited on the dev theme since the previous syncs. **Not removed on the dev theme:** the 19 files Stage 9 deleted (13 unreferenced AI blocks, 6 `dressar-*` stubs). This connector's safety policy refuses `themeFilesDelete` on any theme. Nothing references them, so they change nothing on the storefront; the 13 blocks still appear in the editor's block picker. See "Removing the deleted files" below. The then-live theme's `updatedAt` was unchanged at that sync (2026-10-26 18:16 UTC). |
 
 Sync history:
 
@@ -20,7 +21,7 @@ Sync history:
 | `b55b350` | Stage 7: `templates/index.json`, `sections/featured-collection.liquid`, `assets/component-card.css` | 2026-10-27 |
 | `2e55206` | Stage 8: 4 new files (`dsr-direction`, `dsr-breadcrumbs` snippet and CSS, `dsr-rtl.css`), Dawn JS and Liquid edits, layouts, settings schema and data, footer group, product template, 32 locale files | 2026-10-27 |
 | `427724e` | Stage 9: `assets/component-card.css`, `sections/footer-group.json`, `templates/collection.json` (19 deletions not applied, see below) | 2026-10-27 |
-| quick add (`feat(cards): minimalist outlined plus quick-add button`) | **Not synced:** the dev theme was published before this commit. The quick-add files on `#167837270247` are still the Stage 9 versions (MD5-checked on 2026-11-10). | — |
+| `c6e59b1` | Quick add, to the **preview theme `#168303165671`** (not the live theme). Its 41 files: the new `snippets/dsr-card-quick-add.liquid`, `snippets/card-product.liquid`, `assets/dsr-card.css` and `.js`, `layout/theme.liquid`, `config/settings_schema.json`, `sections/main-product`, `main-search`, `related-products`, and 32 locale files.<br>**Checks:**<br>• Before the upload, the copy's 40 existing files matched the previous sync, so nothing edited in admin was overwritten.<br>• After it, all 41 matched the commit (MD5).<br>• Live `#167837270247` `updatedAt` stayed at 2026-11-10 12:58:34 UTC. | 2026-11-10 |
 
 ## How changes reach the dev theme today
 

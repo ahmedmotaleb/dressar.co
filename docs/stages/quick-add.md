@@ -1,6 +1,9 @@
 # Quick add: outlined "+" button on product cards
 
-**Status:** on the branch only. **Not uploaded to any Shopify theme.** On 2026-11-10, before this commit, the dev theme `#167837270247` was published and became the live theme (see `docs/dev-theme.md`). This work may only go to an unpublished theme, so it waits for one to preview it on.
+**Status:** on the preview theme `#168303165671` (unpublished), not on the live theme.
+
+- **Why a new theme:** on 2026-11-10, before this commit, the earlier dev theme `#167837270247` was published in Shopify admin and became the live theme. So this work went to a fresh unpublished copy of the live theme, and all 41 files were MD5-checked against the commit. `docs/dev-theme.md` has the record.
+- **Preview:** `https://dnx31m-mi.myshopify.com/?preview_theme_id=168303165671`
 
 ## What changed
 
@@ -98,7 +101,7 @@ The test harness's `{% form %}` tag now renders Shopify's arguments: IDs from va
   - 1280px on hover
   - the open dialog
 
-## Manual checks, once it's on a preview theme
+## Manual checks on the preview
 
 - **On a phone:**
   - tap "+" on a product with sizes, pick a size, add
