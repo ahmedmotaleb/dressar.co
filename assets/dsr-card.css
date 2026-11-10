@@ -431,3 +431,10 @@ dsr-card-slides {
   min-height: 2rem;
   align-content: start;
 }
+
+.product-card-wrapper .dsr-card-color-row {
+  min-height: 3rem;
+}
+.product-card-wrapper .dsr-card-size-row {
+  min-height: 2rem;
+}
