@@ -251,10 +251,10 @@
               {% render 'price', product: card_product, price_class: '', show_compare_at_price: true %}
               {%- comment -%} Dressar: the colours and sizes the product has in stock. {%- endcomment -%}
               {%- if settings.card_show_swatches -%}
-                {% render 'dsr-card-swatches', card_product: card_product %}
+                <div class="dsr-card-color-row">{% render 'dsr-card-swatches', card_product: card_product %}</div>
               {%- endif -%}
               {%- if settings.card_show_sizes -%}
-                {% render 'dsr-card-sizes', card_product: card_product %}
+                <div class="dsr-card-size-row">{% render 'dsr-card-sizes', card_product: card_product %}</div>
               {%- endif -%}
               {%- if card_product.quantity_price_breaks_configured? -%}
                 {% if card_product.variants_count == 1 and quick_add == 'bulk' %}
