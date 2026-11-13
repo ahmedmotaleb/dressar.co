@@ -10,7 +10,7 @@
   }
 {%- endstyle -%}
 
-<div class="collection-hero{% if section.settings.show_collection_image and collection.image %} collection-hero--with-image{% endif %} color-{{ section.settings.color_scheme }} gradient">
+<div class="collection-hero dsr-collection-hero--title-{{ section.settings.title_alignment }} dsr-collection-hero--description-{{ section.settings.description_alignment }}{% if section.settings.show_collection_image and collection.image %} collection-hero--with-image{% endif %} color-{{ section.settings.color_scheme }} gradient">
   <div class="collection-hero__inner page-width {% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
     <div class="collection-hero__text-wrapper">
       {%- if section.settings.show_breadcrumbs -%}
@@ -122,6 +122,28 @@
       "default": true,
       "label": "Show breadcrumbs",
       "info": "Home > collection, with breadcrumb structured data for search engines."
+    },
+    {
+      "type": "select",
+      "id": "title_alignment",
+      "label": "Collection title alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "description_alignment",
+      "label": "Collection description alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
     },
     {
       "type": "color_scheme",
