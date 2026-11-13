@@ -1,6 +1,8 @@
 # Product grid and product page UI upgrade (2S style)
 
-**Status:** on the branch `claude/dressar-2s-card-pdp-redesign`, made from `claude/dressar-theme-audit-7xbdeb` at `24fd7ee`. Not merged, not published. The live theme was not touched.
+**Status:** on the branch `claude/dressar-2s-card-pdp-redesign`, made from `claude/dressar-theme-audit-7xbdeb` at `24fd7ee` (PR #2). Not merged, not published. The live theme was not touched.
+
+Preview (unpublished theme `#168399831271`, a copy of the live theme): `https://dnx31m-mi.myshopify.com/?preview_theme_id=168399831271`. Details in `docs/dev-theme.md`.
 
 The brief: a calmer, more compact product card and product page, in the style of the 2S Homewear screenshots the merchant sent. It had to keep every feature already in the theme.
 
@@ -84,6 +86,8 @@ The brief: a calmer, more compact product card and product page, in the style of
   5. icons (cash on delivery / exchange / delivery), description, fabric and fit.
 
   Dawn's own rating block stays disabled, as the merchant left it.
+
+  The template also carries the merchant's two edits from the live theme (the SKU block switched on, and an empty "Complete the look" fallback heading). The repo's copy had neither, so syncing it would have undone them. Apart from the block order, it now matches the live template.
 - Kept as they were: zoom, variant photos, the colour photo selector, Sympl, Judge.me, the size guide, WhatsApp size help and the sale badge.
 
 ### Sticky add to cart (the existing bar, improved; there is still only one)
@@ -196,11 +200,11 @@ They come from the local test harness: the theme's real Liquid, CSS and JS, rend
 
 ## Not done, or not verifiable here
 
-- **No visual check on the live Shopify preview.** This environment can't open the storefront preview. The Shopify connector wasn't connected when the work was finished, so the preview theme hasn't been updated yet. All visual checks above come from the local harness, not from Shopify.
+- **No visual check on the Shopify preview.** This environment can't open the storefront, so the preview theme `#168399831271` was checked file by file (MD5), not by eye. All visual checks above come from the local harness, not from Shopify.
 - **The Judge.me badge on the product page can't be rendered locally**: it is an app block. The test checks its position in the template. On the card, the rating comes from Shopify's reviews metafields. If Judge.me's metafield sync is off for the store, cards show no ratings: there are no fake stars.
 - **The rating row takes no space when a product has no reviews** (as the brief asked). In a row where only some products have reviews, the prices therefore don't line up across cards.
 - **No reference image was supplied for the grid**; it follows the written brief and the 2S product page screenshots.
 - **The theme IDs in the brief are out of date.**
-  - #167837270247 is now the live theme: the merchant published it on Nov 10.
-  - #167717929191 is the previous live theme, unpublished.
-  - The unpublished preview copy is #168303165671. This work goes there once the connector is back.
+  - The live theme is now `#168303165671` (the earlier preview copy), published on Nov 11. Its code is `b7da168`.
+  - `#167837270247` (live Nov 10–11) is the rollback and was left unchanged. So were `#167717929191` and `#168327643367`.
+  - This work is on a new unpublished copy of the live theme, `#168399831271`, made with the merchant's go-ahead.

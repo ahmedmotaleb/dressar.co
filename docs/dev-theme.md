@@ -2,11 +2,13 @@
 
 | | |
 |---|---|
-| **Published on 2026-11-10** | The Admin API shows the dev theme `#167837270247` as the **published (live) theme** since 2026-11-10, and the former live theme `#167717929191` as unpublished (its `updatedAt` moved to 2026-11-10 12:42 UTC, when it was swapped out). This publish was done in Shopify admin, not from this branch or this environment. `#167717929191` is kept unchanged, so republishing it is the rollback. **Since then, nothing from this branch is uploaded to `#167837270247`,** because it is now live. |
-| Former live theme (never written) | `#167717929191` "Updated copy of DRESSAR — Sales Optimized (DRAFT for review)", unpublished since 2026-11-10 |
-| Former dev theme, live since 2026-11-10 | `#167837270247` "DRESSAR DEV (Claude) — from live 2026-10-26", duplicated from live on 2026-10-26. **Not written since it was published.** |
-| **Preview theme (current dev theme)** | `#168303165671` "DRESSAR PREVIEW (Claude) — quick add 2026-11-10", unpublished. Duplicated from the live theme on 2026-11-10 19:06 UTC, on the owner's go-ahead, so it carries the live theme's current settings and content. Preview: `https://dnx31m-mi.myshopify.com/?preview_theme_id=168303165671` |
-| Last synced commit | `b7da168` (card photo slideshow, with `e38e325`), to the preview theme `#168303165671` |
+| **Live since 2026-11-11** | `#168303165671` "DRESSAR PREVIEW (Claude) — quick add 2026-11-10", published in Shopify admin on 2026-11-11 at 12:16 UTC (not from this branch). Its code is commit `b7da168` (card photo slideshow), checked file by file by MD5 on 2026-11-13. **Nothing is uploaded to it,** because it is live. |
+| Live 2026-11-10 to 2026-11-11 (the rollback) | `#167837270247` "DRESSAR DEV (Claude) — from live 2026-10-26", unpublished again since 2026-11-11. Its code is from 2026-10-27; its `settings_data.json` and product template match the live theme's. **Kept unchanged:** republishing it returns to the 2026-11-10 store. |
+| Copy made before the 2026-11-11 publish (never written) | `#168327643367` "Updated copy of DRESSAR DEV (Claude) — from liv…", created 2026-11-11 12:16:10 UTC, outside this branch. A copy of `#167837270247` with a different `settings_schema.json`. |
+| Earlier live theme (never written) | `#167717929191` "Updated copy of DRESSAR — Sales Optimized (DRAFT for review)", unpublished since 2026-11-10 |
+| **Preview theme (current dev theme)** | `#168399831271` "DRESSAR PREVIEW (Claude) — 2S redesign 2026-11-13", unpublished. Duplicated from the live theme on 2026-11-13 at 19:55 UTC, on the owner's go-ahead, so it carries the live theme's settings and content. Preview: `https://dnx31m-mi.myshopify.com/?preview_theme_id=168399831271` |
+| Last synced commit | The 2S redesign branch `claude/dressar-2s-card-pdp-redesign` (PR #2), to `#168399831271`. See the last row of the sync history. |
+| Earlier preview theme | `#168303165671`, synced up to `b7da168`, is now the live theme (above). |
 | Stage 9 sync check (on `#167837270247`, then unpublished) | The 3 Stage 9 files changed in place are byte-identical to the commit (MD5). They were unedited on the dev theme since the previous syncs. **Not removed on the dev theme:** the 19 files Stage 9 deleted (13 unreferenced AI blocks, 6 `dressar-*` stubs). This connector's safety policy refuses `themeFilesDelete` on any theme. Nothing references them, so they change nothing on the storefront; the 13 blocks still appear in the editor's block picker. See "Removing the deleted files" below. The then-live theme's `updatedAt` was unchanged at that sync (2026-10-26 18:16 UTC). |
 
 Sync history:
