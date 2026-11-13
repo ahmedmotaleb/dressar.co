@@ -80,7 +80,8 @@
           "type": "variant_picker",
           "settings": {
             "picker_type": "button",
-            "swatch_shape": "circle"
+            "swatch_shape": "circle",
+            "dsr_color_photos": false
           }
         },
         "quantity_selector": {

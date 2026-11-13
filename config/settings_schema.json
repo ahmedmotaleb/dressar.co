@@ -143,6 +143,17 @@
         "unit": "%",
         "label": "t:settings_schema.typography.settings.body_scale.label",
         "default": 100
+      },
+      {
+        "type": "header",
+        "content": "Arabic text"
+      },
+      {
+        "type": "checkbox",
+        "id": "dsr_arabic_font",
+        "label": "Cairo for Arabic on product pages and cards",
+        "info": "The theme fonts have no Arabic letters, so Arabic text otherwise uses the shopper's device font. Cairo (31 KB, served by the theme, loaded only when Arabic text is shown) is used in the product details, the sticky add-to-cart bar and the product cards.",
+        "default": true
       }
     ]
   },

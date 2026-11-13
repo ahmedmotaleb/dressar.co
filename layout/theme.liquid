@@ -1,6 +1,6 @@
 <!doctype html>
 {%- capture dsr_dir -%}{%- render 'dsr-direction' -%}{%- endcapture -%}
-<html class="js" lang="{{ request.locale.iso_code }}" dir="{{ dsr_dir }}">
+<html class="js{% if settings.dsr_arabic_font %} dsr-arabic-font{% endif %}" lang="{{ request.locale.iso_code }}" dir="{{ dsr_dir }}">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -70,6 +70,8 @@
       assign body_font_bold = settings.type_body_font | font_modify: 'weight', 'bold'
       assign body_font_italic = settings.type_body_font | font_modify: 'style', 'italic'
       assign body_font_bold_italic = body_font_bold | font_modify: 'style', 'italic'
+      # Dressar: medium (500) for the product page's size buttons, when the font has it.
+      assign body_font_medium = settings.type_body_font | font_modify: 'weight', '500'
     %}
 
     {% style %}
@@ -77,7 +79,29 @@
       {{ body_font_bold | font_face: font_display: 'swap' }}
       {{ body_font_italic | font_face: font_display: 'swap' }}
       {{ body_font_bold_italic | font_face: font_display: 'swap' }}
+      {%- if body_font_medium %}
+      {{ body_font_medium | font_face: font_display: 'swap' }}
+      {%- endif %}
       {{ settings.type_header_font | font_face: font_display: 'swap' }}
+
+      {%- comment -%}
+        Dressar: Cairo for Arabic letters (the theme fonts have none). Arabic
+        subset only (unicode-range), so it is fetched only when Arabic text is
+        drawn with it; Latin text keeps the theme font. Used by the product
+        details, the sticky bar and the product cards (assets/dsr-product.css
+        and dsr-card.css, .dsr-arabic-font).
+        Licence: docs/fonts/cairo-OFL.txt.
+      {%- endcomment -%}
+      {%- if settings.dsr_arabic_font %}
+      @font-face {
+        font-family: 'DSR Cairo';
+        font-style: normal;
+        font-weight: 200 1000;
+        font-display: swap;
+        src: url('{{ 'dsr-cairo-arabic.woff2' | asset_url }}') format('woff2');
+        unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC;
+      }
+      {%- endif %}
 
       {% for scheme in settings.color_schemes -%}
         {% assign scheme_classes = scheme_classes | append: ', .color-' | append: scheme.id %}
@@ -138,6 +162,10 @@
         --font-body-weight-bold: {{ settings.type_body_font.weight | plus: 300 | at_most: 1000 }};
 
         --font-heading-family: {{ settings.type_header_font.family }}, {{ settings.type_header_font.fallback_families }};
+        {%- if settings.dsr_arabic_font %}
+        --dsr-font-arabic-body: 'DSR Cairo', {{ settings.type_body_font.family }}, {{ settings.type_body_font.fallback_families }};
+        --dsr-font-arabic-heading: 'DSR Cairo', {{ settings.type_header_font.family }}, {{ settings.type_header_font.fallback_families }};
+        {%- endif %}
         --font-heading-style: {{ settings.type_header_font.style }};
         --font-heading-weight: {{ settings.type_header_font.weight }};
 

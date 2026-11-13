@@ -123,7 +123,18 @@ async function main() {
   for (const locale of ['en.default', 'ar']) {
     const rtl = locale === 'ar';
     const L = rtl ? '[ar]' : '[en]';
-    const harness = createHarness({ root, fixtures: path.join(root, 'tests/fixtures/store.json'), locale });
+    // The colour photos are a setting of the variant picker block, off in the
+    // store's product template since the 2S chips (docs/stages/2s-redesign.md);
+    // these checks switch it on.
+    const harness = createHarness({
+      root,
+      fixtures: path.join(root, 'tests/fixtures/store.json'),
+      locale,
+      templatePatch: (name, t) => {
+        if (name === 'product') t.sections.main.blocks.variant_picker.settings.dsr_color_photos = true;
+        return t;
+      },
+    });
     const strings = readJson(path.join(root, 'locales', `${locale}.json`));
     const soldOut = strings.products.product.sold_out;
 

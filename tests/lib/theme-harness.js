@@ -195,7 +195,9 @@ function resolveResource(def, v, globals) {
 
 // ---------- harness ----------
 
-function createHarness({ root, fixtures, locale = 'en.default', origin = 'http://dressar.test' }) {
+// templatePatch(name, template): optional, returns a JSON template changed for
+// a test (for example a block setting switched on that the store has off).
+function createHarness({ root, fixtures, locale = 'en.default', origin = 'http://dressar.test', templatePatch = null }) {
   const store = readJson(fixtures);
   const localeData = readJson(path.join(root, 'locales', `${locale}.json`));
   const settingsSchema = JSON.parse(fs.readFileSync(path.join(root, 'config/settings_schema.json'), 'utf8'));
@@ -595,7 +597,8 @@ function createHarness({ root, fixtures, locale = 'en.default', origin = 'http:/
     },
     // A JSON template's sections in order, like Shopify's content_for_layout.
     async renderTemplate(name, globals, { only } = {}) {
-      const template = readJson(path.join(root, 'templates', `${name}.json`));
+      let template = readJson(path.join(root, 'templates', `${name}.json`));
+      if (templatePatch) template = templatePatch(name, template) || template;
       let html = '';
       let index = 0;
       for (const sid of template.order) {
@@ -644,7 +647,7 @@ function svgPlaceholder(name, w, h) {
 }
 
 async function routeTheme(page, { root, fontsDir, harness, globalsFor, onCartAdd, cartSection, cartJson, pages, imageSize }) {
-  const mime = { '.css': 'text/css', '.js': 'application/javascript', '.svg': 'image/svg+xml', '.json': 'application/json' };
+  const mime = { '.css': 'text/css', '.js': 'application/javascript', '.svg': 'image/svg+xml', '.json': 'application/json', '.woff2': 'font/woff2' };
   await page.route('**/*', async (route) => {
     const url = new URL(route.request().url());
     const send = (body, type = 'text/html', status = 200) => {
