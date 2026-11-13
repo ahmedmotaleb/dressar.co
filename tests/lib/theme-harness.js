@@ -388,7 +388,8 @@ function createHarness({ root, fixtures, locale = 'en.default', origin = 'http:/
       }
       const extraAlt = ` alt="${attr(o.alt)}"`;
       delete o.alt;
-      const extra = ['class', 'alt', 'sizes', 'loading', 'fetchpriority', 'width', 'height', 'style']
+      // Like Shopify, other attributes (data-*) pass straight through.
+      const extra = ['class', 'alt', 'sizes', 'loading', 'fetchpriority', 'width', 'height', 'style', ...Object.keys(o).filter((k) => k.startsWith('data-'))]
         .filter((k) => o[k] !== undefined && o[k] !== false)
         .map((k) => ` ${k}="${attr(k === 'height' || k === 'width' ? Math.round(Number(o[k])) : o[k])}"`)
         .join('');

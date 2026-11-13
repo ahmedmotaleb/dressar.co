@@ -247,7 +247,7 @@ async function main() {
         check(`${tag} each photo is that colour's own variant photo`, r.items.every((i, k) => i.img && i.img.includes(expected[k])), JSON.stringify(r.items.map((i) => i.img)));
         const w = phone ? 68 : 76;
         check(`${tag} ${w}px wide, 3:4`, r.items.every((i) => Math.abs(i.w - w) < 0.6 && Math.abs(i.h - (w * 4) / 3) < 1), JSON.stringify(r.items.map((i) => [i.w, i.h])));
-        check(`${tag} selected colour's name above the photos`, r.legend === 'Color: olive', r.legend);
+        check(`${tag} selected colour's name above the photos`, r.legend === 'Color — olive', r.legend);
         const sel = r.items.find((i) => i.checked);
         const other = r.items.find((i) => !i.checked && !i.soldOut);
         check(`${tag} selected: thin black frame; others: a faint one`, sel && sel.borderWidth === '1px' && /^rgb\(/.test(sel.border) && other.borderWidth === '1px' && /rgba\(.*0\.15\)/.test(other.border), `${sel && sel.border} / ${other && other.border}`);
@@ -378,7 +378,7 @@ async function main() {
       const tag = `${L} [390]`;
       let page = await open(390, '/products/qa-one-colour');
       let r = await tiles(page);
-      check(`${tag} one colour: one photo, selected, named`, r && r.items.length === 1 && r.items[0].checked && r.legend === 'Color: Navy' && /^rgb\(/.test(r.items[0].border), r && JSON.stringify([r.items.length, r.legend, r.items[0].border]));
+      check(`${tag} one colour: one photo, selected, named`, r && r.items.length === 1 && r.items[0].checked && r.legend === 'Color — Navy' && /^rgb\(/.test(r.items[0].border), r && JSON.stringify([r.items.length, r.legend, r.items[0].border]));
       await page.closeAll();
 
       page = await open(390, '/products/qa-tiered-skirt');

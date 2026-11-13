@@ -276,3 +276,177 @@ quick-add-modal .product-form__input--dsr-photos {
     border-width: 3px;
   }
 }
+
+/* ==========================================================================
+   Compact product page (2S Homewear reference, docs/stages/2s-redesign.md)
+
+   Mobile first: a large rounded photo with thumbnails, then a tight column
+   (name, rating, price, colour, size, size guide, stock, add to cart,
+   shipping and exchange, description, fabric and fit) in small, firm type.
+   Only spacing, type and shapes change; Dawn's blocks and their order in the
+   product template are unchanged here. Sizes in px on purpose: this theme
+   sets html { font-size: 11px }.
+   ========================================================================== */
+
+/* Gallery: rounded photos and thumbnails (Dawn's own media radius). */
+.product {
+  --media-radius: 10px;
+}
+
+.product .thumbnail {
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.product .thumbnail-list {
+  gap: 8px;
+}
+
+/* A tighter column. */
+.product__info-container > * + * {
+  margin: 12px 0;
+}
+
+.product__info-container .product-form,
+.product__info-container .product__description,
+.product__info-container .icon-with-text {
+  margin: 16px 0;
+}
+
+/* Name: firm, not oversized. */
+.product__info-container .product__title {
+  margin-bottom: 6px;
+}
+
+.product__info-container .product__title > h1 {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0;
+}
+
+/* Rating, right under the name: Judge.me's badge and Dawn's rating row. */
+.product__info-container .rating-wrapper,
+.product__info-container .jdgm-widget {
+  margin-top: 4px;
+  margin-bottom: 4px;
+  font-size: 12px;
+}
+
+/* Price: the price to pay, firm; the old price smaller. */
+.product__info-container .price--large {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.product__info-container .price--large.price--on-sale .price-item--regular {
+  font-size: 14px;
+  font-weight: var(--font-body-weight);
+}
+
+/* Colour and size labels: the option, a dash, the chosen value. */
+.product__info-container .product-form__input .form__label {
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgb(var(--color-foreground));
+}
+
+.product__info-container .product-form__input [data-selected-value] {
+  font-weight: 400;
+}
+
+/* Sizes: compact rounded buttons (the 2S reference). The chosen size has a
+   firm black frame; a size not in stock in the chosen colour is struck
+   through and lighter. (variant-selects: after Dawn's picker styles, which
+   load later.) */
+variant-selects .product-form__input--pill {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+variant-selects .product-form__input--pill .form__label {
+  flex: 0 0 100%;
+}
+
+variant-selects .product-form__input--pill input[type='radio'] + label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 52px;
+  min-height: 40px;
+  margin: 0;
+  padding: 0 14px;
+  border: 1px solid rgba(var(--color-foreground), 0.2);
+  border-radius: 8px;
+  background-color: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+variant-selects .product-form__input--pill input[type='radio'] + label::before {
+  border-radius: 8px;
+}
+
+variant-selects .product-form__input--pill input[type='radio']:checked + label {
+  border-color: rgb(var(--color-foreground));
+  background-color: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+  box-shadow: inset 0 0 0 1px rgb(var(--color-foreground));
+}
+
+variant-selects .product-form__input--pill input[type='radio']:disabled + label,
+variant-selects .product-form__input--pill input[type='radio'].disabled + label {
+  border-color: rgba(var(--color-foreground), 0.12);
+  color: rgba(var(--color-foreground), 0.6);
+}
+
+variant-selects .product-form__input--pill input[type='radio'].disabled:checked + label {
+  border-color: rgba(var(--color-foreground), 0.6);
+  box-shadow: none;
+}
+
+@media screen and (forced-colors: active) {
+  variant-selects .product-form__input--pill input[type='radio']:checked + label {
+    outline: 2px solid CanvasText;
+    outline-offset: 1px;
+  }
+}
+
+/* Size guide, size help, stock: small. */
+.product__info-container .product-popup-modal__button,
+.product__info-container .dsr-size-help,
+.product__info-container .product__inventory {
+  font-size: 13px;
+}
+
+/* Add to cart: full width, rounded, firm. */
+.product-form__buttons .product-form__submit {
+  min-height: 50px;
+  border-radius: 8px;
+  font-size: 15px;
+  letter-spacing: 0.04em;
+}
+
+.product-form__buttons .product-form__submit::before,
+.product-form__buttons .product-form__submit::after {
+  border-radius: 8px;
+}
+
+@media screen and (min-width: 990px) {
+  .product__info-container .product__title > h1 {
+    font-size: 24px;
+  }
+
+  .product__info-container .price--large {
+    font-size: 20px;
+  }
+
+  .product__info-container > * + * {
+    margin: 14px 0;
+  }
+}

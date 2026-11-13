@@ -12,7 +12,13 @@ const read = (p) => fs.readFileSync(path.join(root, p), 'utf8');
 let boost = read('sections/dsr-product-boost.liquid')
   .replace(/{%-?\s*comment\s*-?%}[\s\S]*?{%-?\s*endcomment\s*-?%}/g, '')
   .replace(/{%\s*schema\s*%}[\s\S]*?{%\s*endschema\s*%}/, '')
+  // The bar's photo: the selected variant's (here a placeholder).
+  .replace(/{%-?\s*liquid\s+assign sticky_media[\s\S]*?-?%}/, '')
+  .replace(/{%-?\s*if sticky_media\s*-?%}[\s\S]*?{%-?\s*endif\s*-?%}/, '<img class="dsr-sticky-atc__thumb" data-dsr-sticky-thumb src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" alt="" width="48" height="64">')
   .replace(/{%-?\s*if product\s*-?%}/, '').replace(/{%-?\s*endif\s*-?%}/, '')
+  .replace('{{ product.title | escape }}', 'Full-Length Evasé Skirt')
+  .replace("{{- 'dressar.product.change' | t -}}", 'تغيير')
+  .replace("{{- 'icon-cart-empty.svg' | inline_asset_content -}}", read('assets/icon-cart-empty.svg'))
   .replace("{{ 'products.product.add_to_cart' | t }}", 'أضيفي للسلة')
   .replace("{{ 'dressar.product.pick_size' | t | json }}", JSON.stringify('اختاري مقاسك'))
   .replace('{% style %}', '<style>').replace('{% endstyle %}', '</style>');
@@ -70,11 +76,34 @@ const html = `<!doctype html><html><head><meta name="viewport" content="width=de
     const vis = await page.evaluate(() => {
       const bar = document.querySelector('[data-dsr-sticky-atc]');
       const cs = getComputedStyle(bar);
-      return { display: cs.display, visibility: cs.visibility, cls: bar.className, btn: bar.querySelector('button').textContent.trim() };
+      return {
+        display: cs.display,
+        visibility: cs.visibility,
+        cls: bar.className,
+        btn: bar.querySelector('[data-dsr-sticky-btn]').textContent.trim(),
+        thumb: Boolean(bar.querySelector('[data-dsr-sticky-thumb]')),
+        title: (bar.querySelector('.dsr-sticky-atc__title') || {}).textContent,
+        change: (bar.querySelector('[data-dsr-sticky-change]') || {}).textContent,
+        meta: bar.querySelector('[data-dsr-sticky-meta]').textContent,
+        height: bar.offsetHeight,
+        padding: parseFloat(getComputedStyle(document.body).paddingBottom),
+      };
     });
     if (width < 990) {
       check(`${t} bar shown after scrolling past the form`, vis.display !== 'none' && vis.visibility === 'visible' && vis.cls.includes('is-visible'), JSON.stringify(vis));
       check(`${t} bar asks for a size before one is picked`, vis.btn === 'اختاري مقاسك', vis.btn);
+      check(`${t} bar shows the photo, the name and "Change"`, vis.thumb && vis.title === 'Full-Length Evasé Skirt' && vis.change.trim() === 'تغيير', JSON.stringify(vis));
+      check(`${t} no size shown before one is picked`, vis.meta === '', vis.meta);
+      check(`${t} the page keeps clear of the bar (bottom padding = its height)`, vis.height > 0 && Math.abs(vis.padding - vis.height) <= 1, `${vis.padding} ${vis.height}`);
+
+      // "Change": back to the size choice.
+      await page.evaluate(() => window.scrollTo(0, 2000));
+      await page.click('[data-dsr-sticky-change]');
+      await page.waitForTimeout(700);
+      const back = await page.evaluate(() => { const r = document.querySelector('variant-selects').getBoundingClientRect(); return r.top >= 0 && r.bottom <= window.innerHeight; });
+      check(`${t} "Change" brings the size choice into view`, back);
+      await page.evaluate(() => window.scrollTo(0, 2000));
+      await page.waitForTimeout(400);
 
       // Modal / drawer open -> bar must hide.
       await page.evaluate(() => document.body.classList.add('overflow-hidden'));
@@ -86,6 +115,7 @@ const html = `<!doctype html><html><head><meta name="viewport" content="width=de
       await page.evaluate(() => { const r = document.getElementById('s-l'); r.checked = true; r.dispatchEvent(new Event('change', { bubbles: true })); });
       await page.waitForTimeout(100);
       check(`${t} after picking, bar mirrors the real button`, (await page.locator('[data-dsr-sticky-btn]').textContent()).trim() === 'أضيفي للسلة');
+      check(`${t} after picking, bar shows the chosen size`, (await page.locator('[data-dsr-sticky-meta]').textContent()) === 'L', await page.locator('[data-dsr-sticky-meta]').textContent());
 
       // Sold-out variant -> aria-disabled, no add.
       await page.evaluate(() => { const b = document.querySelector('.product-form__submit'); b.disabled = true; b.querySelector('span').textContent = 'نفذت الكمية'; });
@@ -94,8 +124,11 @@ const html = `<!doctype html><html><head><meta name="viewport" content="width=de
       check(`${t} sold-out variant shown as disabled`, sold.label === 'نفذت الكمية' && sold.aria === 'true', JSON.stringify(sold));
 
       // WhatsApp button lifted above the bar.
-      const waBottom = await page.evaluate(() => parseFloat(getComputedStyle(document.querySelector('.dsr-wa')).bottom));
-      check(`${t} WhatsApp button lifted above the bar`, waBottom > 60, `bottom=${waBottom}px`);
+      const wa = await page.evaluate(() => ({
+        bottom: parseFloat(getComputedStyle(document.querySelector('.dsr-wa')).bottom),
+        bar: document.querySelector('[data-dsr-sticky-atc]').offsetHeight,
+      }));
+      check(`${t} WhatsApp button lifted above the bar`, wa.bottom > wa.bar, JSON.stringify(wa));
     } else {
       check(`${t} no sticky bar on desktop`, vis.display === 'none', JSON.stringify(vis));
     }
