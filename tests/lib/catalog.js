@@ -98,9 +98,12 @@ function buildProduct(p, n = 0) {
     metafields.shopify[key] = { value: labels.map((label) => ({ label: { value: label } })) };
   }
   // reviews: [rating, count], as Judge.me keeps Shopify's review metafields
-  // (reviews.rating, reviews.rating_count) in sync with its reviews.
+  // (reviews.rating, reviews.rating_count) in sync with its reviews. Shaped
+  // like the store's: the rating type's fields are text ("4.6", "1.0",
+  // "5.0"), the count a number.
   if (p.reviews) {
-    metafields.reviews.rating = { value: { rating: p.reviews[0], scale_min: 1, scale_max: 5, toString: () => String(p.reviews[0]) } };
+    const text = p.reviews[0].toFixed(1);
+    metafields.reviews.rating = { value: { rating: text, scale_min: '1.0', scale_max: '5.0', toString: () => text } };
     metafields.reviews.rating_count = { value: p.reviews[1] };
   }
   // colorMeta: the Color category metafield's entries as Shopify's colour metaobjects,

@@ -7,7 +7,21 @@
 
 const fs = require('fs');
 const path = require('path');
-const { Liquid, Drop, Value } = require('liquidjs');
+const { Liquid, Drop, Value, defaultOperators } = require('liquidjs');
+
+// Shopify's Liquid refuses to order a string against a number ("Liquid error:
+// comparison of String with 0 failed"); LiquidJS converts quietly. The same
+// refusal here makes such a comparison fail the tests instead of the storefront.
+const plain = (v) => (v !== null && typeof v === 'object' && typeof v.valueOf === 'function' ? v.valueOf() : v);
+const strictOrder = (op) => (l, r, ctx) => {
+  const a = plain(l);
+  const b = plain(r);
+  if ((typeof a === 'string' && typeof b === 'number') || (typeof a === 'number' && typeof b === 'string')) {
+    throw new Error(`Liquid error: comparison of ${typeof a === 'string' ? 'String' : 'Integer'} with ${typeof a === 'string' ? b : JSON.stringify(b)} failed`);
+  }
+  return defaultOperators[op](l, r, ctx);
+};
+const shopifyOperators = { ...defaultOperators, '>': strictOrder('>'), '<': strictOrder('<'), '>=': strictOrder('>='), '<=': strictOrder('<=') };
 
 const HEADER_COMMENT = /^\s*\/\*[\s\S]*?\*\//;
 const readJson = (file) => JSON.parse(fs.readFileSync(file, 'utf8').replace(HEADER_COMMENT, ''));
@@ -216,6 +230,7 @@ function createHarness({ root, fixtures, locale = 'en.default', origin = 'http:/
     strictFilters: false,
     strictVariables: false,
     jsTruthy: false,
+    operators: shopifyOperators,
   });
 
   // Tags Shopify adds.
