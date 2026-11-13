@@ -523,6 +523,13 @@ dsr-card-slides {
   display: block;
 }
 
+/* An image waiting for its source (lazy: set on the first hover or touch)
+   draws nothing. Without this, Chrome draws a broken-image icon for the
+   first slide, an empty copy of the card photo, on touch screens. */
+.dsr-card-slides__img:not([src]) {
+  visibility: hidden;
+}
+
 /* Desktop with a mouse: the images fade in over the card's photo, one at a time. */
 @media (hover: hover) and (pointer: fine) {
   .dsr-card-slides__slide {
