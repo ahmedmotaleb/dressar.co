@@ -47,9 +47,12 @@
   {%- if dsr_quick_add == 'standard' -%}
     {{ 'quick-add.css' | asset_url | stylesheet_tag }}
   {%- endif -%}
-  {%- if settings.card_media_background != blank -%}
+  {%- if settings.card_media_background != blank or settings.card_background != blank -%}
     {%- style -%}
-      .product-card-wrapper { --dsr-card-media-bg: {{ settings.card_media_background }}; }
+      .product-card-wrapper {
+        {%- if settings.card_background != blank %} --dsr-card-bg: {{ settings.card_background }};{% endif -%}
+        {%- if settings.card_media_background != blank %} --dsr-card-media-bg: {{ settings.card_media_background }};{% endif %}
+      }
     {%- endstyle -%}
   {%- endif -%}
 {%- endunless -%}
@@ -212,7 +215,13 @@
 
               <span class="caption-large light">{{ block.settings.description | escape }}</span>
 
-              {%- if show_rating and card_product.metafields.reviews.rating.value != blank -%}
+              {%- comment -%}
+                Dressar: the rating row (real reviews only; no row without). It
+                takes the place of Dawn's own rating, so there is never a second one.
+              {%- endcomment -%}
+              {%- if settings.card_show_rating -%}
+                {%- render 'dsr-card-rating', card_product: card_product -%}
+              {%- elsif show_rating and card_product.metafields.reviews.rating.value != blank -%}
                 {% liquid
                   assign rating_decimal = 0
                   assign decimal = card_product.metafields.reviews.rating.value.rating | modulo: 1
@@ -249,12 +258,12 @@
               {%- endif -%}
 
               {% render 'price', product: card_product, price_class: '', show_compare_at_price: true %}
-              {%- comment -%} Dressar: the colours and sizes the product has in stock. {%- endcomment -%}
-              {%- if settings.card_show_swatches -%}
-                <div class="dsr-card-color-row">{% render 'dsr-card-swatches', card_product: card_product %}</div>
-              {%- endif -%}
-              {%- if settings.card_show_sizes -%}
-                <div class="dsr-card-size-row">{% render 'dsr-card-sizes', card_product: card_product %}</div>
+              {%- comment -%}
+                Dressar: the colour and size rows, each on every card at a fixed
+                height, and the shopper's choice of them for the bag button.
+              {%- endcomment -%}
+              {%- if settings.card_show_swatches or settings.card_show_sizes -%}
+                {%- render 'dsr-card-options', card_product: card_product -%}
               {%- endif -%}
               {%- if card_product.quantity_price_breaks_configured? -%}
                 {% if card_product.variants_count == 1 and quick_add == 'bulk' %}

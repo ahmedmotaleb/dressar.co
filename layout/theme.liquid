@@ -419,11 +419,12 @@
     {%- endif -%}
 
     {%- comment -%}
-      Dressar product-card swatches. Loaded here rather than with the cards,
+      Dressar product cards: colour swatches, the size choice and the bag
+      button's exact-variant add. Loaded here rather than with the cards,
       because cards also arrive later by fetch (filters, recommendations),
       and scripts in fetched HTML never run.
     {%- endcomment -%}
-    {%- if settings.card_show_swatches -%}
+    {%- if settings.card_show_swatches or settings.card_show_sizes or settings.card_quick_add -%}
       <script src="{{ 'dsr-card.js' | asset_url }}" defer="defer"></script>
     {%- endif -%}
 

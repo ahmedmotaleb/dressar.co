@@ -97,6 +97,12 @@ function buildProduct(p, n = 0) {
   for (const [key, labels] of Object.entries(p.facts || {})) {
     metafields.shopify[key] = { value: labels.map((label) => ({ label: { value: label } })) };
   }
+  // reviews: [rating, count], as Judge.me keeps Shopify's review metafields
+  // (reviews.rating, reviews.rating_count) in sync with its reviews.
+  if (p.reviews) {
+    metafields.reviews.rating = { value: { rating: p.reviews[0], scale_min: 1, scale_max: 5, toString: () => String(p.reviews[0]) } };
+    metafields.reviews.rating_count = { value: p.reviews[1] };
+  }
   // colorMeta: the Color category metafield's entries as Shopify's colour metaobjects,
   // [[label, hex or null], ...]; null is a pattern with no colour (e.g. "Floral").
   if (p.colorMeta) {

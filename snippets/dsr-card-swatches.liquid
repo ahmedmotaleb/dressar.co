@@ -107,7 +107,12 @@
   assign extra = total | minus: shown_limit
 -%}
 
-<div class="dsr-card-colors-row">
+<div
+  class="dsr-card-colors-row"
+  {% if color_option %}
+    data-option-index="{{ color_option.position | minus: 1 }}"
+  {% endif %}
+>
   {%- if color_has_swatches -%}
     {%- liquid
       assign featured_id = card_product.featured_media.id
@@ -144,6 +149,7 @@
                 class="dsr-card-swatch{% if sold_out %} dsr-card-swatch--sold-out{% endif %}"
                 aria-label="{{ label }}"
                 aria-pressed="{{ pressed }}"
+                data-value="{{ value.name | escape }}"
                 data-variant-id="{{ variant_id }}"
                 data-src="{{ media | image_url: width: 533 }}"
                 data-srcset="
@@ -163,6 +169,7 @@
                 class="dsr-card-swatch dsr-card-swatch--static{% if sold_out %} dsr-card-swatch--sold-out{% endif %}"
                 role="img"
                 aria-label="{{ label }}"
+                data-value="{{ value.name | escape }}"
               >
                 {%- render 'swatch', swatch: value.swatch -%}
               </span>

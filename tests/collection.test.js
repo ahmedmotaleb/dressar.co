@@ -202,14 +202,17 @@ async function main() {
     const sizesOf = (h) =>
       page.evaluate((sel) => {
         const li = document.querySelector(sel);
-        return li ? [...li.querySelectorAll('.dsr-card-sizes__size')].map((s) => (s.classList.contains('dsr-card-sizes__size--unavailable') ? `-${s.firstElementChild.textContent}` : s.textContent.trim())) : null;
+        // Size buttons (2S redesign): a size not in stock is aria-disabled, struck through.
+        return li ? [...li.querySelectorAll('.dsr-card-size')].map((s) => (s.getAttribute('aria-disabled') === 'true' ? `-${s.dataset.value}` : s.textContent.trim())) : null;
       }, cardFor(h));
     const shirtSizes = await sizesOf('long-linen-shirt');
-    check(`${tag} sizes follow variant stock (long linen shirt: M, XL in stock)`, shirtSizes && shirtSizes.join() === 'M,-L,XL,-XXL,-3XL', String(shirtSizes));
+    // The card starts on the colour in its photo (beige, in stock only in XL);
+    // picking another colour shows that colour's stock (black: only M).
+    check(`${tag} sizes follow the shown colour's stock (long linen shirt, beige: XL)`, shirtSizes && shirtSizes.join() === '-M,-L,XL,-XXL,-3XL', String(shirtSizes));
     const upperSizes = await sizesOf('476');
     check(`${tag} size option found whatever its case ("SIZE")`, upperSizes && upperSizes.length === 5 && upperSizes.every((s) => !s.startsWith('-')), String(upperSizes));
     const soldOutSizes = await sizesOf('linen-suit');
-    check(`${tag} sold-out product lists no sizes`, soldOutSizes && soldOutSizes.length === 0, String(soldOutSizes));
+    check(`${tag} sold-out product: its sizes, all struck through`, soldOutSizes && soldOutSizes.length > 0 && soldOutSizes.every((x) => x.startsWith('-')), String(soldOutSizes));
     const oddOrder = await sizesOf('381');
     check(`${tag} sizes keep the product's own order`, oddOrder && oddOrder.join() === 'L,XL,XXL,M,3XL', String(oddOrder));
 
@@ -266,6 +269,12 @@ async function main() {
       }, cardFor('linen-maxi-skirt-with-front-pockets'));
       check(`${tag} after picking a colour, hover keeps that photo`, keep[0] === '1:block' && keep[1] === 0 && /front-pockets-2\.jpg/.test(keep[2]), keep.join());
     }
+
+    // Picking a colour on the card shows that colour's stock (after the hover
+    // checks: a picked colour stops the shirt's slideshow).
+    await page.evaluate((sel) => document.querySelector(`${sel} .dsr-card-swatch[data-value="Black"]`).click(), cardFor('long-linen-shirt'));
+    const blackSizes = await sizesOf('long-linen-shirt');
+    check(`${tag} sizes follow the chosen colour (long linen shirt, black: M)`, blackSizes && blackSizes.join() === 'M,-L,-XL,-XXL,-3XL', String(blackSizes));
 
     // Filters.
     if (width < 750) {

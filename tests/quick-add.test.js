@@ -143,6 +143,7 @@ async function main() {
               icon: [Math.round(svg.width), Math.round(svg.height)],
               iconCentred: Math.abs(svg.left + svg.width / 2 - (box.left + box.width / 2)) < 1 && Math.abs(svg.top + svg.height / 2 - (box.top + box.height / 2)) < 1,
               text: [...b.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent.trim()).join(''),
+              bag: b.querySelector('svg').classList.contains('icon-cart-empty'),
               bottom: Math.round(img.bottom - box.bottom),
               end: Math.round(rtl ? box.left - img.left : img.right - box.right),
               overlapsBadge: bb ? !(bb.right <= box.left || bb.left >= box.right || bb.bottom <= box.top || bb.top >= box.bottom) : false,
@@ -154,11 +155,12 @@ async function main() {
         check(`${tag} collection: one quick-add button per card`, r.n > 0 && c.every((x) => x.count === 1), JSON.stringify(c.map((x) => x.count)));
         // The detail lists the cards that fail, by position in the grid.
         const failing = (ok) => JSON.stringify(c.map((x, i) => ({ i, ...x })).filter((x) => !ok(x)));
-        const looks = (x) => x.w === 38 && x.h === 38 && x.border === '1px solid rgb(31, 31, 31)' && x.bg === 'rgb(255, 255, 255)' && x.radius === '2px' && x.shadow === 'none';
-        const iconOnly = (x) => x.icon.join() === '18,18' && x.iconCentred && x.color === 'rgb(0, 0, 0)' && x.text === '';
-        check(`${tag} 38 x 38 px, 1px solid #1F1F1F, white, 2px radius, no shadow`, c.every(looks), failing(looks));
-        check(`${tag} icon only: black plus, 18px, centred, no text`, c.every(iconOnly), failing(iconOnly));
-        check(`${tag} on the photo's bottom ${rtl ? 'left' : 'right'} corner, 10px in`, c.every((x) => x.bottom === 10 && x.end === 10), JSON.stringify(c.map((x) => [x.bottom, x.end])));
+        // The 2S redesign: a small floating shopping-bag button.
+        const looks = (x) => x.w === 34 && x.h === 34 && x.border.startsWith('0px') && x.bg === 'rgba(255, 255, 255, 0.94)' && x.radius === '8px' && x.shadow !== 'none';
+        const iconOnly = (x) => x.icon.join() === '30,30' && x.iconCentred && x.color === 'rgb(18, 18, 18)' && x.text === '' && x.bag;
+        check(`${tag} small floating bag button: 34 x 34 px, white, 8px radius, light shadow`, c.every(looks), failing(looks));
+        check(`${tag} icon only: the shopping bag, centred, no text`, c.every(iconOnly), failing(iconOnly));
+        check(`${tag} on the photo's bottom ${rtl ? 'left' : 'right'} corner, 8px in`, c.every((x) => x.bottom === 8 && x.end === 8), JSON.stringify(c.map((x) => [x.bottom, x.end])));
         check(`${tag} clear of the sale or sold-out badge`, c.every((x) => !x.overlapsBadge));
 
         // Accessible name, hit test, photo still opens the product.
@@ -285,6 +287,60 @@ async function main() {
           page.adds.length === 1 && page.adds[0] === chosen && added && added.product.handle.startsWith('linen-maxi-skirt-with-front-pockets') && (!size || added.variant.option2 === size.value), JSON.stringify(page.adds.map((id) => variants.get(id) && variants.get(id).variant.title)));
         check(`${tag} sizes: picker closes, cart drawer opens, count 1`, !after.modalOpen && after.drawer && after.bubble === '1', JSON.stringify(after));
         check(`${tag} sizes: no JS errors`, page.errors.length === 0, page.errors.join(' | '));
+        await page.closeAll();
+      }
+
+      // ---------- Colour and size chosen on the card: the bag adds exactly that ----------
+      {
+        const page = await open(width, '/collections/qa');
+        const card = cardSel('linen-maxi-skirt-with-front-pockets');
+        // This card's own variants (the collection shows a numbered copy of the linen skirt).
+        const linen = (await page.evaluate((sel) => JSON.parse(document.querySelector(`${sel} script[data-dsr-card-variants]`).textContent), card)).map(([id, available, options]) => ({
+          id,
+          available: Boolean(available),
+          option1: options[0],
+          option2: options[1],
+        }));
+        await page.locator(`${card} .dsr-card-swatch[aria-label="olive"], ${card} .dsr-card-swatch[data-value="olive"]`).first().click();
+        await page.waitForTimeout(200);
+        const olive = await page.evaluate((sel) => [...document.querySelectorAll(`${sel} .dsr-card-size`)].map((b) => `${b.dataset.value}:${b.getAttribute('aria-disabled') === 'true' ? 'x' : 'ok'}`).join(), card);
+        const oliveOpen = linen.filter((v) => v.option1 === 'olive' && v.available).map((v) => v.option2);
+        check(`${tag} card: sizes follow the chosen colour (olive: only ${oliveOpen.join(', ')} in stock)`, olive.split(',').every((x) => x.endsWith(':ok') === oliveOpen.includes(x.split(':')[0])), olive);
+        // A struck-through size can't be chosen.
+        const struck = olive.split(',').find((x) => x.endsWith(':x'));
+        if (struck) {
+          await page.locator(`${card} .dsr-card-size[data-value="${struck.split(':')[0]}"]`).click({ force: true });
+          const pressed = await page.evaluate((sel) => document.querySelectorAll(`${sel} .dsr-card-size[aria-pressed="true"]`).length, card);
+          check(`${tag} card: a size not in stock can't be chosen`, pressed === 0, pressed);
+        }
+        // No size chosen yet: the bag opens the dialog, adds nothing.
+        const cardBox = await page.locator(`${card} .card__inner`).boundingBox();
+        await page.mouse.move(cardBox.x + cardBox.width / 2, cardBox.y + cardBox.height / 2);
+        await page.click(`${card} .dsr-quick-add__button`);
+        await page.waitForSelector('quick-add-modal[open]', { timeout: 5000 }).catch(() => {});
+        await page.waitForTimeout(300);
+        const dialogFirst = await page.evaluate(() => Boolean(document.querySelector('quick-add-modal[open]')));
+        check(`${tag} card: no size chosen -> the bag opens the dialog, nothing added`, dialogFirst && page.adds.length === 0, `${dialogFirst} ${page.adds.length}`);
+        await page.keyboard.press('Escape');
+        await page.waitForTimeout(400);
+        // Genzari, size L: the bag adds exactly that variant, without the dialog.
+        await page.locator(`${card} .dsr-card-swatch[data-value="Genzari"]`).click();
+        await page.locator(`${card} .dsr-card-size[data-value="L"]`).click();
+        await page.waitForTimeout(150);
+        const wanted = linen.find((v) => v.option1 === 'Genzari' && v.option2 === 'L');
+        const link = await page.evaluate((sel) => document.querySelector(`${sel} a.full-unstyled-link`).getAttribute('href'), card);
+        check(`${tag} card: colour and size chosen -> the card opens that exact variant`, new RegExp(`^/products/linen-maxi-skirt-with-front-pockets(-\\d+)?\\?variant=${wanted.id}$`).test(link), link);
+        await page.mouse.move(cardBox.x + cardBox.width / 2, cardBox.y + cardBox.height / 2);
+        await page.click(`${card} .dsr-quick-add__button`);
+        await page.waitForTimeout(1500);
+        const after = await page.evaluate(() => ({
+          modal: Boolean(document.querySelector('quick-add-modal[open]')),
+          drawer: document.querySelector('cart-drawer').classList.contains('active'),
+          bubble: (document.querySelector('#cart-icon-bubble .cart-count-bubble span[aria-hidden]') || {}).textContent?.trim(),
+        }));
+        check(`${tag} card: the bag adds exactly Genzari / L, one request, no dialog`, page.adds.length === 1 && page.adds[0] === String(wanted.id) && !after.modal, `${JSON.stringify(page.adds)} ${JSON.stringify(after)}`);
+        check(`${tag} card: cart drawer opens, count 1`, after.drawer && after.bubble === '1', JSON.stringify(after));
+        check(`${tag} card choice: no JS errors`, page.errors.length === 0, page.errors.join(' | '));
         await page.closeAll();
       }
     }
