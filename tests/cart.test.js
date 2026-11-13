@@ -251,7 +251,8 @@ async function main() {
       check(`[${width}] complete the look: asks complementary first${expectHandles ? '' : ', then related'}`, asked.join() === (expectHandles ? 'complementary' : 'complementary,related'), asked.join());
       check(`[${width}] complete the look: same 3:4 card`, got.ratios.length > 0 && got.ratios.every((r) => Math.abs(r - 4 / 3) < 0.01), got.ratios.map((r) => r.toFixed(3)).join());
       check(`[${width}] complete the look: card prices card-sized (not the product page's 26px)`, got.priceSize > 0 && got.priceSize < 17, String(got.priceSize));
-      if (got.swatchSize !== null) check(`[${width}] complete the look: swatches styled without the product form's CSS`, got.swatchSize >= 14 && got.swatchSize <= 20, String(got.swatchSize));
+      // The card's own chips (22px wide, 26px from 990px), not the product form's 42px ones.
+      if (got.swatchSize !== null) check(`[${width}] complete the look: swatches styled without the product form's CSS`, got.swatchSize === (width >= 990 ? 26 : 22), String(got.swatchSize));
       check(`[${width}] complete the look: no JS errors`, page.errors.length === 0, page.errors.join(' | '));
       await shot(page, `ctl-${handle}-${width}`, { fullPage: true });
       await context.close();
