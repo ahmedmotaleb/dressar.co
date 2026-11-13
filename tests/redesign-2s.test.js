@@ -70,6 +70,29 @@ async function main() {
           const sizes = li.querySelector('.dsr-card-sizes-row');
           const top = (el) => (el ? el.getBoundingClientRect().top : null);
           const cs = getComputedStyle(card);
+          const box = card.getBoundingClientRect();
+          // How far the visible content of a centred row is from the card's middle.
+          const offCentre = (el) => {
+            if (!el) return null;
+            const parts = [...el.querySelectorAll('*')].filter((e) => e.children.length === 0 && e.offsetWidth > 0 && !e.closest('.visually-hidden')).map((e) => e.getBoundingClientRect());
+            if (!parts.length) return null;
+            // What shows: a part cut short ("...") counts only up to the row's edge.
+            const edge = el.getBoundingClientRect();
+            const l = Math.max(edge.left, Math.min(...parts.map((b) => b.left)));
+            const r = Math.min(edge.right, Math.max(...parts.map((b) => b.right)));
+            return Math.abs((l + r) / 2 - (box.left + box.right) / 2);
+          };
+          const visiblePrice = price.querySelector(price.classList.contains('price--on-sale') ? '.price__sale' : '.price__regular');
+          const options = li.querySelector('.dsr-card-options');
+          const label = (row) => {
+            const l = row && row.querySelector('.dsr-card-row__label');
+            const next = l && l.nextElementSibling;
+            if (!l || !next) return null;
+            const a = l.getBoundingClientRect();
+            const b = next.getBoundingClientRect();
+            return { text: l.textContent.trim(), above: a.bottom <= b.top + 0.5, beside: a.top < b.bottom && b.top < a.bottom };
+          };
+          const swatch = li.querySelector('.dsr-card-swatch .swatch');
           return {
             handle: link.getAttribute('href').split('/').pop().split('?')[0],
             bg: cs.backgroundColor,
@@ -84,7 +107,16 @@ async function main() {
             priceSize: px(price, 'fontSize'),
             priceWeight: getComputedStyle(price).fontWeight,
             sizeButtons: [...li.querySelectorAll('.dsr-card-size')].map((b) => px(b, 'fontSize')),
-            swatchRadius: (() => { const s = li.querySelector('.dsr-card-swatch .swatch'); return s ? getComputedStyle(s).borderTopLeftRadius : null; })(),
+            swatch: swatch ? [Math.round(swatch.getBoundingClientRect().width), Math.round(swatch.getBoundingClientRect().height), getComputedStyle(swatch).borderTopLeftRadius] : null,
+            titleStyle: [getComputedStyle(title).fontWeight, getComputedStyle(title).textTransform, getComputedStyle(title).textAlign],
+            titleCentre: offCentre(link),
+            ratingCentre: offCentre(rating),
+            priceCentre: offCentre(visiblePrice),
+            star: rating && getComputedStyle(rating.querySelector('.rating-star')).getPropertyValue('--color-rating-star').trim(),
+            rules: options && [getComputedStyle(options).borderTopWidth, colours && sizes ? getComputedStyle(sizes).borderTopWidth : '1px'],
+            colourLabel: label(colours),
+            sizeLabel: label(sizes),
+            cardWidth: box.width,
             left: card.getBoundingClientRect().left,
             right: card.getBoundingClientRect().right,
             cardTop: Math.round(card.getBoundingClientRect().top),
@@ -94,15 +126,24 @@ async function main() {
       });
       const c = r.cards;
       check(`${tag}: the whole card #F2EEE9 (photo, name, rating, price, colours, sizes), no white panel`, c.every((x) => x.bg === CARD_BG && x.contentBg === 'rgba(0, 0, 0, 0)'), JSON.stringify(c.map((x) => [x.bg, x.contentBg])));
-      check(`${tag}: 10px corners, no shadow`, c.every((x) => x.radius === '10px' && x.shadow === 'none' && x.innerShadow === 'none'), JSON.stringify(c[0]));
+      check(`${tag}: 10px corners, a faint shadow only`, c.every((x) => x.radius === '10px' && /rgba\(17, 17, 17, 0\.0[45]\)/.test(x.shadow) && x.innerShadow === 'none'), JSON.stringify(c[0].shadow));
       check(`${tag}: order name, rating, price, colours, sizes`, c.every((x) => x.order));
       check(`${tag}: name ${desktop ? 13 : 12}px, two lines at most`, c.every((x) => x.titleSize === (desktop ? 13 : 12) && x.titleLines <= 2), JSON.stringify(c.map((x) => [x.titleSize, x.titleLines])));
-      check(`${tag}: price ${desktop ? 16 : 14}px semibold`, c.every((x) => x.priceSize === (desktop ? 16 : 14) && Number(x.priceWeight) >= 600), JSON.stringify(c.map((x) => [x.priceSize, x.priceWeight])));
+      check(`${tag}: price ${desktop ? 16 : 14}px`, c.every((x) => x.priceSize === (desktop ? 16 : 14)), JSON.stringify(c.map((x) => x.priceSize)));
       check(`${tag}: size buttons ${desktop ? 11 : 10}px`, c.every((x) => x.sizeButtons.every((s) => s === (desktop ? 11 : 10))), JSON.stringify(c.map((x) => x.sizeButtons)));
-      check(`${tag}: colour swatches are small rounded squares`, c.every((x) => x.swatchRadius === null || x.swatchRadius === '3px'), JSON.stringify(c.map((x) => x.swatchRadius)));
+      check(`${tag}: colour chips: rounded rectangles, ${desktop ? '26 x 22' : '22 x 18'}`, c.every((x) => x.swatch === null || x.swatch.join() === (desktop ? '26,22,4px' : '22,18,4px')), JSON.stringify(c.map((x) => x.swatch)));
+      // The "Collection grid product" reference: centred name, rating and price; lines and labels for the rows.
+      check(`${tag}: name centred, regular weight, no capitals`, c.every((x) => x.titleStyle.join() === '400,none,center' && x.titleCentre <= 2), JSON.stringify(c.map((x) => [x.titleStyle, x.titleCentre && x.titleCentre.toFixed(1)])));
+      check(`${tag}: price centred and bold`, c.every((x) => x.priceCentre !== null && x.priceCentre <= 2 && x.priceWeight === '700'), JSON.stringify(c.map((x) => [x.priceCentre && x.priceCentre.toFixed(1), x.priceWeight])));
+      check(`${tag}: thin lines above the colours and between colours and sizes`, c.every((x) => x.rules && x.rules.join() === '1px,1px'), JSON.stringify(c.map((x) => x.rules)));
+      const labelled = c.filter((x) => x.colourLabel && x.sizeLabel);
+      const wide = (x) => x.cardWidth - 2 * (desktop ? 12 : 8) >= 240;
+      check(`${tag}: rows labelled "${rtl ? 'اللون:' : 'Colour:'}" and "${rtl ? 'المقاس:' : 'Size:'}"`, labelled.length > 0 && labelled.every((x) => x.colourLabel.text === (rtl ? 'اللون:' : 'Colour:') && x.sizeLabel.text === (rtl ? 'المقاس:' : 'Size:')), JSON.stringify(labelled.map((x) => [x.colourLabel.text, x.sizeLabel.text])));
+      check(`${tag}: labels ${desktop && width >= 1280 ? 'beside' : 'above'} their rows (${desktop && width >= 1280 ? 'wide' : 'narrow'} card)`, labelled.every((x) => (wide(x) ? x.colourLabel.beside && x.sizeLabel.beside : x.colourLabel.above && x.sizeLabel.above)), JSON.stringify(labelled.map((x) => [Math.round(x.cardWidth), x.colourLabel.above, x.colourLabel.beside])));
       const reviewed = c.filter((x) => x.handle.startsWith('linen-maxi-skirt-with-front-pockets'));
       const others = c.filter((x) => !x.handle.startsWith('linen-maxi-skirt-with-front-pockets'));
       check(`${tag}: rating from real reviews: stars and (12), ${desktop ? 11 : 10}px`, reviewed.length > 0 && reviewed.every((x) => x.rating && x.rating.stars && x.rating.size === (desktop ? 11 : 10) && x.rating.text.includes('(12)')), JSON.stringify(reviewed.map((x) => x.rating)));
+      check(`${tag}: rating centred, gold stars`, reviewed.every((x) => x.ratingCentre <= 2 && x.star === '#f2b33d'), JSON.stringify(reviewed.map((x) => [x.ratingCentre, x.star])));
       check(`${tag}: no reviews, no rating row (no empty space)`, others.every((x) => x.rating === null), JSON.stringify(others.filter((x) => x.rating).map((x) => x.handle)));
       // Grid: two cards a row on phones, 8px apart; 16px from 750px; four a row from 990px.
       const rows = {};
@@ -157,9 +198,10 @@ async function main() {
       // so it isn't rendered here): its place in the template is checked below.
       const seq = ['title', 'price', 'colour', 'sizeGuide', 'stock', 'add', 'shipping', 'description', 'facts'];
       check(`${tag}: order: name, rating, price, colour, size, size guide, stock, add to cart, shipping and exchange, description, fabric and fit`, seq.every((k, i) => r.order[k] > -1 && (i === 0 || r.order[k] > r.order[seq[i - 1]])), JSON.stringify(r.order));
-      check(`${tag}: name ${desktop ? 24 : 20}px, price ${desktop ? 20 : 18}px semibold`, r.titleSize === (desktop ? 24 : 20) && r.priceSize === (desktop ? 20 : 18) && Number(r.priceWeight) >= 600, JSON.stringify([r.titleSize, r.priceSize, r.priceWeight]));
+      check(`${tag}: name ${desktop ? 24 : 20}px, price ${desktop ? 20 : 18}px bold`, r.titleSize === (desktop ? 24 : 20) && r.priceSize === (desktop ? 20 : 18) && Number(r.priceWeight) === 700, JSON.stringify([r.titleSize, r.priceSize, r.priceWeight]));
       check(`${tag}: labels "Color — olive", "Size — L"`, r.colourLegend === 'Color — olive' && r.sizeLegend === 'Size — L', `${r.colourLegend} | ${r.sizeLegend}`);
-      check(`${tag}: sizes: rounded 8px buttons, 40px high; the chosen one framed in black, not filled`, r.sizeShape && r.sizeShape.radius === '8px' && r.sizeShape.height >= 40 && /rgb\(18, 18, 18\)/.test(r.sizeShape.frame) && r.sizeShape.bg === 'rgb(255, 255, 255)', JSON.stringify(r.sizeShape));
+      // (Exact sizes and colours: tests/pdp-selectors.test.js.)
+      check(`${tag}: sizes: rounded 8px buttons, 46px high; the chosen one framed in black, not filled`, r.sizeShape && r.sizeShape.radius === '8px' && r.sizeShape.height === 46 && /rgb\(17, 17, 17\)/.test(r.sizeShape.frame) && r.sizeShape.bg === 'rgb(255, 255, 255)', JSON.stringify(r.sizeShape));
       check(`${tag}: a size not in stock is struck through`, r.struck === 'line-through', r.struck);
       check(`${tag}: rounded photos (10px)`, r.mediaRadius === '10px', r.mediaRadius);
       check(`${tag}: no JS errors`, page.errors.length === 0, page.errors.join(' | '));

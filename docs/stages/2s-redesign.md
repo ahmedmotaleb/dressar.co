@@ -198,12 +198,95 @@ Each is in English (`-en`) and Arabic (`-ar`).
 
 They come from the local test harness: the theme's real Liquid, CSS and JS, rendered with fixture products and plain colour blocks in place of product photos. In the full-page product shots, the sticky bar and WhatsApp button are hidden, because a full-page capture draws fixed elements in the middle of the page. The sticky bar has its own shot.
 
+## Round 2 (Nov 13): product page selectors and the card reference
+
+Two briefs:
+- "Exact Product Variant Selector Styling" (product page, with exact sizes). No screenshot came with that message, so this work follows its numbers.
+- The "Collection grid product" image, sent during that work: one card, in Arabic.
+
+### Product page selectors
+
+- **Colours are 42 x 30 chips**:
+  - 5px corners, 12px apart;
+  - shown in the variants' own Shopify swatch colours;
+  - not chosen: a light grey edge (#D9D9D9);
+  - chosen: a black frame (#111) with a white ring inside it;
+  - sold out: faded and crossed corner to corner.
+
+  The colour photo selector is off in the product template (`dsr_color_photos: false` on the variant picker block), as the merchant chose. It stays in the theme editor ("Dressar: colour photos"). Nearly every product's colour option has a Shopify swatch colour (checked on the store). The few without (for example "130", "Floral", "Striped", "Sky blue") show Dawn's buttons.
+- **Size buttons**:
+  - at least 64 x 46, 8px corners, white, 1px #D9D9D9 edge;
+  - 14px text at weight 500;
+  - 10px apart, wrapping onto more rows;
+  - chosen: a 2px #111 edge (a 1px border plus a 1px inner ring, so nothing moves);
+  - not in stock: struck through and lighter.
+
+  Fixed while here: Dawn wrote a chosen size that is sold out in the background colour, which would be white on white.
+- **Type**:
+  - name 20px, price 18px, both bold (700);
+  - labels 14px bold, reading "Color — Black": the option's own translated name and value, so on the Arabic store "لون — أسود" (the store's translation of "Color" is "لون");
+  - from 990px, the name stays 24px and the price 20px.
+
+  No capitals and no letter-spacing on Arabic text (letter-spacing pulls joined letters apart).
+- **Spacing**: 10px from a label to its choices, and 20px between the colour and size sections.
+- **Arabic font: Cairo.**
+  - The theme fonts (Poppins) have no Arabic letters, and Shopify's font library files cover Latin only (Shopify's docs say to self-host for other scripts).
+  - Cairo's Arabic subset is served by the theme: `assets/dsr-cairo-arabic.woff2`, 31 KB, one variable file for every weight.
+  - It is declared in `layout/theme.liquid` with an Arabic-only `unicode-range`, so it downloads only when Arabic text is shown, and Latin text keeps Poppins.
+  - It is used in the product details, the sticky bar and the cards.
+  - Theme setting: Typography > "Cairo for Arabic on product pages and cards" (on by default).
+  - Licence: OFL, in `docs/fonts/cairo-OFL.txt`.
+- Poppins at weight 500 is now declared (for the size buttons; before, 500 fell back to the thin 300). Like any `@font-face`, it downloads only where it is used.
+- **Kept**: the size guide, WhatsApp size help, Dawn's variant change (price, stock, photos, URL, sticky bar), the colour photo selector as a setting, and RTL order (the first choice is on the right in Arabic). No virtual fitting room is in the theme: its app blocks and embeds are Judge.me, a pre-order app, a frequently-bought-together app and a WhatsApp chat app.
+
+### Product card (the "Collection grid product" image)
+
+- **Centred**: the name (regular weight, no capitals), the rating (gold stars, real reviews only), and the price (bold).
+- **Two thin lines**: one above the colours and one between colours and sizes.
+- **Labelled rows**: "Colour:" / "اللون:" and "Size:" / "المقاس:", new locale keys `dressar.card.color_row` and `size_row`.
+  - On a wide card (240px of content or more, i.e. desktop) the label sits before its row, as in the image.
+  - On a narrow card (phones' two columns, tablets) it sits above, because a label beside five sizes doesn't fit in 160px.
+  - This is a container query on the card's options, so it follows the card's real width whatever the column setting.
+- **Colour chips**: rounded rectangles, 22 x 18 (26 x 22 from 990px), with the same chosen style as the product page.
+- **Size boxes**: light edge; chosen: a black frame on white.
+- **Bag button**: dark (#332F2B) with a white bag. It is still 34px and still hover-only on desktop.
+- **Shadow**: a faint card shadow, as in the image.
+- **Not copied from the image**:
+  - Photos stay 3:4, as the earlier brief asked; the image's photo is nearly square.
+  - Sizes keep the product's own order in the page's direction (in Arabic the first size is on the right; the image shows S at the left).
+  - The type sizes stay those of the earlier brief (12/13px names, 14/16px prices); the image is a large single-card mock-up.
+
+### Live-theme bug fixed here
+
+On touch screens, the card slideshow's first slide (an empty copy of the photo until the first touch) made Chrome draw a broken-image icon in the top corner of every card photo. That code is on the live theme (`b7da168`). Slideshow images now stay hidden until they have a source. It is a separate commit, so it can go live on its own.
+
+### Tests (round 2)
+
+- **New: `tests/pdp-selectors.test.js`, 153 checks.** At 360, 390 and 430px, in Arabic and English, it checks:
+  - Cairo leads the font stack and is loaded;
+  - the type sizes and weights; no capitals; no letter-spacing on Arabic;
+  - the labels and their text after choosing a colour;
+  - the 8-12px and 18-22px spacing;
+  - chip size, gap and start side, chip colours equal to the fixture's swatch colours, and both chip states;
+  - choosing a colour still runs Dawn's variant change (label, chosen chip and size stock follow);
+  - size button size, edge, chosen state, gap, start side and wrapping;
+  - sold-out sizes; the size guide; no sideways scroll; no script errors.
+- **`tests/redesign-2s.test.js`** (203 checks) adds:
+  - centred name, rating and price;
+  - the regular-weight name; gold stars;
+  - the two lines;
+  - the row labels, above or beside depending on the card's width;
+  - chip size and the faint shadow.
+- **`tests/quick-add.test.js`**: the dark bag button.
+- **`tests/color-photos.test.js`** switches the colour photos back on for its own checks, through a new harness option (`templatePatch`), so the setting keeps its tests.
+- Screenshots: `docs/stages/2s-shots/selectors/`, before and after for the product page at 360, 390 and 430px and the cards at 390 and 1440px, in both languages.
+
 ## Not done, or not verifiable here
 
 - **No visual check on the Shopify preview.** This environment can't open the storefront, so the preview theme `#168399831271` was checked file by file (MD5), not by eye. All visual checks above come from the local harness, not from Shopify.
 - **The Judge.me badge on the product page can't be rendered locally**: it is an app block. The test checks its position in the template. On the card, the rating comes from Shopify's reviews metafields. If Judge.me's metafield sync is off for the store, cards show no ratings: there are no fake stars.
 - **The rating row takes no space when a product has no reviews** (as the brief asked). In a row where only some products have reviews, the prices therefore don't line up across cards.
-- **No reference image was supplied for the grid**; it follows the written brief and the 2S product page screenshots.
+- **Screenshots with the store's real products** need the Shopify connector's theme access (`theme_screenshot`, `theme_bash`), which it refused with "requires additional permissions". Reconnecting the connector with theme access would allow them. All screenshots here come from the local harness.
 - **The theme IDs in the brief are out of date.**
   - The live theme is now `#168303165671` (the earlier preview copy), published on Nov 11. Its code is `b7da168`.
   - `#167837270247` (live Nov 10–11) is the rollback and was left unchanged. So were `#167717929191` and `#168327643367`.

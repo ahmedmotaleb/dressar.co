@@ -2228,7 +2228,9 @@
       },
       "sizes_label": "المقاسات",
       "value_sold_out": "{{ value }}، خلص",
-      "quick_add": "إضافة سريعة إلى السلة"
+      "quick_add": "إضافة سريعة إلى السلة",
+      "color_row": "اللون:",
+      "size_row": "المقاس:"
     },
     "product": {
       "model_size": "البنت اللي في الصورة لابسة مقاس {{ size }}",

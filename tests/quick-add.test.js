@@ -156,10 +156,11 @@ async function main() {
         // The detail lists the cards that fail, by position in the grid.
         const failing = (ok) => JSON.stringify(c.map((x, i) => ({ i, ...x })).filter((x) => !ok(x)));
         // The 2S redesign: a small floating shopping-bag button.
-        const looks = (x) => x.w === 34 && x.h === 34 && x.border.startsWith('0px') && x.bg === 'rgba(255, 255, 255, 0.94)' && x.radius === '8px' && x.shadow !== 'none';
-        const iconOnly = (x) => x.icon.join() === '30,30' && x.iconCentred && x.color === 'rgb(18, 18, 18)' && x.text === '' && x.bag;
-        check(`${tag} small floating bag button: 34 x 34 px, white, 8px radius, light shadow`, c.every(looks), failing(looks));
-        check(`${tag} icon only: the shopping bag, centred, no text`, c.every(iconOnly), failing(iconOnly));
+        // Dark button, white bag (the "Collection grid product" reference).
+        const looks = (x) => x.w === 34 && x.h === 34 && x.border.startsWith('0px') && x.bg === 'rgba(51, 47, 43, 0.92)' && x.radius === '8px' && x.shadow !== 'none';
+        const iconOnly = (x) => x.icon.join() === '30,30' && x.iconCentred && x.color === 'rgb(255, 255, 255)' && x.text === '' && x.bag;
+        check(`${tag} small floating bag button: 34 x 34 px, dark, 8px radius, light shadow`, c.every(looks), failing(looks));
+        check(`${tag} icon only: a white shopping bag, centred, no text`, c.every(iconOnly), failing(iconOnly));
         check(`${tag} on the photo's bottom ${rtl ? 'left' : 'right'} corner, 8px in`, c.every((x) => x.bottom === 8 && x.end === 8), JSON.stringify(c.map((x) => [x.bottom, x.end])));
         check(`${tag} clear of the sale or sold-out badge`, c.every((x) => !x.overlapsBadge));
 

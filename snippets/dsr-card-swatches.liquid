@@ -107,12 +107,24 @@
   assign extra = total | minus: shown_limit
 -%}
 
+{%- liquid
+  # The row's label ("Colour:"), shown when the row has colours to show.
+  assign has_colors = false
+  if color_has_swatches or meta_count > 0
+    assign has_colors = true
+  elsif color_option and color_option.values.size > 1
+    assign has_colors = true
+  endif
+-%}
 <div
   class="dsr-card-colors-row"
   {% if color_option %}
     data-option-index="{{ color_option.position | minus: 1 }}"
   {% endif %}
 >
+  {%- if has_colors -%}
+    <span class="dsr-card-row__label" aria-hidden="true">{{ 'dressar.card.color_row' | t }}</span>
+  {%- endif -%}
   {%- if color_has_swatches -%}
     {%- liquid
       assign featured_id = card_product.featured_media.id
