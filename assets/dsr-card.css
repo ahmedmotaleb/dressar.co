@@ -40,7 +40,12 @@
   margin-bottom: 0.4rem;
 }
 
-/* Long names stop at two lines; the full name stays in the link text. */
+/* Every card's name takes two lines' height, so prices line up across the
+   grid. Long names stop at two lines; the full name stays in the link text. */
+.product-card-wrapper .card__heading.h5 {
+  min-height: calc(2 * 1.45em);
+}
+
 .product-card-wrapper .card__heading.h5 > a {
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -71,6 +76,30 @@
   color: rgba(var(--color-foreground), 0.65);
 }
 
+/* One line on every card, so the rows below line up: the price to pay first,
+   always whole; the struck-through price after it, cut short ("...") when a
+   narrow card has no room. Screen readers keep Dawn's order. */
+/* Only the block Dawn shows: the regular price, or the sale price when on sale. */
+.product-card-wrapper .price:not(.price--on-sale) .price__regular,
+.product-card-wrapper .price--on-sale .price__sale {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: baseline;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.product-card-wrapper .price__sale .price-item--last {
+  order: -1;
+  flex-shrink: 0;
+}
+
+.product-card-wrapper .price__sale > span:not(.visually-hidden):not(.price-item) {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* ---------- Badge ---------- */
 
 .product-card-wrapper .card__badge .badge {
@@ -85,12 +114,22 @@
 
 /* ---------- Colour swatches (snippets/dsr-card-swatches.liquid) ---------- */
 
+/* On every card, at the same height: one colour or several, a colour count,
+   or (no colour data) nothing; :empty too, since Dawn hides empty divs
+   (base.css). The snippet caps the row ("+N"), so it never wraps. */
+.dsr-card-colors-row,
+.dsr-card-colors-row:empty {
+  display: flex;
+  align-items: center;
+  height: 2.6rem;
+}
+
 .dsr-card-swatches__list {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   gap: 0.2rem;
-  margin: 0.2rem 0 0;
+  margin: 0;
   margin-inline-start: -0.5rem;
 }
 
@@ -157,11 +196,22 @@
 
 /* ---------- Sizes (snippets/dsr-card-sizes.liquid) ---------- */
 
+/* On every card, one line high, even when empty (sold out, no size option). */
+/* :empty too: Dawn hides empty divs (base.css), but this row keeps its height. */
+.dsr-card-sizes-row,
+.dsr-card-sizes-row:empty {
+  display: flex;
+  align-items: center;
+  height: calc(1.05rem * 1.6);
+}
+
 .dsr-card-sizes {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 0.2rem 0.9rem;
   margin: 0;
+  line-height: 1.6;
+  white-space: nowrap;
   font-family: 'Dressar UI', var(--font-body-family);
   font-size: 1.05rem;
   font-weight: 500;

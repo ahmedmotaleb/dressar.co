@@ -7,6 +7,9 @@
   "Size option names". Sold-out products show nothing (the card's badge
   already says so). One pass over the variants, no nested loops.
 
+  The row is always there, at a fixed height (assets/dsr-card.css), even when
+  empty, so rows line up across the grid.
+
   @param {product} card_product - The product on the card.
 
   @example
@@ -32,6 +35,7 @@
   endfor
 -%}
 
+<div class="dsr-card-sizes-row">
 {%- if size_option and card_product.available -%}
   {%- liquid
     assign size_key = 'option' | append: size_option.position
@@ -56,3 +60,4 @@
     {%- endfor -%}
   </ul>
 {%- endif -%}
+</div>

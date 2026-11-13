@@ -97,6 +97,13 @@ function buildProduct(p, n = 0) {
   for (const [key, labels] of Object.entries(p.facts || {})) {
     metafields.shopify[key] = { value: labels.map((label) => ({ label: { value: label } })) };
   }
+  // colorMeta: the Color category metafield's entries as Shopify's colour metaobjects,
+  // [[label, hex or null], ...]; null is a pattern with no colour (e.g. "Floral").
+  if (p.colorMeta) {
+    metafields.shopify['color-pattern'] = {
+      value: p.colorMeta.map(([label, hex]) => ({ label: { value: label }, color: { value: hex ? new ColorDrop(hex) : null }, image: { value: null } })),
+    };
+  }
   const product = {
     id: idBase,
     handle,
