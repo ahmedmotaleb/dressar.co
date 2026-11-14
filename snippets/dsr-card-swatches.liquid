@@ -1,15 +1,16 @@
 {%- doc -%}
   The colour row of a product card: a fixed-height row (assets/dsr-card.css),
   on every card, so titles, prices, colours and sizes line up across the grid.
+  No label (docs/stages/card-v2.md); the list is named for screen readers.
   Colours come only from Shopify's own data; nothing here maps colour names
   to hex codes (docs/stages/card-upgrade.md).
 
   Where the colours come from, in order:
   1. The colour option's swatches: the colour or image set on each value of
      an option linked to the "Color" category metafield. Every colour is
-     shown, one circle each (the option's values are unique, so sizes never
-     repeat a colour).
-     - One colour: one circle, shown selected.
+     shown, one rounded square each (the option's values are unique, so
+     sizes never repeat a colour).
+     - One colour: one square, shown selected.
      - Several: each is a button. Picking one shows that colour's photo (when
        its variant has one), price and sale badge, its sizes in stock, and
        points the card's links and quick add at it (assets/dsr-card.js). The
@@ -17,11 +18,11 @@
      - A colour with no stock in any size is marked sold out.
   2. Otherwise, the product's "Color" category metafield
      (shopify.color-pattern), set by the merchant: the colour or image of
-     each entry, as plain circles.
+     each entry, as plain squares.
   3. Otherwise, a colour option without swatch data (found by name: Theme
      settings > Dressar > "Colour option names") with several values shows
      a colour count.
-  4. Otherwise no circle at all: the row stays, empty, at the same height.
+  4. Otherwise no swatch at all: the row stays, empty, at the same height.
      A colour option whose values have no colour data is marked
      data-dsr-color-data="missing" for the merchant to fix in Shopify; no
      made-up swatch.
@@ -118,13 +119,6 @@
   endif
   assign extra = total | minus: shown_limit
 
-  # The row's label ("Colour:"), shown when the row has colours to show.
-  assign has_colors = false
-  if color_has_swatches or meta_count > 0
-    assign has_colors = true
-  elsif color_option and color_option.values.size > 1
-    assign has_colors = true
-  endif
   assign missing_data = false
   if color_option and color_has_swatches == false and meta_count == 0
     assign missing_data = true
@@ -139,9 +133,6 @@
     data-dsr-color-data="missing"
   {% endif %}
 >
-  {%- if has_colors -%}
-    <span class="dsr-card-row__label" aria-hidden="true">{{ 'dressar.card.color_row' | t }}</span>
-  {%- endif -%}
   {%- if color_has_swatches -%}
     {%- liquid
       assign single = false

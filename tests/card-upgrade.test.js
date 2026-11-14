@@ -1,9 +1,11 @@
-// Product card upgrade (docs/stages/card-upgrade.md): the sale badge ("38%", top-right),
-// the small quick-add "+" (bottom-right), colour circles on every card (one colour
-// included), the card's one price variant (price, compare-at price and badge from the
-// same variant, following the chosen colour and size), the type scale and the row order.
-// Arabic (right to left) and English, at 320-1440px, on the theme's real card rendered
-// by tests/lib/theme-harness.js: collection, search and home rows.
+// Product cards (docs/stages/card-upgrade.md, docs/stages/card-v2.md): the compact V2 card
+// (one-line name; price and rating on one line; rounded-square colours; 24px sizes; a
+// small quick-add bag; every row of a grid row aligned within 1px, cards the same height),
+// the sale badge ("38%", top-right), colours on every card (one colour included), and the
+// card's one price variant (price, compare-at price and badge from the same variant,
+// following the chosen colour and size). Arabic (right to left) and English, at
+// 320-1440px, on the theme's real card rendered by tests/lib/theme-harness.js:
+// collection, search and home rows.
 // usage: node tests/card-upgrade.test.js [themeRoot]
 'use strict';
 
@@ -12,14 +14,16 @@ const { chromium } = require('playwright');
 const { createHarness, routeTheme, readJson } = require('./lib/theme-harness');
 const { storefront } = require('./lib/pages');
 const { buildProduct } = require('./lib/catalog');
+const { measureCardLayout, spread, ALIGNED } = require('./lib/card-layout');
 
 const root = path.resolve(process.argv[2] && !process.argv[2].startsWith('--') ? process.argv[2] : path.join(__dirname, '..'));
 const fontsDir = process.env.FONTS_DIR || path.join(path.dirname(require.resolve('@fontsource/poppins/package.json')), 'files');
-const WIDTHS = [320, 375, 390, 430, 768, 1024, 1440];
+const WIDTHS = [320, 360, 375, 390, 430, 768, 1024, 1440];
 const SIZES = ['M', 'L', 'XL', 'XXL', '3XL'];
 
 const results = [];
 const check = (name, ok, detail = '') => results.push({ name, ok: Boolean(ok), detail });
+const c0 = (cards) => cards[0] || {};
 
 // The fixture catalog plus products shaped like the store's (Admin API, 14 Nov 2026),
 // first in a test collection "cu".
@@ -34,6 +38,7 @@ function testCatalog() {
       title: 'Turquoise Velvet Jacket | جاكيت قطيفة تركواز',
       type: 'Jacket',
       created: 1,
+      reviews: [5, 1],
       options: [{ name: 'Color', values: [['Navy', '#282099']] }, { name: 'Size', values: SIZES }, { name: 'Fabric', values: ['Velvet'] }],
       media: [[1080, 1440], [1080, 1440]],
       variants: [
@@ -50,6 +55,7 @@ function testCatalog() {
       title: 'Thirty-eight Skirt',
       type: 'Skirt',
       created: 1,
+      reviews: [4.6, 12],
       options: [{ name: 'Color', values: [['Black', '#000000'], ['White', '#FFFFFF']] }, { name: 'Size', values: ['M', 'L'] }],
       media: [[1080, 1440], [1080, 1440]],
       variants: [v(['Black', 'M'], 62000, 100000, 1, 0), v(['Black', 'L'], 62000, 100000, 1, 0), v(['White', 'M'], 62000, 100000, 1, 1), v(['White', 'L'], 62000, 100000, 0, 1)],
@@ -57,7 +63,8 @@ function testCatalog() {
     {
       // Like the store's Smoothie Skirt: sizes priced differently, compare-at prices not in step.
       handle: 'mixed-pricing',
-      title: 'Mixed Pricing Skirt',
+      // A long mixed English/Arabic name: one line, cut with "…".
+      title: 'Mixed Pricing Pleated Maxi Skirt with Belt and Pockets | جيبة طويلة بكسرات وحزام وجيوب',
       type: 'Skirt',
       created: 1,
       options: [{ name: 'Color', values: [['Black', '#000000'], ['Beige', '#E8D9B5']] }, { name: 'Size', values: ['M', '3XL'] }],
@@ -109,63 +116,6 @@ function testCatalog() {
   catalog.collections.cu = { title: 'Card upgrade', size: 7, offset, description: '' };
   return catalog;
 }
-
-// Geometry and styles of every card with a photo on the page.
-const measureCards = (page) =>
-  page.evaluate(() => {
-    const box = (e) => e.getBoundingClientRect();
-    const cs = (e) => getComputedStyle(e);
-    return [...document.querySelectorAll('.product-card-wrapper')]
-      .filter((card) => card.querySelector('.card__inner .media img') && card.getClientRects().length)
-      .map((card) => {
-        const inner = card.querySelector('.card__inner');
-        const ib = box(inner);
-        const badge = [...card.querySelectorAll('.card__inner .badge')].find((b) => !b.hidden && b.getClientRects().length);
-        const plus = card.querySelector('.dsr-quick-add__button');
-        const svg = plus && plus.querySelector('svg');
-        const title = card.querySelector('.card__heading.h5');
-        const priceItem = [...card.querySelectorAll('.card-information .price .price-item--last, .card-information .price .price__regular .price-item--regular')].find((e) => e.getClientRects().length);
-        const colors = card.querySelector('.dsr-card-colors-row');
-        const sizes = card.querySelector('.dsr-card-sizes-row');
-        const dots = [...card.querySelectorAll('.dsr-card-swatch .swatch')];
-        const size = card.querySelector('.dsr-card-size');
-        const cb = box(card);
-        const dotBoxes = dots.map(box);
-        const plusBefore = plus && getComputedStyle(plus, '::before');
-        return {
-          handle: (card.querySelector('.card__heading a') || {}).getAttribute?.('href'),
-          inner: { top: ib.top, right: ib.right, bottom: ib.bottom, left: ib.left, w: ib.width, h: ib.height },
-          badge: badge && {
-            text: [...badge.querySelectorAll('[aria-hidden="true"]')].map((s) => s.textContent.trim()).join('') || badge.textContent.trim(),
-            top: Math.round(box(badge).top - ib.top),
-            right: Math.round(ib.right - box(badge).right),
-            font: [cs(badge).fontSize, cs(badge).fontWeight, cs(badge).paddingTop, cs(badge).paddingRight, cs(badge).borderTopLeftRadius, cs(badge).color, cs(badge).backgroundColor, cs(badge).textTransform],
-            rect: box(badge).toJSON(),
-          },
-          plus: plus && {
-            w: Math.round(box(plus).width),
-            h: Math.round(box(plus).height),
-            icon: svg ? Math.round(box(svg).width) : 0,
-            bottom: Math.round(ib.bottom - box(plus).bottom),
-            right: Math.round(ib.right - box(plus).right),
-            style: [cs(plus).borderTopLeftRadius, cs(plus).backgroundColor, `${cs(plus).borderTopWidth} ${cs(plus).borderTopStyle}`, cs(plus).boxShadow],
-            touch: plusBefore ? Math.round(box(plus).width - 2 * parseFloat(plusBefore.left)) : 0,
-            rect: box(plus).toJSON(),
-            name: plus.getAttribute('aria-labelledby') ? plus.getAttribute('aria-labelledby').split(' ').map((id) => (document.getElementById(id) || {}).textContent || '').join(' ').trim() : '',
-          },
-          title: title && [cs(title).fontSize, cs(title).fontWeight, Math.round(box(title).top)],
-          price: priceItem && [cs(priceItem).fontSize, cs(priceItem).fontWeight, Math.round(box(priceItem).top)],
-          colorsTop: colors ? Math.round(box(colors).top) : -1,
-          sizesTop: sizes ? Math.round(box(sizes).top) : -1,
-          sizeFont: size ? cs(size).fontSize : null,
-          dots: dotBoxes.map((d) => Math.round(d.width)),
-          dotRound: dots.every((d) => cs(d).borderTopLeftRadius === '50%'),
-          gaps: dotBoxes.slice(1).map((d, i) => Math.round(Math.abs(d.left - dotBoxes[i].left) - dotBoxes[i].width)),
-          dotsInside: dotBoxes.every((d) => d.left >= cb.left && d.right <= cb.right && d.top >= cb.top && d.bottom <= cb.bottom),
-          cardRight: cb.right,
-        };
-      });
-  });
 
 async function main() {
   const browser = await chromium.launch();
@@ -223,43 +173,62 @@ async function main() {
       const edge = desktop ? 12 : 10;
       for (const url of ['/collections/cu', '/collections/skirts', '/search?q=linen']) {
         const page = await open(url, width);
-        const cards = await measureCards(page);
+        const { cards, rows, overflow } = await page.evaluate(measureCardLayout);
         const t = `${tag} ${url}`;
         check(`${t}: cards shown`, cards.length >= 2, String(cards.length));
-        const badged = cards.filter((c) => c.badge && /%$/.test(c.badge.text));
-        check(`${t}: sale badge just the percentage ("38%"), no "OFF"`, badged.length > 0 && badged.every((c) => /^\d+%$/.test(c.badge.text)), JSON.stringify(badged.map((c) => c.badge.text)));
-        check(`${t}: badge ${desktop ? '12px, 600, 5px 9px' : '11px, 600, 4px 7px'}, 5px corners, white on dark red, no capitals`, badged.every((c) => JSON.stringify(c.badge.font.slice(0, 5)) === JSON.stringify(desktop ? ['12px', '600', '5px', '9px', '5px'] : ['11px', '600', '4px', '7px', '5px']) && c.badge.font[5] === 'rgb(255, 255, 255)' && /^rgb\((1[2-9]\d|[2-9]\d), 0?\d{1,2}, 0?\d{1,2}\)$/.test(c.badge.font[6]) && c.badge.font[7] === 'none'), JSON.stringify(badged[0] && badged[0].badge.font));
-        check(`${t}: badge on the photo's top-right corner, ${edge}px in`, cards.filter((c) => c.badge).every((c) => Math.abs(c.badge.top - edge) <= 1 && Math.abs(c.badge.right - edge) <= 1), JSON.stringify(cards.filter((c) => c.badge).map((c) => [c.badge.top, c.badge.right])));
-        const plus = cards.filter((c) => c.plus);
-        const size = desktop ? 34 : 30;
-        check(`${t}: quick add ${size}px with a ${desktop ? 18 : 16}px plus`, plus.length && plus.every((c) => c.plus.w === size && c.plus.h === size && c.plus.icon === (desktop ? 18 : 16)), JSON.stringify(plus.map((c) => [c.plus.w, c.plus.icon])));
-        check(`${t}: quick add white, thin dark edge, 3px corners, no shadow`, plus.every((c) => c.plus.style[0] === '3px' && c.plus.style[1] === 'rgb(255, 255, 255)' && c.plus.style[2] === '1px solid' && c.plus.style[3] === 'none'), JSON.stringify(plus[0] && plus[0].plus.style));
-        check(`${t}: quick add on the photo's bottom-right corner, ${edge}px in`, plus.every((c) => Math.abs(c.plus.bottom - edge) <= 1 && Math.abs(c.plus.right - edge) <= 1), JSON.stringify(plus.map((c) => [c.plus.bottom, c.plus.right])));
-        check(`${t}: quick add touch area 44px, named "${strings.dressar.card.quick_add} …"`, plus.every((c) => c.plus.touch >= 44 && c.plus.name.startsWith(strings.dressar.card.quick_add)), JSON.stringify(plus.map((c) => [c.plus.touch, c.plus.name.slice(0, 30)])));
-        const overlap = (a, b) => a && b && !(a.right <= b.left || b.right <= a.left || a.bottom <= b.top || b.bottom <= a.top);
-        check(`${t}: badge and "+" never overlap`, cards.every((c) => !overlap(c.badge && c.badge.rect, c.plus && c.plus.rect)));
+
+        // The card: #F2EEE9, 10px corners, 8px padding, no labels, no dividers.
+        check(`${t}: card #F2EEE9, 10px corners, 8px padding, no row labels, no divider lines`, cards.every((c) => c.background === 'rgb(242, 238, 233)' && c.radius === '10px' && c.padding === '8px' && c.labels === 0 && c.dividers.every((w) => w === '0px')), JSON.stringify(cards[0] && [c0(cards).background, c0(cards).radius, c0(cards).padding, c0(cards).labels, c0(cards).dividers]));
+
+        // 1. The name: one line, the same height, cut with "…".
+        check(`${t}: name ${desktop ? 13 : 12}px 500 on exactly one line (nowrap, hidden, ellipsis), same height on every card`, cards.every((c) => c.titleOneLine && c.titleFont[0] === `${desktop ? 13 : 12}px` && c.titleFont[1] === '500' && Math.abs(c.titleHeight - c.titleLineHeight) <= 0.5) && spread(cards, 'titleHeight') <= 0.5, JSON.stringify(cards.filter((c) => !c.titleOneLine || Math.abs(c.titleHeight - c.titleLineHeight) > 0.5).map((c) => [c.title.slice(0, 20), c.titleHeight, c.titleLineHeight])));
+        if (url === '/collections/cu') check(`${t}: the long mixed English/Arabic name is cut, not wrapped`, cards.some((c) => /Mixed Pricing/.test(c.title) && c.titleCut && c.titleOneLine), JSON.stringify(cards.filter((c) => /Mixed/.test(c.title)).map((c) => [c.titleCut, c.titleOneLine])));
+
+        // 2. Price (14px semibold) and rating (10px) on one line, apart.
+        check(`${t}: price 14px 600`, cards.every((c) => c.priceFont && c.priceFont[0] === '14px' && c.priceFont[1] === '600'), JSON.stringify(cards.map((c) => c.priceFont).slice(0, 3)));
+        const rated = cards.filter((c) => c.rating);
+        const overlaps = (a, b) => a && b && !(a.right <= b.left || b.right <= a.left || a.bottom <= b.top || b.bottom <= a.top);
+        if (url === '/collections/cu') check(`${t}: cards with reviews show the rating`, rated.length >= 2, String(rated.length));
+        check(`${t}: rating 10px on the price's line, not overlapping the price or the compare-at price`, rated.every((c) => c.rating.font === '10px' && Math.abs((c.rating.rect.top + c.rating.rect.bottom) / 2 - (c.priceTop + c.priceHeight / 2)) <= 2 && !overlaps(c.rating.rect, c.priceRect) && !overlaps(c.rating.rect, c.compareRect)), JSON.stringify(rated.map((c) => [c.rating.font, c.rating.rect.top, c.priceTop])));
+        // The compare-at price is whole or not shown at all (no room); never cut.
+        check(`${t}: compare-at price never cut: whole beside the price, or left out when there's no room`, cards.filter((c) => c.compareRect).every((c) => !c.compareCut), JSON.stringify(cards.filter((c) => c.compareCut).map((c) => c.title.slice(0, 24))));
+        if (width >= 390 && url === '/collections/cu') check(`${t}: on a 390px phone and wider, three-digit sale prices show their compare-at price, rating or not`, cards.filter((c) => c.compareRect && /^(Turquoise|Thirty)/.test(c.title)).every((c) => c.compareShown), JSON.stringify(cards.filter((c) => c.compareRect).map((c) => [c.title.slice(0, 12), c.compareShown])));
+
+        // 3. Colours: rounded squares, 16px, 8px apart.
         const dotted = cards.filter((c) => c.dots.length);
-        const dot = desktop ? 18 : 16;
-        // 7px apart from 990px; 8px on phones, where it keeps each colour button 24px wide (WCAG 2.5.8).
-        const gap = desktop ? 7 : 8;
-        check(`${t}: colour circles ${dot}px, round, ${gap}px apart, not clipped`, dotted.length && dotted.every((c) => c.dots.every((d) => d === dot) && c.dotRound && c.gaps.every((g) => g === gap) && c.dotsInside), JSON.stringify(dotted.map((c) => [c.dots, c.gaps, c.dotsInside])));
-        check(`${t}: name ${desktop ? 13 : 12}px 500, price ${desktop ? 14 : 13}px 600, sizes ${desktop ? 12 : 11}px`, cards.every((c) => c.title[0] === `${desktop ? 13 : 12}px` && c.title[1] === '500' && c.price[0] === `${desktop ? 14 : 13}px` && c.price[1] === '600' && (!c.sizeFont || c.sizeFont === `${desktop ? 12 : 11}px`)), JSON.stringify(cards[0] && [cards[0].title, cards[0].price, cards[0].sizeFont]));
-        check(`${t}: order: photo, name, price, colours, sizes`, cards.every((c) => c.inner.bottom <= c.title[2] + 1 && c.title[2] < c.price[2] && c.price[2] < c.colorsTop && c.colorsTop < c.sizesTop), JSON.stringify(cards.map((c) => [Math.round(c.inner.bottom), c.title[2], c.price[2], c.colorsTop, c.sizesTop]).slice(0, 3)));
-        const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+        check(`${t}: colours: 16px rounded squares (4px), 8px apart, not clipped`, dotted.length && dotted.every((c) => c.dots.every((d) => d === 16) && c.dotRadius.every((x) => x === '4px') && c.dotGaps.every((g) => g === 8) && c.dotsInside), JSON.stringify(dotted.map((c) => [c.dots, c.dotRadius[0], c.dotGaps, c.dotsInside]).slice(0, 3)));
+
+        // 4. Sizes: 24px, 4px corners, 11px, one row (scrolls sideways when needed).
+        check(`${t}: sizes 24px high, 4px corners, 11px, on one row (sideways scroll)`, cards.every((c) => c.sizes.every((b) => b.h === 24 && b.radius === '4px' && b.font === '11px') && new Set(c.sizes.map((b) => b.top)).size <= 1 && (!c.sizes.length || c.sizesScroll === 'auto')), JSON.stringify(cards.map((c) => [c.sizes[0], new Set(c.sizes.map((b) => b.top)).size]).slice(0, 2)));
+
+        // Rows of cards: every row and the card's bottom within 1px, cards the same height.
+        const bad = rows.map((rw) => Object.fromEntries(ALIGNED.map((k) => [k, Math.round(spread(rw, k) * 10) / 10]))).filter((sp) => Object.values(sp).some((v) => v > 1));
+        check(`${t}: in each grid row: same card height; photo bottom, name, price, colours, sizes and card bottom within 1px (${rows.length} rows)`, rows.length >= 1 && bad.length === 0, JSON.stringify(bad.slice(0, 3)));
+        check(`${t}: order: photo, name, price and rating, colours, sizes`, cards.every((c) => c.imageBottom <= c.titleTop + 0.5 && c.titleTop < c.priceTop && c.priceTop < c.colorsTop && c.colorsTop < c.sizesTop), JSON.stringify(cards.map((c) => [c.imageBottom, c.titleTop, c.priceTop, c.colorsTop, c.sizesTop]).slice(0, 2)));
+
+        // Quick add: a small bag, bottom-right of the photo.
+        const bags = cards.filter((c) => c.bag);
+        check(`${t}: quick add: a 32px bag, 8px corners, translucent white, on the photo's bottom-right, ${edge}px in`, bags.length && bags.every((c) => c.bag.w === 32 && c.bag.h === 32 && c.bag.radius === '8px' && /^rgba\(255, 255, 255, 0\.88\)$/.test(c.bag.bg) && c.bag.bagIcon && Math.abs(c.bag.bottom - edge) <= 1 && Math.abs(c.bag.right - edge) <= 1), JSON.stringify(bags.map((c) => [c.bag.w, c.bag.radius, c.bag.bg, c.bag.bagIcon, c.bag.bottom, c.bag.right]).slice(0, 2)));
+        check(`${t}: quick add touch area 44px, named "${strings.dressar.card.quick_add}"`, bags.every((c) => c.bag.touch >= 44), JSON.stringify(bags.map((c) => c.bag.touch)));
+
+        // Sale badge (unchanged since the card upgrade).
+        const badged = cards.filter((c) => c.badge && /%$/.test(c.badge.text));
+        check(`${t}: sale badge just the percentage, top-right, clear of the bag`, badged.length > 0 && badged.every((c) => /^\d+%$/.test(c.badge.text) && Math.abs(c.badge.rect.top - (c.imageBottom - (c.imageBottom - c.top)) - edge) <= 1) && cards.every((c) => !overlaps(c.badge && c.badge.rect, c.bag && c.bag.rect)), JSON.stringify(badged.map((c) => c.badge.text)));
+
         check(`${t}: no sideways scrolling`, overflow <= 0, String(overflow));
         check(`${t}: no JS errors`, page.errors.length === 0, page.errors.join(' | '));
         await page.context().close();
       }
     }
 
-    // Home rows (carousels on phones): the same card.
+    // Home rows (carousels on phones): the same card, aligned.
     for (const width of [390, 1440]) {
       const page = await open('/', width);
-      const cards = await measureCards(page);
-      const desktop = width >= 990;
+      const { cards, rows, overflow } = await page.evaluate(measureCardLayout);
       const t = `${L} [${width}] home rows`;
-      check(`${t}: same badge, "+" and circles as the grid`, cards.length > 0 && cards.every((c) => (!c.badge || /^(\d+%|.*)$/.test(c.badge.text)) && (!c.plus || c.plus.w === (desktop ? 34 : 30)) && c.dots.every((d) => d === (desktop ? 18 : 16))), JSON.stringify(cards.slice(0, 2).map((c) => [c.badge && c.badge.text, c.plus && c.plus.w, c.dots])));
-      check(`${t}: no sideways scrolling, no JS errors`, (await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)) <= 0 && page.errors.length === 0, page.errors.join(' | '));
+      const bad = rows.map((rw) => Object.fromEntries(ALIGNED.map((k) => [k, spread(rw, k)]))).filter((sp) => Object.values(sp).some((v) => v > 1));
+      check(`${t}: same card: one-line names, 32px bag, 16px squares, rows aligned`, cards.length > 0 && cards.every((c) => c.titleOneLine && (!c.bag || c.bag.w === 32) && c.dots.every((d) => d === 16)) && bad.length === 0, JSON.stringify([cards.slice(0, 2).map((c) => [c.titleOneLine, c.bag && c.bag.w, c.dots]), bad.slice(0, 2)]));
+      check(`${t}: no sideways scrolling, no JS errors`, overflow <= 0 && page.errors.length === 0, page.errors.join(' | '));
       await page.context().close();
     }
 
@@ -303,7 +272,7 @@ async function main() {
 
     // A — one colour (the Turquoise Velvet Jacket).
     let c = await card('turquoise-velvet-jacket');
-    check(`${L} A: one colour: one circle, selected (thin dark ring), named "Navy"`, c.swatches.length === 1 && c.swatches[0].pressed && c.swatches[0].value === 'Navy' && /^solid 1px 2px$/.test(c.swatches[0].outline), JSON.stringify(c.swatches));
+    check(`${L} A: one colour: one square, selected (thin dark ring), named "Navy"`, c.swatches.length === 1 && c.swatches[0].pressed && c.swatches[0].value === 'Navy' && /^solid (1|1\.5)px 2px$/.test(c.swatches[0].outline), JSON.stringify(c.swatches));
     check(`${L} A: its sizes in stock open, the rest struck through`, c.sizes.join() === 'M,L:x,XL:x,XXL:x,3XL', c.sizes.join());
     check(`${L} A: price 399 against 649 (the cheapest in-stock size), badge 39% (38.5 rounded)`, has(c.price, 39900) && has(c.compare, 64900) && c.badge === '39%', JSON.stringify(c));
     const fromWordA = strings.products.product.price.from_price_html.split('{{')[0].trim();

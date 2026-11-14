@@ -13,7 +13,7 @@
 //   and sale badge follow too: the cheapest in-stock variant of the chosen
 //   colour ("From" when its sizes cost different amounts), or the exact
 //   variant once a size is chosen (docs/stages/card-upgrade.md).
-// - The quick-add "+" (snippets/dsr-card-quick-add.liquid): adds that exact
+// - The quick-add bag (snippets/dsr-card-quick-add.liquid): adds that exact
 //   variant through Dawn's product-form; with no complete, in-stock choice it
 //   opens Dawn's quick-add dialog instead. It never adds anything else.
 // Shopify HTML-escapes translated text; the card writes plain text.
@@ -292,7 +292,7 @@ if (!customElements.get('dsr-card-options')) {
   );
 }
 
-// The quick-add "+" (snippets/dsr-card-quick-add.liquid) of products with more
+// The quick-add bag (snippets/dsr-card-quick-add.liquid) of products with more
 // than one variant. Runs before Dawn's product-form (capture): with an exact,
 // in-stock variant chosen on the card, it puts that variant's id in the form
 // and lets Dawn add it; otherwise it stops the add and opens the product's

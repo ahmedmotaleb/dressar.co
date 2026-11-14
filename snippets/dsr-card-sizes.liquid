@@ -45,7 +45,6 @@
   {% endif %}
 >
   {%- if size_option -%}
-    <span class="dsr-card-row__label" aria-hidden="true">{{ 'dressar.card.size_row' | t }}</span>
     {%- liquid
       assign size_key = 'option' | append: size_option.position
       assign in_stock = '|'
