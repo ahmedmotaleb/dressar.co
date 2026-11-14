@@ -1,21 +1,33 @@
 {%- doc -%}
   The colour and size rows of a product card (snippets/dsr-card-swatches.liquid,
   snippets/dsr-card-sizes.liquid), with the product's variants for the card's
-  script (assets/dsr-card.js): which sizes the chosen colour has in stock, and
-  the exact variant the bag button adds. Shopify's own variants and stock;
-  nothing made up.
+  script (assets/dsr-card.js): which sizes the chosen colour has in stock, the
+  price and sale badge to show for it, and the exact variant the quick-add
+  button adds. Shopify's own variants, stock and prices; nothing made up.
 
-  Variants: [id, in stock (1/0), [option values]] for each, only for products
-  with more than one.
+  Variants, only for products with more than one:
+  [id, in stock (1/0), [option values], price, compare-at price or null,
+  sale percent (0 when none), price in cents], the prices formatted as the
+  card prints them (docs/stages/card-upgrade.md).
 
   @param {product} card_product - The product on the card.
+  @param {number} [color_index] - The colour option's index (card-product works it out), -1 for none.
+  @param {string} [color] - The colour the card opens on.
 
   @example
-  {%- render 'dsr-card-options', card_product: card_product -%}
+  {%- render 'dsr-card-options', card_product: card_product, color_index: dsr_color_index, color: dsr_color -%}
 {%- enddoc -%}
-<dsr-card-options class="dsr-card-options">
+{%- liquid
+  assign from_template = 'products.product.price.from_price_html' | t: price: '__price__'
+  assign sale_template = 'dressar.card.sale_percent' | t: percent: '__percent__'
+-%}
+<dsr-card-options
+  class="dsr-card-options"
+  data-from="{{ from_template | escape }}"
+  data-sale="{{ sale_template | escape }}"
+>
   {%- if settings.card_show_swatches -%}
-    {%- render 'dsr-card-swatches', card_product: card_product -%}
+    {%- render 'dsr-card-swatches', card_product: card_product, color_index: color_index, color: color -%}
   {%- endif -%}
   {%- if settings.card_show_sizes -%}
     {%- render 'dsr-card-sizes', card_product: card_product -%}
@@ -24,7 +36,22 @@
     <script type="application/json" data-dsr-card-variants>
       [
         {%- for variant in card_product.variants -%}
-          [{{ variant.id }},{% if variant.available %}1{% else %}0{% endif %},{{ variant.options | json }}]
+          {%- liquid
+            if settings.currency_code_enabled
+              assign v_price = variant.price | money_with_currency
+              assign v_compare = variant.compare_at_price | money_with_currency
+            else
+              assign v_price = variant.price | money
+              assign v_compare = variant.compare_at_price | money
+            endif
+            assign v_percent = 0
+            if variant.compare_at_price > variant.price
+              assign v_savings = variant.compare_at_price | minus: variant.price
+              assign v_percent = v_savings | times: 100.0 | divided_by: variant.compare_at_price | round
+            endif
+          -%}
+          [{{ variant.id }},{% if variant.available %}1{% else %}0{% endif %},{{ variant.options | json }},{{ v_price | json }},
+          {%- if variant.compare_at_price > variant.price %}{{ v_compare | json }}{% else %}null{% endif %},{{ v_percent }},{{ variant.price }}]
           {%- unless forloop.last %},{% endunless -%}
         {%- endfor -%}
       ]

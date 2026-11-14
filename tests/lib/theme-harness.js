@@ -429,7 +429,8 @@ function createHarness({ root, fixtures, locale = 'en.default', origin = 'http:/
     font_modify: (font, prop, value) => (font instanceof FontDrop ? font.variant(prop, value) : font),
     font_url: (font) => (font instanceof FontDrop ? font.url : ''),
     color_brightness: (c) => {
-      const d = c instanceof ColorDrop ? c : new ColorDrop(String(c));
+      // A colour object from the catalog fixtures (its own class) carries .hex, as Shopify's prints its hex.
+      const d = c instanceof ColorDrop ? c : new ColorDrop(c && c.hex ? c.hex : String(c));
       return (d.red * 299 + d.green * 587 + d.blue * 114) / 1000;
     },
     color_lighten: (c, n) => shiftLightness(c, Number(n)),

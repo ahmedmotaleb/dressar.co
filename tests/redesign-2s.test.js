@@ -129,12 +129,13 @@ async function main() {
       check(`${tag}: 10px corners, a faint shadow only`, c.every((x) => x.radius === '10px' && /rgba\(17, 17, 17, 0\.0[45]\)/.test(x.shadow) && x.innerShadow === 'none'), JSON.stringify(c[0].shadow));
       check(`${tag}: order name, rating, price, colours, sizes`, c.every((x) => x.order));
       check(`${tag}: name ${desktop ? 13 : 12}px, two lines at most`, c.every((x) => x.titleSize === (desktop ? 13 : 12) && x.titleLines <= 2), JSON.stringify(c.map((x) => [x.titleSize, x.titleLines])));
-      check(`${tag}: price ${desktop ? 16 : 14}px`, c.every((x) => x.priceSize === (desktop ? 16 : 14)), JSON.stringify(c.map((x) => x.priceSize)));
-      check(`${tag}: size buttons ${desktop ? 11 : 10}px`, c.every((x) => x.sizeButtons.every((s) => s === (desktop ? 11 : 10))), JSON.stringify(c.map((x) => x.sizeButtons)));
-      check(`${tag}: colour chips: rounded rectangles, ${desktop ? '26 x 22' : '22 x 18'}`, c.every((x) => x.swatch === null || x.swatch.join() === (desktop ? '26,22,4px' : '22,18,4px')), JSON.stringify(c.map((x) => x.swatch)));
+      // Type scale since the card upgrade (docs/stages/card-upgrade.md; full checks in tests/card-upgrade.test.js).
+      check(`${tag}: price ${desktop ? 14 : 13}px`, c.every((x) => x.priceSize === (desktop ? 14 : 13)), JSON.stringify(c.map((x) => x.priceSize)));
+      check(`${tag}: size buttons ${desktop ? 12 : 11}px`, c.every((x) => x.sizeButtons.every((s) => s === (desktop ? 12 : 11))), JSON.stringify(c.map((x) => x.sizeButtons)));
+      check(`${tag}: colour circles, ${desktop ? 18 : 16}px`, c.every((x) => x.swatch === null || x.swatch.join() === (desktop ? '18,18,50%' : '16,16,50%')), JSON.stringify(c.map((x) => x.swatch)));
       // The "Collection grid product" reference: centred name, rating and price; lines and labels for the rows.
-      check(`${tag}: name centred, regular weight, no capitals`, c.every((x) => x.titleStyle.join() === '400,none,center' && x.titleCentre <= 2), JSON.stringify(c.map((x) => [x.titleStyle, x.titleCentre && x.titleCentre.toFixed(1)])));
-      check(`${tag}: price centred and bold`, c.every((x) => x.priceCentre !== null && x.priceCentre <= 2 && x.priceWeight === '700'), JSON.stringify(c.map((x) => [x.priceCentre && x.priceCentre.toFixed(1), x.priceWeight])));
+      check(`${tag}: name centred, medium weight (500), no capitals`, c.every((x) => x.titleStyle.join() === '500,none,center' && x.titleCentre <= 2), JSON.stringify(c.map((x) => [x.titleStyle, x.titleCentre && x.titleCentre.toFixed(1)])));
+      check(`${tag}: price centred, semibold (600)`, c.every((x) => x.priceCentre !== null && x.priceCentre <= 2 && x.priceWeight === '600'), JSON.stringify(c.map((x) => [x.priceCentre && x.priceCentre.toFixed(1), x.priceWeight])));
       check(`${tag}: thin lines above the colours and between colours and sizes`, c.every((x) => x.rules && x.rules.join() === '1px,1px'), JSON.stringify(c.map((x) => x.rules)));
       const labelled = c.filter((x) => x.colourLabel && x.sizeLabel);
       const wide = (x) => x.cardWidth - 2 * (desktop ? 12 : 8) >= 240;

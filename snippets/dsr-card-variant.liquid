@@ -1,0 +1,93 @@
+{%- doc -%}
+  Works out, for a product card (docs/stages/card-upgrade.md), the colour
+  option, the colour the card opens on and the one variant its price,
+  compare-at price and sale badge come from, so they never mix two variants.
+  Prints "colour index|~|variant id|~|from|~|colour" for card-product to
+  capture (a snippet can't return values); nothing else.
+
+  - Colour option: the first option with Shopify swatch data, else one named
+    in Theme settings > Dressar > "Colour option names". -1 for none.
+  - Colour shown: the colour of the first in-stock variant whose photo is the
+    card's photo, else of the first in-stock variant.
+  - Price variant: the cheapest in-stock variant in that colour (the cheapest
+    of the colour when none is in stock); "from" when that colour's sizes cost
+    different amounts.
+
+  @param {product} card_product - The product on the card.
+
+  @example
+  {%- capture dsr_state -%}{%- render 'dsr-card-variant', card_product: card_product -%}{%- endcapture -%}
+{%- enddoc -%}
+{%- liquid
+  assign color_index = -1
+  for option in card_product.options_with_values
+    for value in option.values
+      if value.swatch
+        assign color_index = option.position | minus: 1
+        break
+      endif
+    endfor
+    if color_index >= 0
+      break
+    endif
+  endfor
+  if color_index < 0
+    assign color_names = settings.card_color_option_names | downcase | split: ','
+    for option in card_product.options_with_values
+      assign option_name = option.name | downcase | strip
+      for name in color_names
+        assign wanted = name | strip
+        if wanted != blank and option_name == wanted and color_index < 0
+          assign color_index = option.position | minus: 1
+        endif
+      endfor
+    endfor
+  endif
+
+  assign shown = card_product.selected_or_first_available_variant
+  if card_product.featured_media
+    for variant in card_product.variants
+      if variant.available and variant.featured_media.id == card_product.featured_media.id
+        assign shown = variant
+        break
+      endif
+    endfor
+  endif
+  assign color = ''
+  if color_index >= 0
+    assign color = shown.options[color_index]
+  endif
+
+  assign priced = null
+  assign cheapest = null
+  assign low = null
+  assign high = null
+  for variant in card_product.variants
+    if color_index >= 0 and variant.options[color_index] != color
+      continue
+    endif
+    if low == null or variant.price < low
+      assign low = variant.price
+    endif
+    if high == null or variant.price > high
+      assign high = variant.price
+    endif
+    if cheapest == null or variant.price < cheapest.price
+      assign cheapest = variant
+    endif
+    if variant.available
+      if priced == null or variant.price < priced.price
+        assign priced = variant
+      endif
+    endif
+  endfor
+  if priced == null
+    assign priced = cheapest | default: shown
+  endif
+  assign from = ''
+  if high > low
+    assign from = 'from'
+  endif
+
+  echo color_index | append: '|~|' | append: priced.id | append: '|~|' | append: from | append: '|~|' | append: color
+-%}

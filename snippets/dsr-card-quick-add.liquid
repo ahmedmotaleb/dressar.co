@@ -1,7 +1,7 @@
 {%- doc -%}
-  Quick add on a product card: a small shopping-bag button on the photo's
-  bottom corner (the end side, so bottom-left on right-to-left pages), built
-  on Dawn's own quick-add parts.
+  Quick add on a product card: a small outlined "+" button on the photo's
+  bottom-right corner (30px on phones, 34px from 990px, with a 44px touch
+  area; docs/stages/card-upgrade.md), built on Dawn's own quick-add parts.
 
   - One variant: adds it straight to the cart through Dawn's product-form
     (assets/product-form.js), which refreshes the cart drawer and count and
@@ -69,8 +69,8 @@
     {%- comment -%}
       One product form for every product (Dawn's product-form.js: loading,
       errors, cart drawer and count).
-      - One variant: the bag adds it.
-      - Several variants: the bag adds the exact variant chosen on the card
+      - One variant: the "+" adds it.
+      - Several variants: the "+" adds the exact variant chosen on the card
         (colour and size rows, assets/dsr-card.js fills in its id). With the
         choice incomplete or not in stock, it opens the existing quick-add
         dialog instead (data-dsr-dialog), so nothing unintended is added.
@@ -115,7 +115,7 @@
           <span id="{{ qa_form_id }}-label" class="visually-hidden">{{ 'dressar.card.quick_add' | t }}</span>
           <span class="sold-out-message hidden visually-hidden">{{ 'products.product.sold_out' | t }}</span>
           <span class="svg-wrapper dsr-quick-add__icon" aria-hidden="true">
-            {{- 'icon-cart-empty.svg' | inline_asset_content -}}
+            {{- 'icon-plus.svg' | inline_asset_content -}}
           </span>
           {%- render 'loading-spinner' -%}
         </button>
