@@ -29,7 +29,8 @@
     if (k === 'XXXL') k = '3XL';
     return k;
   };
-  const fill = (text, values) => text.replace(/\{(\w+)\}/g, (m, k) => (k in values ? values[k] : m));
+  // Placeholders are __name__: Shopify's Liquid won't take braces inside a string in {{ }}.
+  const fill = (text, values) => text.replace(/__(\w+)__/g, (m, k) => (k in values ? values[k] : m));
 
   // A size table's rows: [{ keys: ['M', '38'], limits: { waist: 76, hips: 106 } }].
   // Only columns that state a body measurement the size fits are read.

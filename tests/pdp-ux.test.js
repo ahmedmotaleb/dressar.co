@@ -34,6 +34,19 @@ async function main() {
   const js = fs.readFileSync(path.join(root, 'assets/dsr-find-size.js'), 'utf8');
   check('find your size: no network or storage calls in its script', !/fetch\(|XMLHttpRequest|sendBeacon|localStorage|sessionStorage|indexedDB|document\.cookie/.test(js));
 
+  // Static: Shopify's Liquid ends a {{ }} tag at a brace even inside a quoted string
+  // (it refused the snippet with '{size}' placeholders); the local harness doesn't.
+  const braces = [];
+  for (const dir of ['snippets', 'sections', 'layout', 'blocks']) {
+    const folder = path.join(root, dir);
+    if (!fs.existsSync(folder)) continue;
+    for (const f of fs.readdirSync(folder).filter((n) => n.endsWith('.liquid'))) {
+      const text = fs.readFileSync(path.join(folder, f), 'utf8');
+      for (const m of text.matchAll(/\{\{-?([\s\S]*?)-?\}\}/g)) if (/'[^']*[{}][^']*'|"[^"]*[{}][^"]*"/.test(m[1])) braces.push(`${dir}/${f}: ${m[0].slice(0, 60)}`);
+    }
+  }
+  check('Liquid: no braces inside quoted strings in {{ }} (Shopify rejects the file)', braces.length === 0, braces.join(' | '));
+
   // Static: one size guide (the existing pop-up block), now drawn as a button.
   const template = readJson(path.join(root, 'templates/product.json'));
   const main = template.sections.main;
