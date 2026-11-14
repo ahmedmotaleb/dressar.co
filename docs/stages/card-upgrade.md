@@ -131,6 +131,21 @@ From the Admin API, 14 Nov, 129 active products.
   - Keyboard choice.
 - **Every badge on the white-friday and test collections** equals the rounded markdown of its card's own prices, both from one variant.
 
+## Checked on the preview with the store's real products
+
+Preview theme `#168399831271`, search results in Arabic and English, 390 and 1440px. Screenshots: `docs/stages/card-upgrade-shots/` (with the live card before, for comparison).
+
+- **Turquoise Velvet Jacket:** one selected circle (Navy), 399 against 649, "39%". Sizes M and 3XL open, the rest struck through.
+- **Smoothie Skirt:** opens on Black, whose only in-stock size is L at 499 against 999: "50%". This matches the store's variants.
+- **Velvet pleated skirt:**
+  - Black: 399 against 699, "43%".
+  - olive: its photo, 449 against 749, "40%"; only 3XL open; links on its 3XL variant.
+  - Brown: the same, with the Brown photo.
+  - Choosing 3XL opens the exact variant.
+  - No request and no change in card height while picking.
+- **The "+":** 30px on phones, 34px on desktop.
+- **No problems:** no Liquid error, no sideways scrolling, no JS errors (other than the store's TikTok pixel, blocked in this sandbox).
+
 ## Not verified here
-- **Local harness:** the checks run on the theme's real Liquid, CSS and JS with fixture products. Checks on the preview with the store's real products are listed in the PR.
+- **Desktop:** the "+" shows on hover (unchanged behaviour), so desktop screenshots don't show it. The test file checks its size and position.
 - **The rating row** wasn't in the brief's order list. It stays, between name and price, and only appears for products with Judge.me reviews.
