@@ -54,7 +54,8 @@ So height and weight never pick a size. The size comes from body measurements, i
 
 1. **The product's own size table**, in its description.
    - Read: the columns that say what body size each size fits, e.g. "يناسب محيط وسط حتى" / "Fits waist up to", for bust, waist and hips.
-   - On 14 Nov, 110 of the 129 products on the storefront had one.
+   - On the morning of 14 Nov, 112 of the 129 products on the storefront had one.
+   - **Since 09:30–09:46 UTC that day, none has.** All 129 descriptions were rewritten outside this work (English at 09:30, the Arabic translations at 09:46). They are now 120–220 characters, with no size table, and send shoppers to WhatsApp for sizing. So today every product uses the Dressar chart. The table path stays for any product whose description gets a "fits … up to" table again.
    - Flat garment widths ("الوسط مسطّح", "عرض الصدر مسطّح") are **not** used. Turning them into body sizes would need an ease allowance the store has never stated.
 2. **Otherwise, the Dressar size chart**: the block's "Size chart (body, cm)" setting. It is copied from the chart image:
 
@@ -160,7 +161,26 @@ So height and weight never pick a size. The size comes from body measurements, i
 - That is the merchant's HTML, fixed in the product editor by making it an h3, not theme code.
 - `tests/a11y.test.js` now skips heading-order inside a description only (now that the fixtures carry the real descriptions); everywhere else the rule still counts.
 
+## Checked on the preview with the store's real products
+
+Preview theme `#168399831271` (`?preview_theme_id=`), velvet pleated skirt and camel evasé skirt, Arabic and English, 390px. Screenshots: `docs/stages/pdp-ux-shots/`.
+
+- **Layout:** the order "اعرف مقاسك, جدول المقاسات, رمز المنتج: AC377-L, أضيفي للسلة"; icons on the right in Arabic, on the left in English. No quantity selector, no stock line, no Liquid error, no sideways scrolling.
+- **The dialog:**
+  - height and weight alone give no size;
+  - waist 82 gives XL from the Dressar chart;
+  - "Sold out in Black", which matches the store (Black XL: not available).
+
+### Two bugs the local harness missed, both fixed
+
+- **Shopify refused the snippet.** Its Liquid ends a `{{ }}` tag at a brace even inside a quoted string, so `'{size}'` placeholders broke the file. Theme Check and the harness accepted it.
+  - The placeholders are now `__size__`.
+  - `tests/pdp-ux.test.js` checks every Liquid file for braces in quoted strings.
+- **English text showed `can&#39;t`.** Shopify HTML-escapes translated strings, and the dialog writes plain text.
+  - The dialog now decodes them.
+  - The harness's `t` filter now escapes like Shopify (keys not ending in `_html`), and the full suite still passes in both languages.
+
 ## Not verified here
 
-- **Local harness only.** The checks use the theme's real Liquid, CSS and JS with fixture products. The Shopify preview can't be opened from this environment, so the live preview hasn't been looked at.
 - **The 2S and Dressar reference screenshots** named in the brief didn't come through with it. The buttons follow the written description.
+- **Desktop** was checked locally (the harness runs 360–1440px) but not on the preview.
