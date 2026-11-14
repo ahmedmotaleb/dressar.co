@@ -1,51 +1,44 @@
 /* ==========================================================================
-   Dressar product card (Stage 4, docs/stages/stage-4.md; redesigned after the
-   2S Homewear reference, docs/stages/2s-redesign.md)
+   Dressar product card (Stage 4, docs/stages/stage-4.md; 2S redesign,
+   docs/stages/2s-redesign.md; compact V2, docs/stages/card-v2.md)
 
    A styling layer on Dawn's snippets/card-product.liquid, used by every grid
    that renders Dawn cards: collection, search, recommendations, featured
    collection. One light card (Theme settings > Dressar > "Card background",
-   #F2EEE9) with 10px corners and a faint shadow holds the photo and
-   everything under it. Photography leads; under it, in a fixed order and at
-   fixed heights, so cards line up across the grid (the "Collection grid
-   product" reference):
-     centred: name (two lines' height), rating (real reviews only, gold
-     stars; no row without), price (one line, bold);
-     a thin line, then the colours ("Colour:" and chips), a thin line, then
-     the sizes ("Size:" and boxes). On a wide card the label sits before its
-     row; on a narrow one (phones' two columns) above it.
+   #F2EEE9) with 10px corners holds the photo and, under it, four rows of
+   fixed height on a grid, so every card in a row lines up from the photo's
+   bottom to the card's bottom:
+     1. the name, on one line (ellipsis);
+     2. the price, and the rating on the same line (real reviews only; the
+        line is the same height without);
+     3. the colours (rounded squares);
+     4. the sizes (24px boxes, one row, scrolling sideways when needed).
+   8px padding, no labels, no dividers. On the photo: the sale badge ("38%")
+   top-right and the quick-add bag bottom-right.
    Sizes in px on purpose: this theme sets html { font-size: 11px }.
    ========================================================================== */
 
 .product-card-wrapper {
   --dsr-card-pad: 8px;
-  --dsr-card-gap: 4px;
+  --dsr-card-gap: 6px;
   --dsr-card-title: 12px;
+  --dsr-card-title-h: 16px;
   --dsr-card-rating: 10px;
   --dsr-card-price: 14px;
-  --dsr-card-small: 10px;
+  --dsr-card-price-h: 20px;
+  --dsr-card-size-text: 11px;
   --dsr-card-control: 24px;
-  --dsr-card-chip-w: 22px;
-  --dsr-card-chip-h: 18px;
-  --dsr-card-chip-gap: 4px;
-  --dsr-card-line: rgba(17, 17, 17, 0.1);
-  --dsr-card-rule-gap: 6px;
-  --dsr-card-label-h: 14px;
+  --dsr-card-dot: 16px;
+  --dsr-card-dot-gap: 8px;
+  --dsr-card-edge: 10px;
+  --dsr-card-bag: 32px;
 }
 
 @media screen and (min-width: 990px) {
   .product-card-wrapper {
-    --dsr-card-pad: 12px;
-    --dsr-card-gap: 6px;
     --dsr-card-title: 13px;
-    --dsr-card-rating: 11px;
-    --dsr-card-price: 16px;
-    --dsr-card-small: 11px;
-    --dsr-card-control: 28px;
-    --dsr-card-chip-w: 26px;
-    --dsr-card-chip-h: 22px;
-    --dsr-card-chip-gap: 6px;
-    --dsr-card-rule-gap: 8px;
+    --dsr-card-title-h: 18px;
+    --dsr-card-edge: 12px;
   }
 }
 
@@ -56,7 +49,6 @@
   overflow: hidden;
   border-radius: 10px;
   background-color: var(--dsr-card-bg, #f2eee9);
-  box-shadow: 0 1px 2px rgba(17, 17, 17, 0.04), 0 4px 14px rgba(17, 17, 17, 0.05);
 }
 
 /* Arabic letters in Cairo, as on the product page (layout/theme.liquid,
@@ -81,92 +73,146 @@
   border-radius: 0;
 }
 
-/* Dawn's card content is a grid; minmax(0, 1fr) and min-width: 0 keep a long
-   one-line row (many sizes) from widening the card: it scrolls inside. */
+/* Under the photo: one grid of fixed rows. minmax(0, 1fr) and min-width: 0
+   keep a long row (many sizes, a long name) from widening the card. */
 .product-card-wrapper .card--standard:not(.card--horizontal) > .card__content {
   grid-template-columns: minmax(0, 1fr);
-  padding: var(--dsr-card-pad) var(--dsr-card-pad) calc(var(--dsr-card-pad) + 2px);
+  grid-template-rows: max-content;
+  align-content: start;
+  padding: var(--dsr-card-pad);
 }
 
 .product-card-wrapper .card__content > .card__information {
-  display: flex;
-  flex-direction: column;
-  gap: var(--dsr-card-gap);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: var(--dsr-card-gap);
   min-width: 0;
   padding: 0;
-  text-align: center;
+  text-align: start;
 }
 
+/* Price and rating on one line, then the colour and size rows. A size
+   container, so a narrow card can drop the review count (below). Nothing in
+   it is absolutely placed, so the containment is harmless. */
 .product-card-wrapper .card-information {
-  display: flex;
-  flex-direction: column;
-  gap: var(--dsr-card-gap);
+  container: dsr-card-info / inline-size;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'price rating'
+    'options options';
+  align-items: center;
+  column-gap: 6px;
+  row-gap: var(--dsr-card-gap);
+  min-width: 0;
 }
 
 .product-card-wrapper .card-information > * + * {
   margin-top: 0;
 }
 
-/* ---------- Name ---------- */
+.product-card-wrapper .card-information > .price {
+  grid-area: price;
+}
 
-/* Two lines' height on every card, so the rows under it line up; a long name
-   stops at two lines (the full name stays in the link text). */
+.product-card-wrapper .card-information > .dsr-card-rating {
+  grid-area: rating;
+}
+
+.product-card-wrapper .card-information > .dsr-card-options {
+  grid-area: options;
+}
+
+/* Dawn's empty description line and vendor caption take no room. */
+.product-card-wrapper .card-information > .caption-large:empty {
+  display: none;
+}
+
+/* ---------- Name: one line ---------- */
+
+/* The same height on every card; a long name ends in "…" (the full name stays
+   in the link text and on the product page). Each name keeps its own reading
+   direction (unicode-bidi: plaintext), so a mixed Arabic/English name reads
+   from its own start and cuts at its own end; every name sits on the page's
+   reading side (left in English, right in Arabic). */
 .product-card-wrapper .card__heading.h5 {
-  min-height: calc(2 * 1.3em);
+  height: var(--dsr-card-title-h);
+  min-height: 0;
   margin: 0;
+  overflow: hidden;
   font-family: var(--font-body-family);
   font-size: var(--dsr-card-title);
-  font-weight: 400;
-  line-height: 1.3;
+  font-weight: 500;
+  line-height: var(--dsr-card-title-h);
   letter-spacing: 0;
   text-transform: none;
-  text-align: center;
-  color: rgba(var(--color-foreground), 0.88);
+  text-align: start;
+  color: rgba(var(--color-foreground), 0.9);
 }
 
 .product-card-wrapper .card__heading.h5 > a {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  display: block;
   overflow: hidden;
-  overflow-wrap: anywhere;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  unicode-bidi: plaintext;
+  text-align: left;
+}
+
+[dir='rtl'] .product-card-wrapper .card__heading.h5 > a {
+  text-align: right;
 }
 
 /* ---------- Rating (snippets/dsr-card-rating.liquid) ---------- */
 
-/* Only for products with real reviews; otherwise there is no row at all. */
+/* Only for products with real reviews; the price line keeps its height
+   without. One gold star, the score and the count, 10px. */
 .dsr-card-rating {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 4px;
+  gap: 3px;
   margin: 0;
   font-size: var(--dsr-card-rating);
-  line-height: 1.2;
-  color: rgba(var(--color-foreground), 0.7);
+  line-height: 1;
+  white-space: nowrap;
+  color: rgba(var(--color-foreground), 0.72);
 }
 
-/* Gold stars (Dawn's star row; the empty part stays a light grey). */
-.dsr-card-rating .rating-star {
-  --color-rating-star: #f2b33d;
-  --font-size: 1;
-  --letter-spacing: 0.1;
-  font-size: var(--dsr-card-rating);
-  letter-spacing: 1px;
+.dsr-card-rating__star {
+  color: #e0a526;
+  font-size: 11px;
+}
+
+.dsr-card-rating__value {
+  font-weight: 600;
+  color: rgba(var(--color-foreground), 0.85);
 }
 
 .dsr-card-rating__count {
   font-variant-numeric: tabular-nums;
 }
 
+/* Narrow cards (phones' two columns up to about 390px): just the star and
+   the score, so a sale price and its compare-at price stay whole beside it.
+   The count stays in the rating's label for screen readers. */
+@container dsr-card-info (max-width: 164px) {
+  .dsr-card-rating__count {
+    display: none;
+  }
+}
+
 /* ---------- Price ---------- */
 
 .product-card-wrapper .price {
+  display: flex;
+  align-items: center;
+  height: var(--dsr-card-price-h);
   margin: 0;
+  min-width: 0;
   font-family: var(--font-body-family);
   font-size: var(--dsr-card-price);
-  font-weight: 700;
-  line-height: 1.3;
+  font-weight: 600;
+  line-height: 1;
   letter-spacing: 0;
 }
 
@@ -174,34 +220,43 @@
   margin: 0;
 }
 
-/* Centred, like the name and rating. */
-.product-card-wrapper .card-information > .price,
 .product-card-wrapper .card-information > .price > .price__container {
   display: flex;
-  justify-content: center;
+  min-width: 0;
   max-width: 100%;
 }
 
 .product-card-wrapper .price--on-sale .price-item--regular {
   font-family: var(--font-body-family);
-  font-size: calc(var(--dsr-card-price) - 3px);
+  font-size: 11px;
   font-weight: var(--font-body-weight);
   /* At least 4.5:1 on the card (WCAG 1.4.3). */
   color: rgba(var(--color-foreground), 0.68);
 }
 
-/* One line on every card: the price to pay first, always whole; the
-   struck-through price after it, cut short ("...") when a narrow card has no
-   room. Only the block Dawn shows; screen readers keep Dawn's order. */
+/* One line: the price to pay first, always whole; the struck-through price
+   after it, whole or not at all. The line wraps inside a box one line high:
+   when the compare-at price doesn't fit (a narrow card, a "From" price, four
+   digits, a rating beside it), it moves to the hidden second line instead of
+   being cut. The sale badge still states the discount, and screen readers
+   keep both prices in Dawn's order. */
 .product-card-wrapper .price:not(.price--on-sale) .price__regular,
 .product-card-wrapper .price--on-sale .price__sale {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   align-items: baseline;
-  justify-content: center;
-  gap: 6px;
+  align-content: flex-start;
+  column-gap: 5px;
+  row-gap: 0;
+  height: var(--dsr-card-price-h);
   min-width: 0;
+  overflow: hidden;
   white-space: nowrap;
+}
+
+.product-card-wrapper .price__regular > *,
+.product-card-wrapper .price__sale > * {
+  line-height: var(--dsr-card-price-h);
 }
 
 .product-card-wrapper .price__sale .price-item--last {
@@ -210,22 +265,54 @@
 }
 
 .product-card-wrapper .price__sale > span:not(.visually-hidden):not(.price-item) {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  flex: none;
 }
 
 /* ---------- Badge ---------- */
 
-.product-card-wrapper .card__badge .badge {
-  font-family: 'Dressar UI', var(--font-body-family);
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.08em;
+/* Just the percentage ("38%"), small, in the theme's sale colours (dark red,
+   white text), on the photo's top-right corner in both reading directions:
+   10px in on phones, 12px from 990px (docs/stages/card-upgrade.md). */
+
+/* Dawn's layer for the badge (.card__inner > .card__content) only spans
+   part of the photo; static, it lets the badge measure from the photo box
+   (.card__inner, positioned by Dawn's .ratio). */
+.product-card-wrapper .card__inner > .card__content {
+  position: static;
+}
+
+.product-card-wrapper .card__inner > .card__content > .card__badge {
+  position: absolute;
+  z-index: 1;
+  display: flex;
   line-height: 1;
-  text-transform: uppercase;
-  padding: 5px 7px;
-  border-radius: 4px;
+  top: var(--dsr-card-edge);
+  right: var(--dsr-card-edge);
+  left: auto;
+  bottom: auto;
+  margin: 0;
+}
+
+.product-card-wrapper .card__badge .badge {
+  font-family: var(--font-body-family);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1;
+  text-transform: none;
+  padding: 4px 7px;
+  border-radius: 5px;
+}
+
+.product-card-wrapper .card__badge .badge[hidden] {
+  display: none;
+}
+
+@media screen and (min-width: 990px) {
+  .product-card-wrapper .card__badge .badge {
+    font-size: 12px;
+    padding: 5px 9px;
+  }
 }
 
 /* Arabic: no letter-spacing (it pulls joined letters apart). */
@@ -235,95 +322,50 @@
 
 /* ---------- Colours and sizes (snippets/dsr-card-options.liquid) ---------- */
 
-/* A thin line above the colours and another between colours and sizes.
-   The rows follow the card's own width (container query below). A container
-   is a stacking context, so it sits above the card's full-size link (z-index
-   1) to keep its buttons tappable; the rest of the card still opens the
-   product. */
+/* Two rows of the same height on every card, even empty (no colour data, no
+   size option; :empty too, since Dawn hides empty divs). The block sits above
+   the card's full-size link (z-index 1) to keep its buttons tappable; the
+   rest of the card still opens the product. */
 .dsr-card-options {
-  container: dsr-card / inline-size;
   position: relative;
   z-index: 2;
-  display: flex;
-  flex-direction: column;
-  margin-top: 2px;
-  border-top: 1px solid var(--dsr-card-line);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: var(--dsr-card-control) var(--dsr-card-control);
+  row-gap: var(--dsr-card-gap);
+  min-width: 0;
   text-align: start;
 }
 
-/* Each row is the same height on every card, even when empty (no colour
-   data, no size option). :empty too, since Dawn hides empty divs (base.css).
-   On a narrow card the label sits above its row; from a 240px-wide card, before
-   it. */
 .dsr-card-colors-row,
 .dsr-card-colors-row:empty,
 .dsr-card-sizes-row,
 .dsr-card-sizes-row:empty {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 2px;
+  align-items: center;
   min-width: 0;
-  height: calc(var(--dsr-card-label-h) + 2px + var(--dsr-card-control) + 2 * var(--dsr-card-rule-gap));
-  padding-block: var(--dsr-card-rule-gap);
+  height: var(--dsr-card-control);
 }
 
-.dsr-card-colors-row + .dsr-card-sizes-row {
-  height: calc(var(--dsr-card-label-h) + 2px + var(--dsr-card-control) + 2 * var(--dsr-card-rule-gap) + 1px);
-  border-top: 1px solid var(--dsr-card-line);
-}
-
-.dsr-card-row__label {
-  flex: none;
-  font-size: var(--dsr-card-small);
-  line-height: var(--dsr-card-label-h);
-  letter-spacing: 0;
-  white-space: nowrap;
-  color: rgba(var(--color-foreground), 0.75);
-}
-
-.dsr-card-colors-row > :not(.dsr-card-row__label),
-.dsr-card-sizes-row > :not(.dsr-card-row__label) {
+.dsr-card-colors-row > *,
+.dsr-card-sizes-row > * {
   max-width: 100%;
   min-width: 0;
 }
 
-@container dsr-card (min-width: 240px) {
-  .dsr-card-colors-row,
-  .dsr-card-colors-row:empty,
-  .dsr-card-sizes-row,
-  .dsr-card-sizes-row:empty {
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 8px;
-    height: calc(var(--dsr-card-control) + 2 * var(--dsr-card-rule-gap));
-  }
-
-  .dsr-card-colors-row + .dsr-card-sizes-row {
-    height: calc(var(--dsr-card-control) + 2 * var(--dsr-card-rule-gap) + 1px);
-  }
-
-  .dsr-card-row__label {
-    min-width: 4.6em;
-  }
-
-  .dsr-card-colors-row > :not(.dsr-card-row__label),
-  .dsr-card-sizes-row > :not(.dsr-card-row__label) {
-    flex: 1 1 auto;
-  }
-}
-
-/* Colours: rounded chips in Shopify's swatch colours. Not chosen: a light
-   edge; chosen: a black frame with a white ring inside (as on the product
-   page). The snippet caps the row ("+N"), so it never wraps. */
+/* Colours: rounded squares in Shopify's swatch colours, 16px, 8px apart
+   (each colour button is 24px wide, WCAG 2.5.8's minimum). Not chosen: no
+   ring (light colours keep a thin grey edge); chosen: a dark ring just
+   outside. The snippet caps the row ("+N"), so it never wraps. */
+/* Every colour button is 24px; the list starts 4px into the card's padding
+   so the first square lines up with the name and price. */
 .dsr-card-swatches__list {
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
-  gap: var(--dsr-card-chip-gap);
+  gap: 0;
   margin: 0;
+  margin-inline-start: calc(var(--dsr-card-dot-gap) / -2);
 }
 
 .dsr-card-swatch {
@@ -332,11 +374,11 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: calc(var(--dsr-card-chip-w) + 4px);
+  width: calc(var(--dsr-card-dot) + var(--dsr-card-dot-gap));
   height: var(--dsr-card-control);
   padding: 0;
   border: 0;
-  border-radius: 5px;
+  border-radius: 4px;
   background: none;
   color: inherit;
   cursor: pointer;
@@ -348,16 +390,22 @@
 
 .dsr-card-swatch .swatch {
   --swatch--border-radius: 4px;
-  width: var(--dsr-card-chip-w);
-  height: var(--dsr-card-chip-h);
-  aspect-ratio: auto;
-  border: 1px solid rgba(17, 17, 17, 0.15);
+  box-sizing: border-box;
+  width: var(--dsr-card-dot);
+  height: var(--dsr-card-dot);
+  aspect-ratio: 1 / 1;
+  border: 0;
   border-radius: 4px;
 }
 
-.dsr-card-swatch[aria-pressed='true'] .swatch {
-  border-color: #111111;
-  box-shadow: 0 0 0 1px #111111, inset 0 0 0 2px #ffffff;
+.dsr-card-swatch--light .swatch {
+  border: 1px solid rgba(17, 17, 17, 0.22);
+}
+
+.dsr-card-swatch[aria-pressed='true'] .swatch,
+.dsr-card-swatch--selected .swatch {
+  outline: 1.5px solid #111111;
+  outline-offset: 2px;
 }
 
 .dsr-card-swatch--sold-out .swatch {
@@ -367,23 +415,23 @@
 .dsr-card-swatch--sold-out::after {
   content: '';
   position: absolute;
-  width: calc(var(--dsr-card-chip-w) + 4px);
+  width: calc(var(--dsr-card-dot) + 2px);
   height: 1px;
   background: rgba(var(--color-foreground), 0.7);
-  transform: rotate(-38deg);
+  transform: rotate(-45deg);
   pointer-events: none;
 }
 
 .dsr-card-swatch:focus-visible {
   outline: 2px solid rgba(var(--color-foreground), 0.6);
-  outline-offset: 0;
+  outline-offset: -1px;
   box-shadow: none;
 }
 
 .dsr-card-swatches__more,
 .dsr-card-colors {
   margin: 0;
-  font-size: var(--dsr-card-small);
+  font-size: 11px;
   letter-spacing: 0;
   color: rgba(var(--color-foreground), 0.7);
 }
@@ -392,14 +440,15 @@
   padding-inline-start: 2px;
 }
 
-/* Sizes: compact boxes. The chosen size has a black frame on white; a size
-   not in stock (in the chosen colour) is struck through and can't be chosen.
-   More sizes than fit scroll sideways inside the row, which keeps its height. */
+/* Sizes: compact 24px boxes, 4px corners, one row; more than fit scroll
+   sideways inside the row. The chosen size has a dark frame on white; a size
+   not in stock (in the chosen colour) is struck through, lighter, and can't
+   be chosen. */
 .dsr-card-sizes {
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   min-width: 0;
   max-width: 100%;
   margin: 0;
@@ -423,16 +472,17 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: var(--dsr-card-control);
+  box-sizing: border-box;
+  min-width: 24px;
   height: var(--dsr-card-control);
   margin: 0;
-  padding: 0 6px;
+  padding: 0 4px;
   border: 1px solid rgba(17, 17, 17, 0.2);
-  border-radius: 5px;
+  border-radius: 4px;
   background: transparent;
   color: rgba(var(--color-foreground), 0.9);
   font-family: var(--font-body-family);
-  font-size: var(--dsr-card-small);
+  font-size: var(--dsr-card-size-text);
   font-weight: 400;
   line-height: 1;
   letter-spacing: 0;
@@ -455,6 +505,7 @@
 .dsr-card-size[aria-disabled='true'],
 .dsr-card-size[aria-disabled='true']:hover {
   border-color: rgba(var(--color-foreground), 0.12);
+  background: transparent;
   color: rgba(var(--color-foreground), 0.62);
   text-decoration: line-through;
   cursor: not-allowed;
@@ -462,13 +513,7 @@
 
 .dsr-card-size:focus-visible {
   outline: 2px solid rgba(var(--color-foreground), 0.6);
-  outline-offset: 1px;
-}
-
-/* The scrolling size row keeps a focus ring visible. */
-.dsr-card-sizes:has(.dsr-card-size:focus-visible) {
-  padding-block: 3px;
-  margin-block: -3px;
+  outline-offset: -2px;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -492,11 +537,14 @@
 
 /* ---------- Quick add (snippets/dsr-card-quick-add.liquid) ---------- */
 
-/* A small dark shopping-bag button (white bag) on the photo's bottom corner:
-   bottom-right, or bottom-left on right-to-left pages. .dsr-quick-add is a
-   click-through frame the size of the photo (the card's own --ratio-percent),
-   above the card's full-card link (z-index 1); only the button takes clicks,
-   so the photo still opens the product. */
+/* A small shopping bag on the photo's bottom-right corner, in both reading
+   directions (docs/stages/card-v2.md): a 32px button, translucent white with
+   8px corners and a faint edge, a dark bag; 10px (12px from 990px) from the
+   edges. Its touch area reaches 44px (::before) without drawing any
+   bigger. .dsr-quick-add is a click-through frame the size of the photo
+   (the card's own --ratio-percent), above the card's full-card link
+   (z-index 1); only the button takes clicks, so the photo still opens the
+   product. */
 .dsr-quick-add {
   position: absolute;
   inset-block-start: 0;
@@ -508,27 +556,37 @@
 
 .dsr-quick-add__button {
   position: absolute;
-  inset-block-end: 8px;
-  inset-inline-end: 8px;
+  bottom: var(--dsr-card-edge);
+  right: var(--dsr-card-edge);
+  left: auto;
   z-index: 1;
   pointer-events: auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  box-sizing: border-box;
+  width: var(--dsr-card-bag);
+  height: var(--dsr-card-bag);
   margin: 0;
   padding: 0;
-  border: 0;
+  border: 1px solid rgba(17, 17, 17, 0.08);
   border-radius: 8px;
-  background: rgba(51, 47, 43, 0.92);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
-  color: #ffffff;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 1px 2px rgba(17, 17, 17, 0.08);
+  color: #111111;
   cursor: pointer;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+.dsr-quick-add__button::before {
+  content: '';
+  position: absolute;
+  inset: calc((44px - var(--dsr-card-bag)) / -2);
 }
 
 .dsr-quick-add__button:hover {
-  background: #332f2b;
+  background: #ffffff;
 }
 
 /* A white then dark ring: visible on light and dark photos alike. */
@@ -538,12 +596,12 @@
   box-shadow: 0 0 0 4px #121212;
 }
 
-/* Dawn's bag icon draws in the middle of its 40-unit box: at 30px the bag
-   itself is about 13 by 16px. */
+/* Dawn's bag icon draws in the middle of its 40-unit box: at 28px the bag
+   itself is about 12 by 15px. */
 .dsr-quick-add__icon,
 .dsr-quick-add__icon svg {
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
 }
 
 .dsr-quick-add__button[disabled],
@@ -575,7 +633,7 @@
 }
 
 .dsr-quick-add__button > .loading__spinner .path {
-  stroke: #ffffff;
+  stroke: #111111;
 }
 
 /* Horizontal cards (complementary products): at the card's end, centred. */

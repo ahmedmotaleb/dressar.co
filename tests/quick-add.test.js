@@ -145,7 +145,8 @@ async function main() {
               text: [...b.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent.trim()).join(''),
               bag: b.querySelector('svg').classList.contains('icon-cart-empty'),
               bottom: Math.round(img.bottom - box.bottom),
-              end: Math.round(rtl ? box.left - img.left : img.right - box.right),
+              // Bottom-right in both reading directions (docs/stages/card-upgrade.md).
+              end: Math.round(img.right - box.right),
               overlapsBadge: bb ? !(bb.right <= box.left || bb.left >= box.right || bb.bottom <= box.top || bb.top >= box.bottom) : false,
             };
           });
@@ -155,13 +156,13 @@ async function main() {
         check(`${tag} collection: one quick-add button per card`, r.n > 0 && c.every((x) => x.count === 1), JSON.stringify(c.map((x) => x.count)));
         // The detail lists the cards that fail, by position in the grid.
         const failing = (ok) => JSON.stringify(c.map((x, i) => ({ i, ...x })).filter((x) => !ok(x)));
-        // The 2S redesign: a small floating shopping-bag button.
-        // Dark button, white bag (the "Collection grid product" reference).
-        const looks = (x) => x.w === 34 && x.h === 34 && x.border.startsWith('0px') && x.bg === 'rgba(51, 47, 43, 0.92)' && x.radius === '8px' && x.shadow !== 'none';
-        const iconOnly = (x) => x.icon.join() === '30,30' && x.iconCentred && x.color === 'rgb(255, 255, 255)' && x.text === '' && x.bag;
-        check(`${tag} small floating bag button: 34 x 34 px, dark, 8px radius, light shadow`, c.every(looks), failing(looks));
-        check(`${tag} icon only: a white shopping bag, centred, no text`, c.every(iconOnly), failing(iconOnly));
-        check(`${tag} on the photo's bottom ${rtl ? 'left' : 'right'} corner, 8px in`, c.every((x) => x.bottom === 8 && x.end === 8), JSON.stringify(c.map((x) => [x.bottom, x.end])));
+        // The compact V2 (docs/stages/card-v2.md): a small translucent bag.
+        const edge = desktop ? 12 : 10;
+        const looks = (x) => x.w === 32 && x.h === 32 && x.bg === 'rgba(255, 255, 255, 0.88)' && x.radius === '8px';
+        const iconOnly = (x) => x.icon.join() === '28,28' && x.iconCentred && x.color === 'rgb(17, 17, 17)' && x.text === '' && x.bag;
+        check(`${tag} small bag button: 32 x 32 px, translucent white, 8px corners`, c.every(looks), failing(looks));
+        check(`${tag} icon only: a dark shopping bag, centred, no text`, c.every(iconOnly), failing(iconOnly));
+        check(`${tag} on the photo's bottom-right corner, ${edge}px in`, c.every((x) => x.bottom === edge && x.end === edge), JSON.stringify(c.map((x) => [x.bottom, x.end])));
         check(`${tag} clear of the sale or sold-out badge`, c.every((x) => !x.overlapsBadge));
 
         // Accessible name, hit test, photo still opens the product.

@@ -326,6 +326,8 @@ async function main() {
         const badge = document.querySelector(`${sel} .badge`);
         const plus = document.querySelector(`${sel} .dsr-quick-add__button`);
         const layer = badge.closest('.card__content');
+        // The badge sits at the photo's top (docs/stages/card-upgrade.md): bring it on screen first.
+        badge.scrollIntoView({ block: 'center' });
         const b = badge.getBoundingClientRect();
         const p = plus.getBoundingClientRect();
         const throughBadge = document.elementFromPoint(b.left + b.width / 2, b.top + b.height / 2);

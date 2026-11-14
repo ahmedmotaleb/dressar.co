@@ -70,6 +70,27 @@
       assign ratio = 1
     endif
   -%}
+  {%- comment -%}
+    Dressar (docs/stages/card-upgrade.md): the card's colour option, the colour
+    it opens on, and the one variant its price, compare-at price and sale badge
+    come from (snippets/dsr-card-variant.liquid).
+  {%- endcomment -%}
+  {%- capture dsr_state -%}{%- render 'dsr-card-variant', card_product: card_product -%}{%- endcapture -%}
+  {%- liquid
+    assign dsr_state = dsr_state | strip | split: '|~|'
+    assign dsr_color_index = dsr_state[0] | plus: 0
+    assign dsr_price_variant_id = dsr_state[1] | plus: 0
+    assign dsr_price_variant = card_product.variants | where: 'id', dsr_price_variant_id | first | default: card_product.selected_or_first_available_variant
+    assign dsr_price_from = false
+    if dsr_state[2] == 'from'
+      assign dsr_price_from = true
+    endif
+    assign dsr_color = dsr_state[3]
+    assign dsr_on_sale = false
+    if dsr_price_variant.compare_at_price > dsr_price_variant.price
+      assign dsr_on_sale = true
+    endif
+  -%}
 
   <product-component view-event-payload="{{ card_product | standard_event_data: 'view', context: product_view_context | escape }}">
     <div class="card-wrapper product-card-wrapper underline-links-hover">
@@ -165,7 +186,7 @@
                   href="{{ card_product.url }}"
                   id="StandardCardNoMediaLink-{{ section_id }}-{{ card_product.id }}"
                   class="full-unstyled-link"
-                  aria-labelledby="StandardCardNoMediaLink-{{ section_id }}-{{ card_product.id }}{% if card_product.available == false or card_product.compare_at_price > card_product.price %} NoMediaStandardBadge-{{ section_id }}-{{ card_product.id }}{% endif %}"
+                  aria-labelledby="StandardCardNoMediaLink-{{ section_id }}-{{ card_product.id }}{% if card_product.available == false or dsr_on_sale %} NoMediaStandardBadge-{{ section_id }}-{{ card_product.id }}{% endif %}"
                 >
                   {{ card_product.title | escape }}
                 </a>
@@ -173,7 +194,7 @@
             </div>
             <div class="card__badge {{ settings.badge_position }}">
               {%- assign badge_id = 'NoMediaStandardBadge-' | append: section_id | append: '-' | append: card_product.id -%}
-              {%- render 'dsr-card-badge', card_product: card_product, id: badge_id -%}
+              {%- render 'dsr-card-badge', card_product: card_product, variant: dsr_price_variant, id: badge_id -%}
             </div>
           </div>
         </div>
@@ -202,7 +223,7 @@
                 href="{{ card_product.url }}"
                 id="CardLink-{{ section_id }}-{{ card_product.id }}"
                 class="full-unstyled-link"
-                aria-labelledby="CardLink-{{ section_id }}-{{ card_product.id }}{% if card_product.available == false or card_product.compare_at_price > card_product.price %} Badge-{{ section_id }}-{{ card_product.id }}{% endif %}"
+                aria-labelledby="CardLink-{{ section_id }}-{{ card_product.id }}{% if card_product.available == false or dsr_on_sale %} Badge-{{ section_id }}-{{ card_product.id }}{% endif %}"
               >
                 {{ card_product.title | escape }}
               </a>
@@ -257,13 +278,24 @@
                 </p>
               {%- endif -%}
 
-              {% render 'price', product: card_product, price_class: '', show_compare_at_price: true %}
+              {%- comment -%} Dressar: the card's one price variant (above). {%- endcomment -%}
+              {% render 'price',
+                product: card_product,
+                dsr_variant: dsr_price_variant,
+                dsr_from: dsr_price_from,
+                price_class: '',
+                show_compare_at_price: true
+              %}
               {%- comment -%}
                 Dressar: the colour and size rows, each on every card at a fixed
                 height, and the shopper's choice of them for the bag button.
               {%- endcomment -%}
               {%- if settings.card_show_swatches or settings.card_show_sizes -%}
-                {%- render 'dsr-card-options', card_product: card_product -%}
+                {%- render 'dsr-card-options',
+                  card_product: card_product,
+                  color_index: dsr_color_index,
+                  color: dsr_color
+                -%}
               {%- endif -%}
               {%- if card_product.quantity_price_breaks_configured? -%}
                 {% if card_product.variants_count == 1 and quick_add == 'bulk' %}
@@ -514,7 +546,7 @@
           <div class="card__badge {{ settings.badge_position }}">
             {%- comment -%} Dressar: one badge snippet for both copies (snippets/dsr-card-badge.liquid). {%- endcomment -%}
             {%- assign badge_id = 'Badge-' | append: section_id | append: '-' | append: card_product.id -%}
-            {%- render 'dsr-card-badge', card_product: card_product, id: badge_id -%}
+            {%- render 'dsr-card-badge', card_product: card_product, variant: dsr_price_variant, id: badge_id -%}
           </div>
         </div>
       </div>

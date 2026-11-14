@@ -290,7 +290,7 @@
      "Maxi"
     ]
    },
-   "description": "<p>Test description, not the real product copy.</p>"
+   "description": "<p>جيبة كتان طويلة بجيوب أمامية — جيبة محتشمة عملية للخروجات اليومية والجامعة، بخامة كتان تتنفس وقصّة واسعة مريحة. متوفرة بأكتر من لون.</p><p>Linen maxi skirt with front pockets — a practical modest skirt for everyday outings and university, in breathable linen with a relaxed comfortable cut. Available in several colors.</p><hr><h4>جدول المقاسات (سم) | Size Guide</h4><table><tbody>\n<tr>\n<td><strong>المقاس</strong></td>\n<td><strong>الوسط مسطّح</strong></td>\n<td><strong>يناسب محيط وسط حتى</strong></td>\n<td><strong>يناسب محيط حوض حتى</strong></td>\n</tr>\n<tr>\n<td>M / 38</td>\n<td>36</td>\n<td>76</td>\n<td>106</td>\n</tr>\n<tr>\n<td>L / 40</td>\n<td>38</td>\n<td>80</td>\n<td>110</td>\n</tr>\n<tr>\n<td>XL / 42</td>\n<td>40</td>\n<td>84</td>\n<td>114</td>\n</tr>\n<tr>\n<td>XXL / 44</td>\n<td>42</td>\n<td>88</td>\n<td>118</td>\n</tr>\n<tr>\n<td>3XL / 46</td>\n<td>44</td>\n<td>92</td>\n<td>122</td>\n</tr>\n</tbody></table><p><strong>الطول: 105 سم لجميع المقاسات</strong> • الوسط أستك مريح ويتمدد حتى 90 سم • القياسات مناسبة لطول 155–170 سم • مش متأكدة من مقاسك؟ واتساب <strong>01020676173</strong>.</p>"
   },
   {
    "handle": "long-linen-shirt",
@@ -544,7 +544,8 @@
     "fabric": [
      "Linen"
     ]
-   }
+   },
+   "description": "<p>قميص كتان طويل بياقة مدببة وأزرار أمامية كاملة وأكمام بربطة أنيقة — بيتلبس كفستان قميص واسع أو مفتوح كطبقة خارجية. قصّة مستقيمة سهلة بتتلبس فضفاضة أو بحزام.</p><p>Long linen button-down shirt dress with a pointed collar and tie-cuff sleeves — worn loose, belted, or open as a layering piece. A clean, timeless everyday essential.</p><hr><h4>جدول المقاسات (سم) | Size Guide</h4><table><tbody>\n<tr>\n<td><strong>المقاس</strong></td>\n<td><strong>عرض الصدر مسطّح</strong></td>\n<td><strong>يناسب محيط صدر حتى</strong></td>\n</tr>\n<tr>\n<td>M / 38</td>\n<td>52</td>\n<td>102</td>\n</tr>\n<tr>\n<td>L / 40</td>\n<td>56</td>\n<td>106</td>\n</tr>\n<tr>\n<td>XL / 42</td>\n<td>58</td>\n<td>110</td>\n</tr>\n<tr>\n<td>XXL / 44</td>\n<td>60</td>\n<td>114</td>\n</tr>\n<tr>\n<td>3XL / 46</td>\n<td>62</td>\n<td>118</td>\n</tr>\n</tbody></table><p><strong>الطول: 150 سم — تغطية كاملة</strong> • القياسات مناسبة لطول 155–170 سم • مش متأكدة من مقاسك؟ ابعتيلنا طولك ووزنك على واتساب <strong>01020676173</strong>.</p>"
   },
   {
    "handle": "linen-suit",
@@ -2103,7 +2104,8 @@
      1,
      null
     ]
-   ]
+   ],
+   "description": "<p>جيبة بطانة سوداء خفيفة بحافة دانتيل ناعمة — بتتلبس تحت الفساتين والجيب لستر كامل مع لمسة أنثوية. قطن مريح ووسط أستك.</p><p>Lightweight black underskirt with a delicate lace hem — worn under dresses and skirts for full opacity with a feminine touch. Comfortable cotton, elastic waist.</p><hr><h4>جدول المقاسات (سم) | Size Guide</h4><table><tbody>\n<tr>\n<td><strong>المقاس</strong></td>\n<td><strong>الوسط مسطّح</strong></td>\n<td><strong>يناسب محيط وسط حتى</strong></td>\n</tr>\n<tr>\n<td>M / 38</td>\n<td>36</td>\n<td>76</td>\n</tr>\n<tr>\n<td>L / 40</td>\n<td>38</td>\n<td>80</td>\n</tr>\n<tr>\n<td>XL / 42</td>\n<td>40</td>\n<td>84</td>\n</tr>\n<tr>\n<td>XXL / 44</td>\n<td>42</td>\n<td>88</td>\n</tr>\n<tr>\n<td>3XL / 46</td>\n<td>44</td>\n<td>92</td>\n</tr>\n</tbody></table><p>الوسط أستك مريح • مش متأكدة من مقاسك؟ واتساب <strong>01020676173</strong>.</p>"
   },
   {
    "handle": "black-pocket-maxi-skirt",

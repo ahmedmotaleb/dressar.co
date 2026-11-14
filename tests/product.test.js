@@ -146,9 +146,9 @@ async function main() {
         title: at('.product__title h1'),
         price: at('.price'),
         picker: at('variant-selects'),
+        find: at('.dsr-find-size-block'),
         guide: at('.product-popup-modal__opener'),
-        help: at('.dsr-size-help'),
-        stock: at('.product__inventory'),
+        sku: at('.product__sku'),
         atc: at('.product-form__submit'),
         reassure: at('.icon-with-text'),
         details: at('.product__description'),
@@ -156,8 +156,10 @@ async function main() {
         tabs: at('.product__accordion:not(.dsr-facts)'),
       };
     }, info);
-    const seq = ['title', 'price', 'picker', 'guide', 'help', 'stock', 'atc', 'reassure', 'details', 'facts', 'tabs'];
-    check(`${tag} order: title, price, colour/size, size guide, size help, stock, add to cart, reassurance, details, fabric & fit, tabs`, seq.every((k, i) => order[k] > -1 && (i === 0 || order[k] > order[seq[i - 1]])), JSON.stringify(order));
+    // Since the product page refinement (docs/stages/pdp-ux.md): no stock line, and the
+    // WhatsApp size help lives in the "Find your size" dialog (tests/pdp-ux.test.js).
+    const seq = ['title', 'price', 'picker', 'find', 'guide', 'sku', 'atc', 'reassure', 'details', 'facts', 'tabs'];
+    check(`${tag} order: title, price, colour/size, find your size, size guide, product code, add to cart, reassurance, details, fabric & fit, tabs`, seq.every((k, i) => order[k] > -1 && (i === 0 || order[k] > order[seq[i - 1]])), JSON.stringify(order));
     const h1 = await page.evaluate(() => [...document.querySelectorAll('h1')].map((h) => h.textContent.trim()));
     check(`${tag} one H1, the product title`, h1.length === 1 && h1[0] === skirt.title, h1.join(' | '));
     check(`${tag} no horizontal overflow`, await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth));
@@ -254,9 +256,9 @@ async function main() {
   check('[390] model size shown from the metafield', modelText.trim() === t('dressar.product.model_size', { size: 'L' }), modelText.trim());
   const modelOrder = await model.evaluate(() => {
     const all = [...document.querySelectorAll('#MainProduct-template--1__main *')];
-    return all.indexOf(document.querySelector('.dsr-model-size')) > all.indexOf(document.querySelector('.dsr-size-help')) && all.indexOf(document.querySelector('.dsr-model-size')) < all.indexOf(document.querySelector('.product-form__submit'));
+    return all.indexOf(document.querySelector('.dsr-model-size')) > all.indexOf(document.querySelector('.product-form__submit')) && all.indexOf(document.querySelector('.dsr-model-size')) < all.indexOf(document.querySelector('.icon-with-text'));
   });
-  check('[390] model size sits with the size help, before add to cart', modelOrder);
+  check('[390] model size right after add to cart (the four size and buy rows stay together)', modelOrder);
   await model.closeAll();
 
   // A link from a card's colour swatch: colour chosen, size still to pick.

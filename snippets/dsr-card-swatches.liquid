@@ -1,73 +1,86 @@
 {%- doc -%}
   The colour row of a product card: a fixed-height row (assets/dsr-card.css),
   on every card, so titles, prices, colours and sizes line up across the grid.
+  No label (docs/stages/card-v2.md); the list is named for screen readers.
   Colours come only from Shopify's own data; nothing here maps colour names
-  to hex codes.
+  to hex codes (docs/stages/card-upgrade.md).
 
   Where the colours come from, in order:
   1. The colour option's swatches: the colour or image set on each value of
-     an option linked to the "Color" category metafield. One colour or
-     several, each shown.
-     - A swatch whose variant has its own photo is a button: it shows that
-       photo on the card and points the card's links at the first in-stock
-       variant in that colour (assets/dsr-card.js). The links carry
-       `pick=color`, so the product page knows only the colour was chosen,
-       not the size. Without a photo, a swatch is a plain, labelled dot.
+     an option linked to the "Color" category metafield. Every colour is
+     shown, one rounded square each (the option's values are unique, so
+     sizes never repeat a colour).
+     - One colour: one square, shown selected.
+     - Several: each is a button. Picking one shows that colour's photo (when
+       its variant has one), price and sale badge, its sizes in stock, and
+       points the card's links and quick add at it (assets/dsr-card.js). The
+       colour the card opens on (`color`) starts selected.
      - A colour with no stock in any size is marked sold out.
   2. Otherwise, the product's "Color" category metafield
      (shopify.color-pattern), set by the merchant: the colour or image of
-     each entry, as plain dots. This covers colour options not linked in
-     Shopify.
+     each entry, as plain squares.
   3. Otherwise, a colour option without swatch data (found by name: Theme
      settings > Dressar > "Colour option names") with several values shows
      a colour count.
-  4. Otherwise (no colour data at all, e.g. a pattern with no colour or
-     image): the row stays empty, at the same height. No made-up swatch.
+  4. Otherwise no swatch at all: the row stays, empty, at the same height.
+     A colour option whose values have no colour data is marked
+     data-dsr-color-data="missing" for the merchant to fix in Shopify; no
+     made-up swatch.
 
-  More colours than `limit`: `limit - 1` swatches and "+N", so the row never
+  Light colours (brightness over 200 of 255) get a thin grey edge.
+  More colours than `limit`: `limit - 1` circles and "+N", so the row never
   wraps.
 
   @param {product} card_product - The product on the card.
+  @param {number} [color_index] - The colour option's index, as card-product works it out; -1 for none. Without it, the snippet finds the option itself.
+  @param {string} [color] - The colour the card opens on (selected).
   @param {number} [limit] - The most items in the row, "+N" included. Defaults to 5.
 
   @example
-  {% render 'dsr-card-swatches', card_product: card_product %}
+  {% render 'dsr-card-swatches', card_product: card_product, color_index: dsr_color_index, color: dsr_color %}
 {%- enddoc -%}
 
 {%- liquid
   assign swatch_limit = limit | default: 5
   assign color_option = null
   assign color_has_swatches = false
-  assign color_names = settings.card_color_option_names | downcase | split: ','
 
-  for option in card_product.options_with_values
-    for value in option.values
+  if color_index == null
+    assign color_index = -1
+    for option in card_product.options_with_values
+      for value in option.values
+        if value.swatch
+          assign color_index = option.position | minus: 1
+          break
+        endif
+      endfor
+      if color_index >= 0
+        break
+      endif
+    endfor
+    if color_index < 0
+      assign color_names = settings.card_color_option_names | downcase | split: ','
+      for option in card_product.options_with_values
+        assign option_name = option.name | downcase | strip
+        for name in color_names
+          assign wanted = name | strip
+          if wanted != blank and option_name == wanted and color_index < 0
+            assign color_index = option.position | minus: 1
+          endif
+        endfor
+      endfor
+    endif
+  endif
+
+  if color_index >= 0
+    assign color_option = card_product.options_with_values[color_index]
+    for value in color_option.values
       if value.swatch
-        assign color_option = option
         assign color_has_swatches = true
         break
       endif
     endfor
-    if color_option
-      break
-    endif
-  endfor
-
-  unless color_option
-    for option in card_product.options_with_values
-      assign option_name = option.name | downcase | strip
-      for name in color_names
-        assign wanted = name | strip
-        if wanted != blank and option_name == wanted
-          assign color_option = option
-          break
-        endif
-      endfor
-      if color_option
-        break
-      endif
-    endfor
-  endunless
+  endif
 
   # The merchant's Color category metafield: only entries with a colour or an image.
   assign meta_count = 0
@@ -105,15 +118,10 @@
     assign shown_limit = swatch_limit | minus: 1
   endif
   assign extra = total | minus: shown_limit
--%}
 
-{%- liquid
-  # The row's label ("Colour:"), shown when the row has colours to show.
-  assign has_colors = false
-  if color_has_swatches or meta_count > 0
-    assign has_colors = true
-  elsif color_option and color_option.values.size > 1
-    assign has_colors = true
+  assign missing_data = false
+  if color_option and color_has_swatches == false and meta_count == 0
+    assign missing_data = true
   endif
 -%}
 <div
@@ -121,14 +129,16 @@
   {% if color_option %}
     data-option-index="{{ color_option.position | minus: 1 }}"
   {% endif %}
+  {% if missing_data %}
+    data-dsr-color-data="missing"
+  {% endif %}
 >
-  {%- if has_colors -%}
-    <span class="dsr-card-row__label" aria-hidden="true">{{ 'dressar.card.color_row' | t }}</span>
-  {%- endif -%}
   {%- if color_has_swatches -%}
     {%- liquid
-      assign featured_id = card_product.featured_media.id
-      assign pressed_found = false
+      assign single = false
+      if color_option.values.size == 1
+        assign single = true
+      endif
     -%}
     <dsr-card-swatches class="dsr-card-swatches">
       <ul class="dsr-card-swatches__list list-unstyled" role="list" aria-label="{{ 'dressar.card.colors_label' | t }}">
@@ -146,45 +156,51 @@
             if sold_out
               assign label = 'dressar.card.value_sold_out' | t: value: value.name
             endif
+            assign light = false
+            if value.swatch.color
+              assign brightness = value.swatch.color | color_brightness
+              if brightness > 200
+                assign light = true
+              endif
+            endif
+            assign selected = false
+            if single or value.name == color
+              assign selected = true
+            endif
           -%}
           <li class="dsr-card-swatches__item">
-            {%- if media and color_option.values.size > 1 -%}
-              {%- liquid
-                assign pressed = false
-                if media.id == featured_id and pressed_found == false
-                  assign pressed = true
-                  assign pressed_found = true
-                endif
-              -%}
-              <button
-                type="button"
-                class="dsr-card-swatch{% if sold_out %} dsr-card-swatch--sold-out{% endif %}"
-                aria-label="{{ label }}"
-                aria-pressed="{{ pressed }}"
-                data-value="{{ value.name | escape }}"
-                data-variant-id="{{ variant_id }}"
-                data-src="{{ media | image_url: width: 533 }}"
-                data-srcset="
-                  {%- if media.width >= 165 -%}{{ media | image_url: width: 165 }} 165w,{%- endif -%}
-                  {%- if media.width >= 360 -%}{{ media | image_url: width: 360 }} 360w,{%- endif -%}
-                  {%- if media.width >= 533 -%}{{ media | image_url: width: 533 }} 533w,{%- endif -%}
-                  {%- if media.width >= 720 -%}{{ media | image_url: width: 720 }} 720w,{%- endif -%}
-                  {%- if media.width >= 940 -%}{{ media | image_url: width: 940 }} 940w,{%- endif -%}
-                  {{ media | image_url }} {{ media.width }}w
-                "
-                data-alt="{{ media.alt | escape }}"
-              >
-                {%- render 'swatch', swatch: value.swatch -%}
-              </button>
-            {%- else -%}
+            {%- if single -%}
               <span
-                class="dsr-card-swatch dsr-card-swatch--static{% if sold_out %} dsr-card-swatch--sold-out{% endif %}"
+                class="dsr-card-swatch dsr-card-swatch--static dsr-card-swatch--selected{% if light %} dsr-card-swatch--light{% endif %}{% if sold_out %} dsr-card-swatch--sold-out{% endif %}"
                 role="img"
                 aria-label="{{ label }}"
                 data-value="{{ value.name | escape }}"
               >
                 {%- render 'swatch', swatch: value.swatch -%}
               </span>
+            {%- else -%}
+              <button
+                type="button"
+                class="dsr-card-swatch{% if light %} dsr-card-swatch--light{% endif %}{% if sold_out %} dsr-card-swatch--sold-out{% endif %}"
+                aria-label="{{ label }}"
+                aria-pressed="{{ selected }}"
+                data-value="{{ value.name | escape }}"
+                data-variant-id="{{ variant_id }}"
+                {% if media %}
+                  data-src="{{ media | image_url: width: 533 }}"
+                  data-srcset="
+                    {%- if media.width >= 165 -%}{{ media | image_url: width: 165 }} 165w,{%- endif -%}
+                    {%- if media.width >= 360 -%}{{ media | image_url: width: 360 }} 360w,{%- endif -%}
+                    {%- if media.width >= 533 -%}{{ media | image_url: width: 533 }} 533w,{%- endif -%}
+                    {%- if media.width >= 720 -%}{{ media | image_url: width: 720 }} 720w,{%- endif -%}
+                    {%- if media.width >= 940 -%}{{ media | image_url: width: 940 }} 940w,{%- endif -%}
+                    {{ media | image_url }} {{ media.width }}w
+                  "
+                  data-alt="{{ media.alt | escape }}"
+                {% endif %}
+              >
+                {%- render 'swatch', swatch: value.swatch -%}
+              </button>
             {%- endif -%}
           </li>
         {%- endfor -%}
@@ -208,15 +224,24 @@
             break
           endif
           assign meta_shown = meta_shown | plus: 1
+          assign light = false
           if entry.image.value
             assign meta_url = entry.image.value | image_url: width: 50
             assign meta_background = 'url(' | append: meta_url | append: ')'
           else
             assign meta_background = 'rgb(' | append: entry.color.value.rgb | append: ')'
+            assign brightness = entry.color.value | color_brightness
+            if brightness > 200
+              assign light = true
+            endif
           endif
         -%}
         <li class="dsr-card-swatches__item">
-          <span class="dsr-card-swatch dsr-card-swatch--static" role="img" aria-label="{{ entry.label.value | escape }}">
+          <span
+            class="dsr-card-swatch dsr-card-swatch--static{% if meta_count == 1 %} dsr-card-swatch--selected{% endif %}{% if light %} dsr-card-swatch--light{% endif %}"
+            role="img"
+            aria-label="{{ entry.label.value | escape }}"
+          >
             <span class="swatch" style="--swatch--background: {{ meta_background }};"></span>
           </span>
         </li>

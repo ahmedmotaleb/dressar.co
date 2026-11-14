@@ -84,9 +84,14 @@
             "dsr_color_photos": false
           }
         },
+        "dsr_find_size": {
+          "type": "dsr_find_size",
+          "settings": {}
+        },
         "quantity_selector": {
           "type": "quantity_selector",
-          "settings": {}
+          "settings": {},
+          "disabled": true
         },
         "buy_buttons": {
           "type": "buy_buttons",
@@ -146,7 +151,8 @@
             "text_style": "body",
             "inventory_threshold": 3,
             "show_inventory_quantity": true
-          }
+          },
+          "disabled": true
         },
         "dsr_trust": {
           "type": "custom_liquid",
@@ -159,12 +165,14 @@
           "type": "popup",
           "settings": {
             "text": "جدول المقاسات | Size Chart",
-            "page": "size-chart"
+            "page": "size-chart",
+            "dsr_style": "size_guide"
           }
         },
         "dsr_size_help": {
           "type": "dsr_size_help",
-          "settings": {}
+          "settings": {},
+          "disabled": true
         },
         "dsr_reassurance": {
           "type": "icon-with-text",
@@ -198,13 +206,14 @@
         "rating_izydnW",
         "price",
         "variant_picker",
+        "dsr_find_size",
         "size_guide",
-        "dsr_size_help",
-        "dsr_model_size",
         "sku_r8AL6g",
+        "buy_buttons",
+        "dsr_model_size",
+        "dsr_size_help",
         "inventory_dsr",
         "quantity_selector",
-        "buy_buttons",
         "dsr_reassurance",
         "dsr_trust",
         "cod_note",

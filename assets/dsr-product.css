@@ -548,3 +548,273 @@ variant-selects .product-form__input--pill input[type='radio']:focus-visible + l
     margin: 14px 0;
   }
 }
+
+/* ==========================================================================
+   Product page tools (docs/stages/pdp-ux.md): "Find your size" and the size
+   guide as outlined buttons after the 2S reference, then the product code.
+   Order after the selectors: find your size, size guide, product code, add
+   to cart. Buttons start on the reading side: the icon on the right in
+   Arabic, on the left in English.
+   ========================================================================== */
+
+.product__info-container .dsr-find-size-block {
+  margin: 20px 0 0;
+}
+
+.product__info-container .dsr-pdp-tool-opener {
+  display: block;
+  margin: 10px 0 0;
+}
+
+.product__info-container .dsr-find-size-block .dsr-pdp-tool-opener {
+  margin: 0;
+}
+
+.product__info-container .dsr-pdp-tool,
+.dsr-pdp-tool {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  background: #fff;
+  color: #111;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: 0;
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color var(--duration-short) ease;
+}
+
+.product__info-container .dsr-pdp-tool:hover {
+  border-color: #111;
+  text-decoration: none;
+}
+
+.dsr-pdp-tool:focus-visible {
+  outline: 2px solid #111;
+  outline-offset: 2px;
+}
+
+.dsr-pdp-tool__icon {
+  display: grid;
+  flex: 0 0 48px;
+  place-items: center;
+  background: #f2f2f2;
+  color: #444;
+}
+
+.dsr-pdp-tool__icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.dsr-pdp-tool__label {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  min-width: 0;
+  padding: 0 12px 0 0;
+}
+
+[dir='rtl'] .dsr-pdp-tool__label {
+  padding: 0 0 0 12px;
+}
+
+/* Product code: right under the two buttons, small and quiet. */
+.product__info-container .product__sku {
+  margin: 12px 0 0;
+  font-size: 13px;
+  color: rgba(var(--color-foreground), 0.75);
+  overflow-wrap: anywhere;
+}
+
+.dsr-sku__label {
+  font-weight: 500;
+}
+
+.product__info-container .product__sku + .product-form,
+.product__info-container .product__sku + * {
+  margin-top: 16px;
+}
+
+/* ---------- The "Find your size" dialog ---------- */
+
+.dsr-find-size-modal .product-popup-modal__content {
+  height: auto;
+  max-height: calc(100% - 4rem);
+  max-width: 52rem;
+  margin-top: 2rem;
+  padding: 0 2rem 2.4rem;
+}
+
+.dsr-find-size-modal .product-popup-modal__content-info {
+  padding: 0;
+}
+
+.dsr-find-size-modal .product-popup-modal__toggle {
+  margin: 0;
+  margin-inline-start: auto;
+}
+
+.dsr-find-size-modal .dsr-fs__title {
+  margin: 1.6rem 0 1.6rem;
+}
+
+.dsr-fs__form {
+  display: grid;
+  gap: 14px;
+}
+
+.dsr-fs__row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 12px;
+}
+
+.dsr-fs__field {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.dsr-fs__field[hidden],
+.dsr-fs__measures[hidden],
+.dsr-fs__form[hidden] {
+  display: none;
+}
+
+.dsr-fs__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111;
+}
+
+.dsr-fs__input {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 12px;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  background: #fff;
+  color: #111;
+  font: inherit;
+  font-size: 16px;
+}
+
+.dsr-fs__input:focus-visible {
+  outline: 2px solid #111;
+  outline-offset: 1px;
+}
+
+.dsr-fs__input[aria-invalid='true'] {
+  border-color: #910505;
+}
+
+.dsr-fs__measures {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.dsr-fs__measures > legend {
+  padding: 0;
+  margin: 0 0 4px;
+}
+
+.dsr-fs__hint,
+.dsr-fs__privacy {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: rgba(var(--color-foreground), 0.7);
+}
+
+.dsr-fs__error {
+  margin: 0;
+  font-size: 13px;
+  color: #910505;
+}
+
+.dsr-fs__submit {
+  width: 100%;
+  min-height: 48px;
+  border-radius: 8px;
+}
+
+.dsr-fs__submit::before,
+.dsr-fs__submit::after {
+  border-radius: 8px;
+}
+
+.dsr-fs__result {
+  margin: 16px 0 0;
+  padding: 14px;
+  border-radius: 8px;
+  background: #f6f4f1;
+}
+
+.dsr-fs__result:empty {
+  display: none;
+}
+
+.dsr-fs__line {
+  margin: 0 0 6px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.dsr-fs__line--size {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.dsr-fs__line--strong {
+  font-weight: 600;
+}
+
+.dsr-fs__line--note {
+  font-size: 12.5px;
+  color: rgba(var(--color-foreground), 0.75);
+}
+
+.dsr-fs__line--in {
+  color: #1d6b2f;
+  font-weight: 600;
+}
+
+.dsr-fs__line--out {
+  color: #910505;
+  font-weight: 600;
+}
+
+.dsr-fs__choose {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 8px;
+  border-radius: 8px;
+}
+
+.dsr-fs__privacy {
+  margin-top: 14px;
+}
+
+.dsr-fs__help {
+  margin-top: 4px;
+}
+
+.dsr-fs__help .dsr-size-help {
+  font-size: 13px;
+}

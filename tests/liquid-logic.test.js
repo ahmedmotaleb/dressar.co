@@ -50,22 +50,28 @@ const test = async (name, tpl, ctx, assert) => {
   await test('model size empty -> nothing', "{% render 'dsr-model-size', product: p %}", { p: { metafields: { custom: {} } } }, (o) => o === '');
 
   // --- card badge (snippets/dsr-card-badge.liquid, used for both of Dawn's badge copies)
-  const tpl = "{% render 'dsr-card-badge', card_product: card_product, id: 'Badge-s-1' %}";
+  // Since the card upgrade (docs/stages/card-upgrade.md): just the percentage, rounded,
+  // from the variant the card prints; screen readers hear "خصم 52%" / "52% off".
+  const tpl = "{% render 'dsr-card-badge', card_product: card_product, variant: variant, id: 'Badge-s-1' %}";
   const card = read('snippets/card-product.liquid');
-  cases.push({ name: 'card-product renders both badge copies with the shared snippet', ok: (card.match(/render 'dsr-card-badge'/g) || []).length === 2 && !card.includes("'products.product.on_sale' | t"), out: '' });
-  await test('1149 -> 549 shows 52% (floor, never rounds up)', tpl, { card_product: { compare_at_price: 114900, price: 54900, id: 1, available: true }, settings: { sale_badge_color_scheme: 'scheme-4' }, section_id: 's' },
-    (o) => o.includes('خصم 52%') && o.includes('class="badge badge--bottom-left color-scheme-4"'));
-  await test('tiny markdown (<1%) falls back to plain sale label', tpl, { card_product: { compare_at_price: 50000, price: 49900, id: 1, available: true }, settings: { sale_badge_color_scheme: 'scheme-4' }, section_id: 's' },
-    (o) => o.includes('>خصم<') && !o.includes('%'));
-  await test('badge never reads the page-level product', tpl, { product: { compare_at_price: 999900, price: 100 }, card_product: { compare_at_price: 49900, price: 39900, id: 1, available: true }, settings: { sale_badge_color_scheme: 'scheme-4' }, section_id: 's' },
-    (o) => o.includes('خصم 20%'));
-  await test('sold out wins over sale', tpl, { card_product: { compare_at_price: 49900, price: 39900, id: 1, available: false }, settings: { sale_badge_color_scheme: 'scheme-4', sold_out_badge_color_scheme: 'scheme-3' } },
+  const sale = (compare, price) => ({ card_product: { compare_at_price: compare, compare_at_price_max: compare, price, price_min: price, id: 1, available: true }, variant: { compare_at_price: compare, price }, settings: { sale_badge_color_scheme: 'scheme-4' }, section_id: 's' });
+  const shown = (o) => (/<span aria-hidden="true">([^<]*)<\/span>/.exec(o) || [])[1];
+  cases.push({ name: 'card-product renders both badge copies with the shared snippet, from its price variant', ok: (card.match(/render 'dsr-card-badge', card_product: card_product, variant: dsr_price_variant/g) || []).length === 2 && !card.includes("'products.product.on_sale' | t"), out: '' });
+  await test('1149 -> 549: "52%" only, screen readers "خصم 52%"', tpl, sale(114900, 54900),
+    (o) => shown(o) === '52%' && o.includes('<span class="visually-hidden">خصم 52%</span>') && o.includes('badge badge--bottom-left dsr-sale-badge color-scheme-4') && !/off/i.test(shown(o)));
+  await test('1000 -> 620: 38%', tpl, sale(100000, 62000), (o) => shown(o) === '38%');
+  await test('649 -> 399: 39% (38.5 rounds up; it used to floor)', tpl, sale(64900, 39900), (o) => shown(o) === '39%');
+  await test('tiny markdown (<1%): no figure, the badge stays hidden', tpl, sale(50000, 49900),
+    (o) => /data-dsr-sale-badge\s+hidden/.test(o) && !o.includes('%'));
+  await test("badge reads the card's variant, not the product or the page", tpl, { product: { compare_at_price: 999900, price: 100 }, card_product: { compare_at_price: 999900, compare_at_price_max: 999900, price: 100, price_min: 100, id: 1, available: true }, variant: { compare_at_price: 49900, price: 39900 }, settings: { sale_badge_color_scheme: 'scheme-4' }, section_id: 's' },
+    (o) => shown(o) === '20%');
+  await test('sold out wins over sale', tpl, { card_product: { compare_at_price: 49900, compare_at_price_max: 49900, price: 39900, price_min: 39900, id: 1, available: false }, variant: { compare_at_price: 49900, price: 39900 }, settings: { sale_badge_color_scheme: 'scheme-4', sold_out_badge_color_scheme: 'scheme-3' } },
     (o) => o.includes('color-scheme-3') && o.includes('نفذت الكمية') && !o.includes('%'));
-  await test('no markdown, in stock -> no badge', tpl, { card_product: { compare_at_price: null, price: 39900, id: 1, available: true }, settings: {} }, (o) => o === '');
+  await test('no markdown, in stock -> no badge', tpl, { card_product: { compare_at_price: null, compare_at_price_max: null, price: 39900, price_min: 39900, id: 1, available: true }, variant: { compare_at_price: null, price: 39900 }, settings: {} }, (o) => o === '');
 
   locale = locales.en;
-  await test('English storefront: badge reads "52% off"', tpl, { card_product: { compare_at_price: 114900, price: 54900, id: 1, available: true }, settings: { sale_badge_color_scheme: 'scheme-4' }, section_id: 's' },
-    (o) => o.includes('>52% off<'));
+  await test('English storefront: "52%" shown, "52% off" for screen readers', tpl, sale(114900, 54900),
+    (o) => shown(o) === '52%' && o.includes('<span class="visually-hidden">52% off</span>'));
   await test('English storefront: model size sentence', "{% render 'dsr-model-size', product: p %}", { p: { metafields: { custom: { model_size: { value: 'L' } } } } },
     (o) => o.includes('The model is wearing size L'));
   locale = locales.ar;

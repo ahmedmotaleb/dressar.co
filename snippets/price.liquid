@@ -4,6 +4,8 @@
   @param {product} [product] - The product to price. Required unless `placeholder` is true.
   @param {boolean} [placeholder] - Whether to render the placeholder amount of 1999 minor currency units. Defaults to false.
   @param {boolean} [use_variant] - Whether to use the selected or first available variant's price instead of the product's price. Defaults to false.
+  @param {variant} [dsr_variant] - Dressar product cards: price this variant (the card's price, compare-at price and sale badge all come from it). Takes precedence over `use_variant`.
+  @param {boolean} [dsr_from] - With `dsr_variant`: say "From" before the price (other sizes cost more). Defaults to false.
   @param {boolean} [show_badges] - Whether to show sale and sold-out badges when applicable. Defaults to false.
   @param {string} [price_class] - An additional class for the price wrapper.
   @param {boolean} [show_compare_at_price] - Whether to show a compare-at price with volume pricing when applicable. Defaults to false.
@@ -12,7 +14,9 @@
   {% render 'price', product: product, use_variant: true, show_badges: true, price_class: 'price--large' %}
 {%- enddoc -%}
 {%- liquid
-  if use_variant
+  if dsr_variant
+    assign target = dsr_variant
+  elsif use_variant
     assign target = product.selected_or_first_available_variant
   elsif placeholder
     assign target = null
@@ -36,6 +40,8 @@
 
   if target == product and product.price_varies
     assign money_price = 'products.product.price.from_price_html' | t: price: money_price
+  elsif dsr_variant and dsr_from
+    assign money_price = 'products.product.price.from_price_html' | t: price: money_price
   endif
 
   # Dressar: on the product page (use_variant) the sale badge says what the
@@ -56,7 +62,7 @@
       {%- if available == false %} price--sold-out{% endif -%}
       {%- if compare_at_price > price and product.quantity_price_breaks_configured? != true %} price--on-sale{% endif -%}
       {%- if compare_at_price > price and product.quantity_price_breaks_configured? %} volume-pricing--sale-badge{% endif -%}
-      {%- if product.price_varies == false and product.compare_at_price_varies %} price--no-compare{% endif -%}
+      {%- if dsr_variant == null and product.price_varies == false and product.compare_at_price_varies %} price--no-compare{% endif -%}
       {%- if show_badges %} price--show-badge{% endif -%}
     "
   >
@@ -99,7 +105,7 @@
         {%- endif -%}
       </div>
       <div class="price__sale">
-        {%- unless product.price_varies == false and product.compare_at_price_varies %}
+        {%- unless dsr_variant == null and product.price_varies == false and product.compare_at_price_varies %}
           <span class="visually-hidden visually-hidden--inline">{{ 'products.product.price.regular_price' | t }}</span>
           <span>
             <s class="price-item price-item--regular">

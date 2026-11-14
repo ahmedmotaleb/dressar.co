@@ -165,17 +165,17 @@ async function main() {
     const skirt = byHandle('linen-maxi-skirt-with-front-pockets');
     const suit = byHandle('linen-suit');
     check(`${tag} one visible badge per card at most`, cards.every((c) => c.badges.length <= 1), JSON.stringify(cards.map((c) => c.badges)));
-    // Dawn prints no struck price when only the compare-at price varies by size;
-    // then the badge is checked against the product's lowest compare-at price.
+    // Since the card upgrade (docs/stages/card-upgrade.md) the card's price, compare-at
+    // price and badge come from one variant, so the struck price is always printed.
     const data = Object.fromEntries(buildCollection(catalog, 'skirts').products.map((p) => [p.url, p]));
     const onSale = cards.filter((c) => c.onSale && data[c.href].available);
     const honest = onSale.every((c) => {
-      const compare = c.compare || data[c.href].compare_at_price / 100;
-      const pct = Math.floor(((compare - c.price) * 100) / compare);
-      return c.badges.length === 1 && (c.badges[0].includes(`${pct}%`) || (pct < 1 && !c.badges[0].includes('%')));
+      const pct = Math.round(((c.compare - c.price) * 100) / c.compare);
+      return c.compare && c.badges.length === 1 && (c.badges[0].includes(`${pct}%`) || (pct < 1 && !c.badges[0].includes('%')));
     });
-    check(`${tag} visible sale badge = markdown on the card (floored)`, onSale.length >= 8 && honest, JSON.stringify(onSale.map((c) => [c.price, c.compare, c.badges[0]])));
-    check(`${tag} skirt: 28% off, "From" price (sizes cost more)`, skirt && skirt.badges[0].includes('28%') && skirt.from && skirt.price === 249, JSON.stringify(skirt));
+    check(`${tag} visible sale badge = markdown on the card (rounded)`, onSale.length >= 8 && honest, JSON.stringify(onSale.map((c) => [c.price, c.compare, c.badges[0]])));
+    // The skirt opens on olive, whose sizes all cost 249 (only Genzari has a 3XL at 299): no "From".
+    check(`${tag} skirt: 29% (249 against 350, olive), no "From" (olive's sizes cost the same)`, skirt && skirt.badges[0].includes('29%') && !skirt.from && skirt.price === 249 && skirt.compare === 350, JSON.stringify(skirt));
     check(`${tag} sold-out product says sold out, no sale %`, suit && suit.badges.length === 1 && !suit.badges[0].includes('%') && suit.badges[0] === t('products.product.sold_out'), JSON.stringify(suit));
 
     // Colour swatches from Shopify's swatch data.
@@ -225,9 +225,10 @@ async function main() {
       const range = document.createRange();
       range.selectNodeContents(a);
       const fits = [...range.getClientRects()].every((r) => r.left >= box.left - 1 && r.right <= box.right + 1);
-      return { lines: Math.round(box.height / lh), fits };
+      return { lines: Math.round(box.height / lh), fits, cut: a.scrollWidth > a.clientWidth + 1 };
     }, cardFor('linen-suit'));
-    check(`${tag} long title stops at 2 lines`, long.lines <= 2 && long.fits, JSON.stringify(long));
+    // One line, cut with "…", since the compact V2 (docs/stages/card-v2.md).
+    check(`${tag} long title stays on one line, cut with "…"`, long.lines === 1 && long.cut, JSON.stringify(long));
 
     // Picking a colour.
     const genzari = `${cardFor('linen-maxi-skirt-with-front-pockets')} .dsr-card-swatch[aria-label="Genzari"]`;

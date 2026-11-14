@@ -366,7 +366,11 @@ function createHarness({ root, fixtures, locale = 'en.default', origin = 'http:/
       v = v[category] ?? v.other;
     }
     if (typeof v !== 'string') return `translation missing: ${locale}.${key}`;
-    return v.replace(/{{\s*(\w+)\s*}}/g, (_, k) => (vars[k] ?? ''));
+    const out = v.replace(/{{\s*(\w+)\s*}}/g, (_, k) => (vars[k] ?? ''));
+    // Like Shopify: the text is HTML-escaped unless the key ends in _html, so an
+    // apostrophe reaches JSON or an attribute as &#39;.
+    if (/_html$/.test(key)) return html(out);
+    return html(out.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'));
   };
   const filters = {
     t,
@@ -425,7 +429,8 @@ function createHarness({ root, fixtures, locale = 'en.default', origin = 'http:/
     font_modify: (font, prop, value) => (font instanceof FontDrop ? font.variant(prop, value) : font),
     font_url: (font) => (font instanceof FontDrop ? font.url : ''),
     color_brightness: (c) => {
-      const d = c instanceof ColorDrop ? c : new ColorDrop(String(c));
+      // A colour object from the catalog fixtures (its own class) carries .hex, as Shopify's prints its hex.
+      const d = c instanceof ColorDrop ? c : new ColorDrop(c && c.hex ? c.hex : String(c));
       return (d.red * 299 + d.green * 587 + d.blue * 114) / 1000;
     },
     color_lighten: (c, n) => shiftLightness(c, Number(n)),

@@ -228,8 +228,9 @@
                     role="status"
                     {{ block.shopify_attributes }}
                   >
-                    <span class="visually-hidden">{{ 'products.product.sku' | t }}:</span>
-                    {{- product.selected_or_first_available_variant.sku -}}
+                    {%- comment -%} Dressar: a visible "Product Code" label (docs/stages/pdp-ux.md). {%- endcomment -%}
+                    <span class="dsr-sku__label">{{ 'dressar.product.product_code' | t }}:</span>
+                    <span class="dsr-sku__value">{{- product.selected_or_first_available_variant.sku -}}</span>
                   </p>
                 {%- when 'custom_liquid' -%}
                   {{ block.settings.custom_liquid }}
@@ -482,18 +483,40 @@
                   </div>
                 {%- when 'popup' -%}
                   <modal-opener
-                    class="product-popup-modal__opener quick-add-hidden"
+                    class="product-popup-modal__opener quick-add-hidden{% if block.settings.dsr_style == 'size_guide' %} dsr-pdp-tool-opener{% endif %}"
                     data-modal="#PopupModal-{{ block.id }}"
                     {{ block.shopify_attributes }}
                   >
-                    <button
-                      id="ProductPopup-{{ block.id }}"
-                      class="product-popup-modal__button link"
-                      type="button"
-                      aria-haspopup="dialog"
-                    >
-                      {{ block.settings.text | default: block.settings.page.title | escape }}
-                    </button>
+                    {%- if block.settings.dsr_style == 'size_guide' -%}
+                      {%- comment -%}
+                        Dressar: the size guide as a button (docs/stages/pdp-ux.md),
+                        with a translated "Size Guide" label. Same pop-up and page.
+                      {%- endcomment -%}
+                      <button
+                        id="ProductPopup-{{ block.id }}"
+                        class="product-popup-modal__button dsr-pdp-tool"
+                        type="button"
+                        aria-haspopup="dialog"
+                      >
+                        <span class="dsr-pdp-tool__icon" aria-hidden="true">
+                          {%- comment -%} A ruler. {%- endcomment -%}
+                          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                            <rect x="2.5" y="8" width="19" height="8" rx="1.5"/>
+                            <path d="M6 8v3M9.5 8v2M13 8v3M16.5 8v2M20 8v3"/>
+                          </svg>
+                        </span>
+                        <span class="dsr-pdp-tool__label">{{ 'dressar.product.size_guide' | t }}</span>
+                      </button>
+                    {%- else -%}
+                      <button
+                        id="ProductPopup-{{ block.id }}"
+                        class="product-popup-modal__button link"
+                        type="button"
+                        aria-haspopup="dialog"
+                      >
+                        {{ block.settings.text | default: block.settings.page.title | escape }}
+                      </button>
+                    {%- endif -%}
                   </modal-opener>
                 {%- when 'share' -%}
                   {% liquid
@@ -714,6 +737,10 @@
                 {%- when 'icon-with-text' -%}
                   {% render 'icon-with-text', block: block %}
                 {%- comment -%} Dressar blocks (docs/stages/stage-5.md) {%- endcomment -%}
+                {%- when 'dsr_find_size' -%}
+                  <div class="dsr-find-size-block quick-add-hidden" {{ block.shopify_attributes }}>
+                    {%- render 'dsr-find-size', product: product, block: block, section: section -%}
+                  </div>
                 {%- when 'dsr_size_help' -%}
                   <div class="dsr-size-help-block" {{ block.shopify_attributes }}>
                     {%- render 'dsr-size-help', product: product -%}
@@ -1285,6 +1312,17 @@
           "id": "page",
           "type": "page",
           "label": "t:sections.main-product.blocks.popup.settings.page.label"
+        },
+        {
+          "type": "select",
+          "id": "dsr_style",
+          "label": "Dressar: style",
+          "info": "Size guide button: an outlined button with a ruler icon and a translated \"Size Guide\" label, in place of the link text.",
+          "options": [
+            { "value": "link", "label": "Link" },
+            { "value": "size_guide", "label": "Size guide button" }
+          ],
+          "default": "link"
         }
       ]
     },
@@ -1572,6 +1610,36 @@
           "id": "enable_quick_add",
           "label": "t:sections.main-product.blocks.complementary_products.settings.enable_quick_add.label",
           "default": false
+        }
+      ]
+    },
+    {
+      "type": "dsr_find_size",
+      "name": "Dressar: find your size",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "A \"Find your size\" button. It recommends a size from the product's own size table (the description's \"fits ... up to\" columns), otherwise from the chart below. Height and weight alone never pick a size. Nothing typed is sent or saved."
+        },
+        {
+          "type": "textarea",
+          "id": "chart",
+          "label": "Size chart (body, cm)",
+          "info": "One size a line: size | bust | waist | hips. From the chart on the size-chart page.",
+          "default": "36 / S | 98 | 72 | 102\n38 / M | 102 | 76 | 106\n40 / L | 106 | 80 | 110\n42 / XL | 110 | 84 | 114\n44 / 2XL | 114 | 88 | 118\n46 / 3XL | 118 | 92 | 122"
+        },
+        {
+          "type": "number",
+          "id": "height_min",
+          "label": "Chart height from (cm)",
+          "default": 155
+        },
+        {
+          "type": "number",
+          "id": "height_max",
+          "label": "Chart height to (cm)",
+          "default": 170
         }
       ]
     },

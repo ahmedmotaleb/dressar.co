@@ -9,10 +9,20 @@
 //   previews its photo.
 // - Colour and size choice (snippets/dsr-card-options.liquid): sizes follow
 //   the chosen colour's stock; a chosen colour and size give the exact
-//   variant, which the card's links then open.
-// - The bag button (snippets/dsr-card-quick-add.liquid): adds that exact
+//   variant, which the card's links then open. The price, compare-at price
+//   and sale badge follow too: the cheapest in-stock variant of the chosen
+//   colour ("From" when its sizes cost different amounts), or the exact
+//   variant once a size is chosen (docs/stages/card-upgrade.md).
+// - The quick-add bag (snippets/dsr-card-quick-add.liquid): adds that exact
 //   variant through Dawn's product-form; with no complete, in-stock choice it
 //   opens Dawn's quick-add dialog instead. It never adds anything else.
+// Shopify HTML-escapes translated text; the card writes plain text.
+function dsrCardDecode(text) {
+  const area = document.createElement('textarea');
+  area.innerHTML = String(text);
+  return area.value;
+}
+
 if (!customElements.get('dsr-card-swatches')) {
   customElements.define(
     'dsr-card-swatches',
@@ -109,7 +119,7 @@ if (!customElements.get('dsr-card-options')) {
         this.card = this.closest('.card-wrapper');
         const data = this.querySelector('script[data-dsr-card-variants]');
         try {
-          // [[id, in stock (1/0), [option values]], ...]
+          // [[id, in stock (1/0), [option values], price, compare-at or null, sale %, price in cents], ...]
           this.variants = data ? JSON.parse(data.textContent) : null;
         } catch (error) {
           this.variants = null;
@@ -179,6 +189,53 @@ if (!customElements.get('dsr-card-options')) {
       onColor() {
         this.refreshSizes();
         this.updateLinks();
+        this.updatePrice();
+      }
+
+      // The price and sale badge for the choice on the card, from one variant:
+      // the exact one once a size is chosen, otherwise the cheapest in-stock
+      // variant of the chosen colour (any variant when none is in stock).
+      // "From" when that colour's sizes in stock cost different amounts.
+      updatePrice() {
+        if (!this.variants || !this.variants.length || !this.card || this.variants[0].length < 7) return;
+        const color = this.color();
+        const size = this.size();
+        let scope = this.variants.filter(([, , options]) => color === null || this.colorIndex < 0 || options[this.colorIndex] === color);
+        if (size !== null && this.sizeIndex >= 0) {
+          const exact = scope.filter(([, , options]) => options[this.sizeIndex] === size);
+          if (exact.length) scope = exact;
+        }
+        if (!scope.length) return;
+        const inStock = scope.filter(([, available]) => available);
+        const pool = inStock.length ? inStock : scope;
+        const variant = pool.reduce((low, next) => (next[6] < low[6] ? next : low));
+        const [, , , price, compare, percent] = variant;
+        // "From" only when the sizes that can be bought cost different amounts.
+        const from = new Set(pool.map((entry) => entry[6])).size > 1;
+        const text = from ? dsrCardDecode(this.dataset.from || '__price__').replace('__price__', price) : price;
+
+        const block = this.card.querySelector('.card-information .price');
+        if (block) {
+          block.classList.toggle('price--on-sale', Boolean(compare));
+          block.querySelectorAll('.price__regular .price-item--regular, .price__sale .price-item--sale').forEach((item) => {
+            item.textContent = text;
+          });
+          const was = block.querySelector('.price__sale s.price-item--regular');
+          if (was) was.textContent = compare || '';
+        }
+        this.card.querySelectorAll('[data-dsr-sale-badge]').forEach((badge) => {
+          badge.replaceChildren();
+          badge.hidden = !(percent >= 1);
+          if (percent >= 1) {
+            const shown = document.createElement('span');
+            shown.setAttribute('aria-hidden', 'true');
+            shown.textContent = `${percent}%`;
+            const spoken = document.createElement('span');
+            spoken.className = 'visually-hidden';
+            spoken.textContent = dsrCardDecode(this.dataset.sale || '__percent__%').replace('__percent__', percent);
+            badge.append(shown, spoken);
+          }
+        });
       }
 
       onClick(event) {
@@ -190,6 +247,7 @@ if (!customElements.get('dsr-card-options')) {
         const chosen = this.sizes.length === 1 || button.getAttribute('aria-pressed') !== 'true';
         this.sizes.forEach((other) => other.setAttribute('aria-pressed', other === button && chosen ? 'true' : 'false'));
         this.updateLinks();
+        this.updatePrice();
       }
 
       // The exact variant chosen on the card, or null while the choice is
@@ -234,7 +292,7 @@ if (!customElements.get('dsr-card-options')) {
   );
 }
 
-// The bag button (snippets/dsr-card-quick-add.liquid) of products with more
+// The quick-add bag (snippets/dsr-card-quick-add.liquid) of products with more
 // than one variant. Runs before Dawn's product-form (capture): with an exact,
 // in-stock variant chosen on the card, it puts that variant's id in the form
 // and lets Dawn add it; otherwise it stops the add and opens the product's
