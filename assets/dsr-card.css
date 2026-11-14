@@ -357,12 +357,15 @@
    (each colour button is 24px wide, WCAG 2.5.8's minimum). Not chosen: no
    ring (light colours keep a thin grey edge); chosen: a dark ring just
    outside. The snippet caps the row ("+N"), so it never wraps. */
+/* Every colour button is 24px; the list starts 4px into the card's padding
+   so the first square lines up with the name and price. */
 .dsr-card-swatches__list {
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
   gap: 0;
   margin: 0;
+  margin-inline-start: calc(var(--dsr-card-dot-gap) / -2);
 }
 
 .dsr-card-swatch {
@@ -379,13 +382,6 @@
   background: none;
   color: inherit;
   cursor: pointer;
-}
-
-/* The first colour starts at the row's edge. */
-.dsr-card-swatches__item:first-child .dsr-card-swatch {
-  justify-content: flex-start;
-  width: calc(var(--dsr-card-dot) + var(--dsr-card-dot-gap) / 2 + 2px);
-  padding-inline-start: 2px;
 }
 
 .dsr-card-swatch--static {
@@ -424,10 +420,6 @@
   background: rgba(var(--color-foreground), 0.7);
   transform: rotate(-45deg);
   pointer-events: none;
-}
-
-.dsr-card-swatches__item:first-child .dsr-card-swatch--sold-out::after {
-  inset-inline-start: 1px;
 }
 
 .dsr-card-swatch:focus-visible {

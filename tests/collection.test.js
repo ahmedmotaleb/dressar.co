@@ -225,9 +225,10 @@ async function main() {
       const range = document.createRange();
       range.selectNodeContents(a);
       const fits = [...range.getClientRects()].every((r) => r.left >= box.left - 1 && r.right <= box.right + 1);
-      return { lines: Math.round(box.height / lh), fits };
+      return { lines: Math.round(box.height / lh), fits, cut: a.scrollWidth > a.clientWidth + 1 };
     }, cardFor('linen-suit'));
-    check(`${tag} long title stops at 2 lines`, long.lines <= 2 && long.fits, JSON.stringify(long));
+    // One line, cut with "…", since the compact V2 (docs/stages/card-v2.md).
+    check(`${tag} long title stays on one line, cut with "…"`, long.lines === 1 && long.cut, JSON.stringify(long));
 
     // Picking a colour.
     const genzari = `${cardFor('linen-maxi-skirt-with-front-pockets')} .dsr-card-swatch[aria-label="Genzari"]`;

@@ -132,7 +132,8 @@ async function main() {
 
       check(`${tag} every card has a colour row and a size row`, cards.length === 9 && cards.every((c) => c.colours && c.sizes), `${cards.length} ${detail('colours')}`);
       check(`${tag} order: photo, name, price, colours, sizes`, cards.every((c) => c.order), detail('order'));
-      check(`${tag} names take the same height (two lines) and place on every card`, same('title') && cards[0].title[1] >= 30, detail('title'));
+      // One line since the compact V2 (docs/stages/card-v2.md).
+      check(`${tag} names take the same height (one line) and place on every card`, same('title') && cards[0].title[1] >= 14 && cards[0].title[1] <= 20, detail('title'));
       check(`${tag} prices at the same height and place on every card`, same('price'), detail('price'));
       check(`${tag} colour rows at the same height and place on every card`, same('colours'), detail('colours'));
       check(`${tag} size rows at the same height and place on every card`, same('sizes'), detail('sizes'));

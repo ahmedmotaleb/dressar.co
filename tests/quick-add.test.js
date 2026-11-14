@@ -143,7 +143,7 @@ async function main() {
               icon: [Math.round(svg.width), Math.round(svg.height)],
               iconCentred: Math.abs(svg.left + svg.width / 2 - (box.left + box.width / 2)) < 1 && Math.abs(svg.top + svg.height / 2 - (box.top + box.height / 2)) < 1,
               text: [...b.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent.trim()).join(''),
-              plus: b.querySelector('svg').classList.contains('icon-plus'),
+              bag: b.querySelector('svg').classList.contains('icon-cart-empty'),
               bottom: Math.round(img.bottom - box.bottom),
               // Bottom-right in both reading directions (docs/stages/card-upgrade.md).
               end: Math.round(img.right - box.right),
@@ -156,13 +156,12 @@ async function main() {
         check(`${tag} collection: one quick-add button per card`, r.n > 0 && c.every((x) => x.count === 1), JSON.stringify(c.map((x) => x.count)));
         // The detail lists the cards that fail, by position in the grid.
         const failing = (ok) => JSON.stringify(c.map((x, i) => ({ i, ...x })).filter((x) => !ok(x)));
-        // The card upgrade (docs/stages/card-upgrade.md): a small outlined "+".
-        const px = desktop ? 34 : 30;
+        // The compact V2 (docs/stages/card-v2.md): a small translucent bag.
         const edge = desktop ? 12 : 10;
-        const looks = (x) => x.w === px && x.h === px && x.border === '1px solid rgb(17, 17, 17)' && x.bg === 'rgb(255, 255, 255)' && x.radius === '3px' && x.shadow === 'none';
-        const iconOnly = (x) => x.icon.join() === (desktop ? '18,18' : '16,16') && x.iconCentred && x.color === 'rgb(17, 17, 17)' && x.text === '' && x.plus;
-        check(`${tag} small outlined "+": ${px} x ${px} px, white, thin dark edge, 3px corners, no shadow`, c.every(looks), failing(looks));
-        check(`${tag} icon only: a black plus, ${desktop ? 18 : 16}px, centred, no text`, c.every(iconOnly), failing(iconOnly));
+        const looks = (x) => x.w === 32 && x.h === 32 && x.bg === 'rgba(255, 255, 255, 0.88)' && x.radius === '8px';
+        const iconOnly = (x) => x.icon.join() === '28,28' && x.iconCentred && x.color === 'rgb(17, 17, 17)' && x.text === '' && x.bag;
+        check(`${tag} small bag button: 32 x 32 px, translucent white, 8px corners`, c.every(looks), failing(looks));
+        check(`${tag} icon only: a dark shopping bag, centred, no text`, c.every(iconOnly), failing(iconOnly));
         check(`${tag} on the photo's bottom-right corner, ${edge}px in`, c.every((x) => x.bottom === edge && x.end === edge), JSON.stringify(c.map((x) => [x.bottom, x.end])));
         check(`${tag} clear of the sale or sold-out badge`, c.every((x) => !x.overlapsBadge));
 
