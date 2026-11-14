@@ -1,0 +1,33 @@
+{%- doc -%}
+  The colour and size rows of a product card (snippets/dsr-card-swatches.liquid,
+  snippets/dsr-card-sizes.liquid), with the product's variants for the card's
+  script (assets/dsr-card.js): which sizes the chosen colour has in stock, and
+  the exact variant the bag button adds. Shopify's own variants and stock;
+  nothing made up.
+
+  Variants: [id, in stock (1/0), [option values]] for each, only for products
+  with more than one.
+
+  @param {product} card_product - The product on the card.
+
+  @example
+  {%- render 'dsr-card-options', card_product: card_product -%}
+{%- enddoc -%}
+<dsr-card-options class="dsr-card-options">
+  {%- if settings.card_show_swatches -%}
+    {%- render 'dsr-card-swatches', card_product: card_product -%}
+  {%- endif -%}
+  {%- if settings.card_show_sizes -%}
+    {%- render 'dsr-card-sizes', card_product: card_product -%}
+  {%- endif -%}
+  {%- if card_product.variants_count > 1 -%}
+    <script type="application/json" data-dsr-card-variants>
+      [
+        {%- for variant in card_product.variants -%}
+          [{{ variant.id }},{% if variant.available %}1{% else %}0{% endif %},{{ variant.options | json }}]
+          {%- unless forloop.last %},{% endunless -%}
+        {%- endfor -%}
+      ]
+    </script>
+  {%- endif -%}
+</dsr-card-options>

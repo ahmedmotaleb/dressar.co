@@ -114,7 +114,9 @@ async function main() {
             // The list starts 0.5rem out (its first swatch's dot lines up with the text), on the reading-start side.
             colourInside: items.every((r) => r.left >= card.left - 6 && r.right <= card.right + 6) && (getComputedStyle(li).direction === 'rtl' ? items.every((r) => r.left >= card.left - 1) : items.every((r) => r.right <= card.right + 1)),
             sizeLine: sizeItems.length ? new Set(sizeItems.map((r) => Math.round(r.top))).size === 1 : true,
-            sizeInside: sizeItems.every((r) => r.left >= card.left - 1 && r.right <= card.right + 1),
+            // The size row stays inside the card; more sizes than fit scroll sideways inside it.
+            sizeInside: (() => { const list = li.querySelector('.dsr-card-sizes'); if (!list) return true; const r = list.getBoundingClientRect(); return r.left >= card.left - 1 && r.right <= card.right + 1; })(),
+            sizesStruck: [...li.querySelectorAll('.dsr-card-size')].every((b) => b.getAttribute('aria-disabled') === 'true'),
             sizeCount: sizeItems.length,
             plusInside: plus && media ? plus.left >= media.left && plus.right <= media.right && plus.top >= media.top && plus.bottom <= media.bottom : null,
           };
@@ -151,7 +153,7 @@ async function main() {
       check(`${tag} no made-up swatch anywhere`, cards.every((c) => c.fake === 0), detail('fake'));
       check(`${tag} colour rows on one line, inside the card`, cards.every((c) => c.colourLine && c.colourInside), JSON.stringify(cards.filter((c) => !c.colourLine || !c.colourInside).map((c) => c.handle)));
       check(`${tag} size rows on one line, inside the card (6 sizes too)`, cards.every((c) => c.sizeLine && c.sizeInside) && by['qa-row-six-sizes'].sizeCount === 6, JSON.stringify(cards.filter((c) => !c.sizeLine || !c.sizeInside).map((c) => c.handle)));
-      check(`${tag} sold out: sizes row kept, empty`, by['qa-row-sold-out'].sizeCount === 0 && by['qa-row-sold-out'].sizes, JSON.stringify(by['qa-row-sold-out'].sizes));
+      check(`${tag} sold out: its sizes shown, all struck through`, by['qa-row-sold-out'].sizeCount === 3 && by['qa-row-sold-out'].sizesStruck, JSON.stringify(by['qa-row-sold-out'].sizes));
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
       check(`${tag} no sideways page scroll`, overflow <= 0, overflow);
       check(`${tag} no JS errors`, errors.length === 0, errors.join(' | '));

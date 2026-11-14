@@ -1,14 +1,17 @@
 {%- doc -%}
-  The sizes of a product card, in the product's own option order. A size is
-  in stock when any variant with that size is available (in any colour);
-  sizes with no stock are struck through and announced as sold out.
+  The size row of a product card: the product's own sizes, in its option
+  order, as small buttons the shopper can choose (assets/dsr-card.js). The
+  row is always there, one line high (assets/dsr-card.css), even when empty,
+  so rows line up across the grid.
 
-  The size option is found by name: Theme settings > Dressar >
-  "Size option names". Sold-out products show nothing (the card's badge
-  already says so). One pass over the variants, no nested loops.
+  - A size with no stock is struck through, announced as sold out and can't
+    be chosen. Here, before a colour is chosen, that means no stock in any
+    colour; assets/dsr-card.js then narrows it to the card's chosen colour.
+  - A product with one size has it chosen already.
+  - A sold-out product shows its sizes, all struck through.
 
-  The row is always there, at a fixed height (assets/dsr-card.css), even when
-  empty, so rows line up across the grid.
+  The size option is found by name: Theme settings > Dressar > "Size option
+  names". One pass over the variants, no nested loops.
 
   @param {product} card_product - The product on the card.
 
@@ -35,29 +38,53 @@
   endfor
 -%}
 
-<div class="dsr-card-sizes-row">
-{%- if size_option and card_product.available -%}
-  {%- liquid
-    assign size_key = 'option' | append: size_option.position
-    assign in_stock = '|'
-    for variant in card_product.variants
-      if variant.available
-        assign in_stock = in_stock | append: variant[size_key] | append: '|'
+<div
+  class="dsr-card-sizes-row"
+  {% if size_option %}
+    data-option-index="{{ size_option.position | minus: 1 }}"
+  {% endif %}
+>
+  {%- if size_option -%}
+    <span class="dsr-card-row__label" aria-hidden="true">{{ 'dressar.card.size_row' | t }}</span>
+    {%- liquid
+      assign size_key = 'option' | append: size_option.position
+      assign in_stock = '|'
+      for variant in card_product.variants
+        if variant.available
+          assign in_stock = in_stock | append: variant[size_key] | append: '|'
+        endif
+      endfor
+      assign only_size = false
+      if size_option.values.size == 1
+        assign only_size = true
       endif
-    endfor
-  -%}
-  <ul class="dsr-card-sizes list-unstyled" role="list" aria-label="{{ 'dressar.card.sizes_label' | t }}">
-    {%- for value in size_option.values -%}
-      {%- assign token = '|' | append: value.name | append: '|' -%}
-      {%- if in_stock contains token -%}
-        <li class="dsr-card-sizes__size">{{ value.name | escape }}</li>
-      {%- else -%}
-        <li class="dsr-card-sizes__size dsr-card-sizes__size--unavailable">
-          <span aria-hidden="true">{{ value.name | escape }}</span>
-          <span class="visually-hidden">{{ 'dressar.card.value_sold_out' | t: value: value.name }}</span>
+    -%}
+    <ul class="dsr-card-sizes list-unstyled" role="list" aria-label="{{ 'dressar.card.sizes_label' | t }}">
+      {%- for value in size_option.values -%}
+        {%- liquid
+          assign token = '|' | append: value.name | append: '|'
+          assign size_sold_out = true
+          if in_stock contains token
+            assign size_sold_out = false
+          endif
+          assign sold_out_label = 'dressar.card.value_sold_out' | t: value: value.name
+        -%}
+        <li>
+          <button
+            type="button"
+            class="dsr-card-size"
+            data-value="{{ value.name | escape }}"
+            data-sold-out-label="{{ sold_out_label | escape }}"
+            aria-pressed="{% if only_size and size_sold_out == false %}true{% else %}false{% endif %}"
+            {% if size_sold_out %}
+              aria-disabled="true"
+              aria-label="{{ sold_out_label | escape }}"
+            {% endif %}
+          >
+            {{- value.name | escape -}}
+          </button>
         </li>
-      {%- endif -%}
-    {%- endfor -%}
-  </ul>
-{%- endif -%}
+      {%- endfor -%}
+    </ul>
+  {%- endif -%}
 </div>

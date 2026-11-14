@@ -128,7 +128,10 @@ async function main() {
       overflow: document.documentElement.scrollWidth > window.innerWidth,
       ai: document.querySelectorAll('[class*="ai-featured-collection"], [class*="ai-product-card"], [class*="ai-slideshow"]').length,
       aiElements: [...document.querySelectorAll('main *')].filter((e) => /^featured-collection-aigen|^product-grid-aigen/.test(e.localName)).length,
-      inlineScripts: [...document.querySelectorAll('main script:not([src])')].length,
+      // Code only: the cards' variant data (<script type="application/json">,
+      // snippets/dsr-card-options.liquid) is data and never runs.
+      inlineScripts: [...document.querySelectorAll('main script:not([src]):not([type="application/json"])')].length,
+      jsonScripts: [...document.querySelectorAll('main script[type="application/json"]')].filter((s) => { try { JSON.parse(s.textContent); return false; } catch (e) { return true; } }).length,
       sliders: document.querySelectorAll('main slider-component').length,
     }));
     check(`${tag} sections render in the Stage 7 order`, JSON.stringify(basics.order.filter((id) => ORDER.includes(id))) === JSON.stringify(ORDER), basics.order.join(', '));
@@ -137,6 +140,7 @@ async function main() {
     check(`${tag} no AI carousel markup; the rows use Dawn's one slider`, basics.ai === 0 && basics.aiElements === 0 && basics.sliders >= 5, JSON.stringify(basics));
     // The editorial AI blocks kept (media grid, videos, icons) carry one inline script each; the carousels added five more.
     check(`${tag} inline scripts in the page body: at most the 3 kept editorial blocks`, basics.inlineScripts <= 3, String(basics.inlineScripts));
+    check(`${tag} every JSON data block in the page body parses`, basics.jsonScripts === 0, String(basics.jsonScripts));
 
     // Product rows.
     for (const row of rows) {

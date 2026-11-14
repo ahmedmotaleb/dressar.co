@@ -276,3 +276,275 @@ quick-add-modal .product-form__input--dsr-photos {
     border-width: 3px;
   }
 }
+
+/* ==========================================================================
+   Compact product page (2S Homewear reference, docs/stages/2s-redesign.md)
+
+   Mobile first: a large rounded photo with thumbnails, then a tight column
+   (name, rating, price, colour, size, size guide, stock, add to cart,
+   shipping and exchange, description, fabric and fit) in small, firm type.
+   Only spacing, type and shapes change; Dawn's blocks and their order in the
+   product template are unchanged here. Sizes in px on purpose: this theme
+   sets html { font-size: 11px }.
+   ========================================================================== */
+
+/* Gallery: rounded photos and thumbnails (Dawn's own media radius). */
+.product {
+  --media-radius: 10px;
+}
+
+.product .thumbnail {
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.product .thumbnail-list {
+  gap: 8px;
+}
+
+/* A tighter column. */
+.product__info-container > * + * {
+  margin: 12px 0;
+}
+
+.product__info-container .product-form,
+.product__info-container .product__description,
+.product__info-container .icon-with-text {
+  margin: 16px 0;
+}
+
+/* Arabic letters in Cairo (layout/theme.liquid declares it when the theme
+   setting "Cairo for Arabic on product pages and cards" is on). Latin text
+   keeps the theme font: Cairo is an Arabic-only subset. No letter-spacing on
+   Arabic: it pulls the joined letters apart. */
+.dsr-arabic-font .product__info-container,
+.dsr-arabic-font .dsr-sticky-atc {
+  --font-body-family: var(--dsr-font-arabic-body);
+  --font-heading-family: var(--dsr-font-arabic-heading);
+  font-family: var(--font-body-family);
+}
+
+[dir='rtl'] :is(.product__info-container, .dsr-sticky-atc) :where(*) {
+  letter-spacing: 0;
+}
+
+/* Name: firm, not oversized. */
+.product__info-container .product__title {
+  margin-bottom: 6px;
+}
+
+.product__info-container .product__title > h1 {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* Rating, right under the name: Judge.me's badge and Dawn's rating row. */
+.product__info-container .rating-wrapper,
+.product__info-container .jdgm-widget {
+  margin-top: 4px;
+  margin-bottom: 4px;
+  font-size: 12px;
+}
+
+/* Price: the price to pay, bold; the old price smaller. */
+.product__info-container .price--large {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.product__info-container .price--large.price--on-sale .price-item--regular {
+  font-size: 14px;
+  font-weight: var(--font-body-weight);
+}
+
+/* ---------- Colour and size picker (2S reference) ---------- */
+
+/* Each option: its label ("Color — Black", the option's own translated name
+   and value), then its choices 10px below; 20px between options. */
+variant-selects .product-form__input {
+  margin: 0 0 20px;
+}
+
+variant-selects .product-form__input:last-child {
+  margin-bottom: 0;
+}
+
+.product__info-container .product-form__input .form__label {
+  margin: 0 0 10px;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: 0;
+  text-transform: none;
+  color: #111111;
+}
+
+/* Colour chips: 42 x 30, 5px corners, 12px apart, in the variants' own
+   Shopify swatch colours. Not chosen: a light grey edge. Chosen: a black
+   frame with a white ring inside it. Sold out: faded and crossed (Dawn). */
+variant-selects .product-form__input--swatch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+variant-selects .product-form__input--swatch .swatch-input__input + .swatch-input__label {
+  --swatch-input--size: 42px;
+  --swatch-input--border-radius: 5px;
+  display: block;
+  margin: 0;
+  border-radius: 5px;
+}
+
+variant-selects .product-form__input--swatch .swatch-input__label > .swatch {
+  width: 42px;
+  height: 30px;
+  aspect-ratio: auto;
+  border: 1px solid #d9d9d9;
+  border-radius: 5px;
+  transition: border-color var(--duration-short) ease, box-shadow var(--duration-short) ease;
+}
+
+variant-selects .product-form__input--swatch .swatch-input__input + .swatch-input__label,
+variant-selects .product-form__input--swatch .swatch-input__input + .swatch-input__label:hover,
+variant-selects .product-form__input--swatch .swatch-input__input:hover + .swatch-input__label,
+variant-selects .product-form__input--swatch .swatch-input__input:checked + .swatch-input__label {
+  outline: none;
+}
+
+variant-selects .product-form__input--swatch .swatch-input__input:not(:checked) + .swatch-input__label:hover > .swatch {
+  border-color: #8c8c8c;
+}
+
+variant-selects .product-form__input--swatch .swatch-input__input:checked + .swatch-input__label > .swatch {
+  border-color: #111111;
+  box-shadow: 0 0 0 1px #111111, inset 0 0 0 2px #ffffff;
+}
+
+variant-selects .product-form__input--swatch .swatch-input__input:focus-visible + .swatch-input__label {
+  outline: 2px solid #111111;
+  outline-offset: 3px;
+  box-shadow: none;
+}
+
+/* Dawn's sold-out line is drawn for a square; this one runs corner to corner
+   of the 42 x 30 chip (52px long, 35.5 degrees). */
+variant-selects .product-form__input--swatch .swatch-input__input:is(:disabled, .visually-disabled) + .swatch-input__label > .swatch::after {
+  --diagonal--size: 52px;
+  transform: rotate(-35.5deg);
+}
+
+/* Sizes: 64 x 46 buttons (at least), 8px corners, 10px apart, wrapping onto
+   more rows when needed. White with a #D9D9D9 edge; the chosen size has a
+   2px #111 edge (1px border and a 1px inner ring, so nothing moves); a size
+   not in stock in the chosen colour is struck through (Dawn) and lighter.
+   (variant-selects: after Dawn's picker styles, which load later.) */
+variant-selects .product-form__input--pill {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+variant-selects .product-form__input--pill input[type='radio'] + label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 64px;
+  height: 46px;
+  margin: 0;
+  padding: 0 14px;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  background-color: #ffffff;
+  color: #111111;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1;
+  text-transform: none;
+}
+
+variant-selects .product-form__input--pill input[type='radio'] + label::before {
+  border-radius: 8px;
+}
+
+variant-selects .product-form__input--pill input[type='radio'] + label:hover {
+  border-color: #111111;
+}
+
+variant-selects .product-form__input--pill input[type='radio']:checked + label {
+  border-color: #111111;
+  background-color: #ffffff;
+  color: #111111;
+  box-shadow: inset 0 0 0 1px #111111;
+}
+
+variant-selects .product-form__input--pill input[type='radio']:disabled + label,
+variant-selects .product-form__input--pill input[type='radio'].disabled + label {
+  border-color: #ececec;
+  color: rgba(17, 17, 17, 0.6);
+}
+
+/* Chosen but sold out: Dawn would write it in the background colour (white
+   on white here). */
+variant-selects .product-form__input--pill input[type='radio']:is(:disabled, .disabled):checked + label {
+  border-color: rgba(17, 17, 17, 0.6);
+  color: rgba(17, 17, 17, 0.6);
+  box-shadow: none;
+}
+
+variant-selects .product-form__input--pill input[type='radio']:focus-visible + label {
+  outline: 2px solid #111111;
+  outline-offset: 2px;
+}
+
+@media screen and (forced-colors: active) {
+  variant-selects .product-form__input--pill input[type='radio']:checked + label,
+  variant-selects .product-form__input--swatch .swatch-input__input:checked + .swatch-input__label > .swatch {
+    outline: 2px solid CanvasText;
+    outline-offset: 1px;
+  }
+}
+
+/* Size guide, size help, stock: small. */
+.product__info-container .product-popup-modal__button,
+.product__info-container .dsr-size-help,
+.product__info-container .product__inventory {
+  font-size: 13px;
+}
+
+/* Add to cart: full width, rounded, firm. */
+.product-form__buttons .product-form__submit {
+  min-height: 50px;
+  border-radius: 8px;
+  font-size: 15px;
+  letter-spacing: 0.04em;
+}
+
+[dir='rtl'] .product-form__buttons .product-form__submit {
+  letter-spacing: 0;
+}
+
+.product-form__buttons .product-form__submit::before,
+.product-form__buttons .product-form__submit::after {
+  border-radius: 8px;
+}
+
+@media screen and (min-width: 990px) {
+  .product__info-container .product__title > h1 {
+    font-size: 24px;
+  }
+
+  .product__info-container .price--large {
+    font-size: 20px;
+  }
+
+  .product__info-container > * + * {
+    margin: 14px 0;
+  }
+}

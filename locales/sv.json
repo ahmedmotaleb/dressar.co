@@ -551,7 +551,9 @@
       },
       "sizes_label": "Sizes",
       "value_sold_out": "{{ value }}, sold out",
-      "quick_add": "Quick add to cart"
+      "quick_add": "Quick add to cart",
+      "color_row": "Colour:",
+      "size_row": "Size:"
     },
     "product": {
       "model_size": "The model is wearing size {{ size }}",
@@ -566,7 +568,8 @@
         "neckline": "Neckline",
         "care": "Care"
       },
-      "colour": "Colour"
+      "colour": "Colour",
+      "change": "Change"
     },
     "whatsapp": {
       "label": "Chat with us on WhatsApp",

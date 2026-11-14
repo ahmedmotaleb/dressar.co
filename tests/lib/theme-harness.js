@@ -7,7 +7,21 @@
 
 const fs = require('fs');
 const path = require('path');
-const { Liquid, Drop, Value } = require('liquidjs');
+const { Liquid, Drop, Value, defaultOperators } = require('liquidjs');
+
+// Shopify's Liquid refuses to order a string against a number ("Liquid error:
+// comparison of String with 0 failed"); LiquidJS converts quietly. The same
+// refusal here makes such a comparison fail the tests instead of the storefront.
+const plain = (v) => (v !== null && typeof v === 'object' && typeof v.valueOf === 'function' ? v.valueOf() : v);
+const strictOrder = (op) => (l, r, ctx) => {
+  const a = plain(l);
+  const b = plain(r);
+  if ((typeof a === 'string' && typeof b === 'number') || (typeof a === 'number' && typeof b === 'string')) {
+    throw new Error(`Liquid error: comparison of ${typeof a === 'string' ? 'String' : 'Integer'} with ${typeof a === 'string' ? b : JSON.stringify(b)} failed`);
+  }
+  return defaultOperators[op](l, r, ctx);
+};
+const shopifyOperators = { ...defaultOperators, '>': strictOrder('>'), '<': strictOrder('<'), '>=': strictOrder('>='), '<=': strictOrder('<=') };
 
 const HEADER_COMMENT = /^\s*\/\*[\s\S]*?\*\//;
 const readJson = (file) => JSON.parse(fs.readFileSync(file, 'utf8').replace(HEADER_COMMENT, ''));
@@ -195,7 +209,9 @@ function resolveResource(def, v, globals) {
 
 // ---------- harness ----------
 
-function createHarness({ root, fixtures, locale = 'en.default', origin = 'http://dressar.test' }) {
+// templatePatch(name, template): optional, returns a JSON template changed for
+// a test (for example a block setting switched on that the store has off).
+function createHarness({ root, fixtures, locale = 'en.default', origin = 'http://dressar.test', templatePatch = null }) {
   const store = readJson(fixtures);
   const localeData = readJson(path.join(root, 'locales', `${locale}.json`));
   const settingsSchema = JSON.parse(fs.readFileSync(path.join(root, 'config/settings_schema.json'), 'utf8'));
@@ -214,6 +230,7 @@ function createHarness({ root, fixtures, locale = 'en.default', origin = 'http:/
     strictFilters: false,
     strictVariables: false,
     jsTruthy: false,
+    operators: shopifyOperators,
   });
 
   // Tags Shopify adds.
@@ -388,7 +405,8 @@ function createHarness({ root, fixtures, locale = 'en.default', origin = 'http:/
       }
       const extraAlt = ` alt="${attr(o.alt)}"`;
       delete o.alt;
-      const extra = ['class', 'alt', 'sizes', 'loading', 'fetchpriority', 'width', 'height', 'style']
+      // Like Shopify, other attributes (data-*) pass straight through.
+      const extra = ['class', 'alt', 'sizes', 'loading', 'fetchpriority', 'width', 'height', 'style', ...Object.keys(o).filter((k) => k.startsWith('data-'))]
         .filter((k) => o[k] !== undefined && o[k] !== false)
         .map((k) => ` ${k}="${attr(k === 'height' || k === 'width' ? Math.round(Number(o[k])) : o[k])}"`)
         .join('');
@@ -594,7 +612,8 @@ function createHarness({ root, fixtures, locale = 'en.default', origin = 'http:/
     },
     // A JSON template's sections in order, like Shopify's content_for_layout.
     async renderTemplate(name, globals, { only } = {}) {
-      const template = readJson(path.join(root, 'templates', `${name}.json`));
+      let template = readJson(path.join(root, 'templates', `${name}.json`));
+      if (templatePatch) template = templatePatch(name, template) || template;
       let html = '';
       let index = 0;
       for (const sid of template.order) {
@@ -643,7 +662,7 @@ function svgPlaceholder(name, w, h) {
 }
 
 async function routeTheme(page, { root, fontsDir, harness, globalsFor, onCartAdd, cartSection, cartJson, pages, imageSize }) {
-  const mime = { '.css': 'text/css', '.js': 'application/javascript', '.svg': 'image/svg+xml', '.json': 'application/json' };
+  const mime = { '.css': 'text/css', '.js': 'application/javascript', '.svg': 'image/svg+xml', '.json': 'application/json', '.woff2': 'font/woff2' };
   await page.route('**/*', async (route) => {
     const url = new URL(route.request().url());
     const send = (body, type = 'text/html', status = 200) => {

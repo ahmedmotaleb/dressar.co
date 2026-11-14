@@ -99,7 +99,8 @@
       {%- if picker_type == 'swatch' -%}
         <fieldset class="js product-form__input product-form__input--swatch">
           <legend class="form__label">
-            {{ option.name }}:
+            {{ option.name -}}
+            <span class="dsr-label-sep" aria-hidden="true"> — </span>
             <span data-selected-value>
               {{- option.selected_value -}}
             </span>
@@ -112,7 +113,17 @@
         </fieldset>
       {%- elsif picker_type == 'button' -%}
         <fieldset class="js product-form__input product-form__input--pill">
-          <legend class="form__label">{{ option.name }}</legend>
+          {%- comment -%}
+            Dressar: the chosen value after the option name ("Size — 2XL", as in
+            the 2S reference); Dawn's variant picker updates it on each choice.
+          {%- endcomment -%}
+          <legend class="form__label">
+            {{ option.name -}}
+            <span class="dsr-label-sep" aria-hidden="true"> — </span>
+            <span data-selected-value>
+              {{- option.selected_value -}}
+            </span>
+          </legend>
           {% render 'product-variant-options',
             option: option,
             block: block,

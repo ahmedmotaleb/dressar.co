@@ -67,7 +67,6 @@
         },
         "sku_r8AL6g": {
           "type": "sku",
-          "disabled": true,
           "settings": {
             "text_style": "body"
           }
@@ -81,7 +80,8 @@
           "type": "variant_picker",
           "settings": {
             "picker_type": "button",
-            "swatch_shape": "circle"
+            "swatch_shape": "circle",
+            "dsr_color_photos": false
           }
         },
         "quantity_selector": {
@@ -194,14 +194,14 @@
       "block_order": [
         "dsr_breadcrumbs",
         "title",
-        "price",
         "judge_me_reviews_preview_badge_amPJgp",
-        "sku_r8AL6g",
         "rating_izydnW",
+        "price",
         "variant_picker",
         "size_guide",
         "dsr_size_help",
         "dsr_model_size",
+        "sku_r8AL6g",
         "inventory_dsr",
         "quantity_selector",
         "buy_buttons",
@@ -318,7 +318,8 @@
         "show_rating": true,
         "padding_top": 36,
         "padding_bottom": 28,
-        "recommendation_intent": "complementary_related"
+        "recommendation_intent": "complementary_related",
+        "fallback_heading": ""
       }
     },
     "178648157455ed3771": {

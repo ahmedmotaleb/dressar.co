@@ -143,6 +143,17 @@
         "unit": "%",
         "label": "t:settings_schema.typography.settings.body_scale.label",
         "default": 100
+      },
+      {
+        "type": "header",
+        "content": "Arabic text"
+      },
+      {
+        "type": "checkbox",
+        "id": "dsr_arabic_font",
+        "label": "Cairo for Arabic on product pages and cards",
+        "info": "The theme fonts have no Arabic letters, so Arabic text otherwise uses the shopper's device font. Cairo (31 KB, served by the theme, loaded only when Arabic text is shown) is used in the product details, the sticky add-to-cart bar and the product cards.",
+        "default": true
       }
     ]
   },
@@ -1530,6 +1541,13 @@
       },
       {
         "type": "color",
+        "id": "card_background",
+        "label": "Card background",
+        "info": "The whole product card: behind the photo, name, rating, price, colours and sizes.",
+        "default": "#F2EEE9"
+      },
+      {
+        "type": "color",
         "id": "card_media_background",
         "label": "Photo background",
         "info": "Shown behind product photos while they load.",
@@ -1537,23 +1555,30 @@
       },
       {
         "type": "checkbox",
+        "id": "card_show_rating",
+        "label": "Show ratings",
+        "info": "Stars and review count from the product's reviews (Judge.me). Products without reviews show no rating row.",
+        "default": true
+      },
+      {
+        "type": "checkbox",
         "id": "card_show_swatches",
         "label": "Show colour swatches",
-        "info": "Uses the colours set on each product's colour option in Shopify. Products in one colour show none.",
+        "info": "Uses the colours set on each product's colour option in Shopify, or its Color category metafield. One colour or several; never a made-up colour.",
         "default": true
       },
       {
         "type": "checkbox",
         "id": "card_show_sizes",
         "label": "Show sizes",
-        "info": "Sizes with no stock in any colour are struck through.",
+        "info": "Shoppers can choose a size on the card. Sizes with no stock in the chosen colour are struck through and can't be chosen.",
         "default": true
       },
       {
         "type": "checkbox",
         "id": "card_quick_add",
         "label": "Show quick add button",
-        "info": "A square + on each product photo. Products with one variant go straight to the cart; the others open their size and colour picker.",
+        "info": "A small bag button on each product photo. It adds the colour and size chosen on the card; without a full choice it opens the product's colour and size picker.",
         "default": true
       },
       {

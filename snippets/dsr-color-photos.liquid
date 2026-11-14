@@ -59,7 +59,8 @@
 {%- if option -%}
   <fieldset class="js product-form__input product-form__input--dsr-photos">
     <legend class="form__label">
-      {{ option.name }}:
+      {{ option.name -}}
+      <span class="dsr-label-sep" aria-hidden="true"> — </span>
       <span data-selected-value>
         {{- option.selected_value -}}
       </span>
@@ -85,7 +86,7 @@
     <p class="form__label" id="{{ label_id }}">
       {{ 'dressar.product.colour' | t -}}
       {%- if own_name != blank -%}
-        : <span>{{ own_name | escape }}</span>
+        <span class="dsr-label-sep" aria-hidden="true"> — </span><span>{{ own_name | escape }}</span>
       {%- endif -%}
     </p>
     <dsr-color-photos class="dsr-color-photos" data-key="{{ section.id }}-{{ product.id }}">
