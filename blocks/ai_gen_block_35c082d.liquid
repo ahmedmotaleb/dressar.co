@@ -1,0 +1,423 @@
+{% doc %}
+  @prompt
+    price section comare at price and price and percentage of discount
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-price-compare-{{ ai_gen_id }} {
+    display: block;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+  }
+
+  .ai-price-compare-container-{{ ai_gen_id }} {
+    display: flex;
+    align-items: {{ block.settings.alignment }};
+    gap: {{ block.settings.spacing }}px;
+    flex-wrap: wrap;
+  }
+
+  .ai-price-compare-original-{{ ai_gen_id }} {
+    font-size: {{ block.settings.original_price_size }}px;
+    color: {{ block.settings.original_price_color }};
+    text-decoration: line-through;
+    font-weight: {{ block.settings.original_price_weight }};
+  }
+
+  .ai-price-compare-current-{{ ai_gen_id }} {
+    font-size: {{ block.settings.current_price_size }}px;
+    color: {{ block.settings.current_price_color }};
+    font-weight: {{ block.settings.current_price_weight }};
+  }
+
+  .ai-price-compare-badge-{{ ai_gen_id }} {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: {{ block.settings.badge_padding_vertical }}px {{ block.settings.badge_padding_horizontal }}px;
+    background-color: {{ block.settings.badge_bg_color }};
+    color: {{ block.settings.badge_text_color }};
+    font-size: {{ block.settings.badge_font_size }}px;
+    font-weight: {{ block.settings.badge_font_weight }};
+    border-radius: {{ block.settings.badge_border_radius }}px;
+  }
+
+  .ai-price-compare-no-sale-{{ ai_gen_id }} {
+    font-size: {{ block.settings.current_price_size }}px;
+    color: {{ block.settings.current_price_color }};
+    font-weight: {{ block.settings.current_price_weight }};
+  }
+{% endstyle %}
+
+<price-compare-{{ ai_gen_id }}
+  class="ai-price-compare-{{ ai_gen_id }}"
+  {{ block.shopify_attributes }}
+>
+  {% if product.compare_at_price > product.price %}
+    <div class="ai-price-compare-container-{{ ai_gen_id }}">
+      {% if block.settings.show_original_price %}
+        <span class="ai-price-compare-original-{{ ai_gen_id }}">
+          {{ product.compare_at_price | money }}
+        </span>
+      {% endif %}
+
+      <span class="ai-price-compare-current-{{ ai_gen_id }}">
+        {{ product.price | money }}
+      </span>
+
+      {% if block.settings.show_discount_badge %}
+        {% assign savings = product.compare_at_price | minus: product.price %}
+        {% assign savings_percent = savings | times: 100.0 | divided_by: product.compare_at_price | round %}
+
+        <span class="ai-price-compare-badge-{{ ai_gen_id }}">
+          {% if block.settings.badge_format == 'percentage' %}
+            -{{ savings_percent }}%
+          {% elsif block.settings.badge_format == 'amount' %}
+            Save {{ savings | money }}
+          {% else %}
+            -{{ savings_percent }}% ({{ savings | money }})
+          {% endif %}
+        </span>
+      {% endif %}
+    </div>
+  {% else %}
+    <div class="ai-price-compare-container-{{ ai_gen_id }}">
+      <span class="ai-price-compare-no-sale-{{ ai_gen_id }}">
+        {{ product.price | money }}
+      </span>
+    </div>
+  {% endif %}
+</price-compare-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class PriceCompare{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.updatePriceDisplay();
+      }
+
+      updatePriceDisplay() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const variantId = urlParams.get('variant');
+
+        if (variantId && window.product && window.product.variants) {
+          const variant = window.product.variants.find(v => v.id == variantId);
+          if (variant) {
+            this.renderVariantPrice(variant);
+          }
+        }
+      }
+
+      renderVariantPrice(variant) {
+        const container = this.querySelector('.ai-price-compare-container-{{ ai_gen_id }}');
+        if (!container) return;
+
+        const hasDiscount = variant.compare_at_price && variant.compare_at_price > variant.price;
+
+        if (hasDiscount) {
+          const savings = variant.compare_at_price - variant.price;
+          const savingsPercent = Math.round((savings / variant.compare_at_price) * 100);
+
+          container.innerHTML = `
+            ${this.shouldShowOriginalPrice() ? `<span class="ai-price-compare-original-{{ ai_gen_id }}">${this.formatMoney(variant.compare_at_price)}</span>` : ''}
+            <span class="ai-price-compare-current-{{ ai_gen_id }}">${this.formatMoney(variant.price)}</span>
+            ${this.shouldShowBadge() ? `<span class="ai-price-compare-badge-{{ ai_gen_id }}">${this.getBadgeText(savingsPercent, savings)}</span>` : ''}
+          `;
+        } else {
+          container.innerHTML = `<span class="ai-price-compare-no-sale-{{ ai_gen_id }}">${this.formatMoney(variant.price)}</span>`;
+        }
+      }
+
+      shouldShowOriginalPrice() {
+        return {{ block.settings.show_original_price | json }};
+      }
+
+      shouldShowBadge() {
+        return {{ block.settings.show_discount_badge | json }};
+      }
+
+      getBadgeText(percent, amount) {
+        const format = {{ block.settings.badge_format | json }};
+        if (format === 'percentage') {
+          return `-${percent}%`;
+        } else if (format === 'amount') {
+          return `Save ${this.formatMoney(amount)}`;
+        } else {
+          return `-${percent}% (${this.formatMoney(amount)})`;
+        }
+      }
+
+      formatMoney(cents) {
+        if (typeof Shopify !== 'undefined' && Shopify.formatMoney) {
+          return Shopify.formatMoney(cents, window.theme.moneyFormat || '{{amount}}');
+        }
+        return (cents / 100).toFixed(2);
+      }
+    }
+
+    customElements.define('price-compare-{{ ai_gen_id }}', PriceCompare{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Price comparison",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Display options"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_original_price",
+      "label": "Show original price",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_discount_badge",
+      "label": "Show discount badge",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "badge_format",
+      "label": "Badge format",
+      "options": [
+        {
+          "value": "percentage",
+          "label": "Percentage only"
+        },
+        {
+          "value": "amount",
+          "label": "Amount only"
+        },
+        {
+          "value": "both",
+          "label": "Both"
+        }
+      ],
+      "default": "percentage"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "baseline",
+          "label": "Baseline"
+        }
+      ],
+      "default": "baseline"
+    },
+    {
+      "type": "range",
+      "id": "spacing",
+      "label": "Spacing between elements",
+      "min": 4,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "header",
+      "content": "Original price"
+    },
+    {
+      "type": "range",
+      "id": "original_price_size",
+      "label": "Font size",
+      "min": 10,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "original_price_color",
+      "label": "Color",
+      "default": "#999999"
+    },
+    {
+      "type": "select",
+      "id": "original_price_weight",
+      "label": "Font weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi-bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "header",
+      "content": "Current price"
+    },
+    {
+      "type": "range",
+      "id": "current_price_size",
+      "label": "Font size",
+      "min": 10,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "color",
+      "id": "current_price_color",
+      "label": "Color",
+      "default": "#121212"
+    },
+    {
+      "type": "select",
+      "id": "current_price_weight",
+      "label": "Font weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi-bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "header",
+      "content": "Discount badge"
+    },
+    {
+      "type": "range",
+      "id": "badge_font_size",
+      "label": "Font size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "badge_font_weight",
+      "label": "Font weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi-bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "color",
+      "id": "badge_bg_color",
+      "label": "Background color",
+      "default": "#334fb4"
+    },
+    {
+      "type": "color",
+      "id": "badge_text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "badge_padding_vertical",
+      "label": "Vertical padding",
+      "min": 2,
+      "max": 16,
+      "step": 2,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "badge_padding_horizontal",
+      "label": "Horizontal padding",
+      "min": 4,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "badge_border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 4
+    }
+  ],
+  "presets": [
+    {
+      "name": "Price comparison"
+    }
+  ]
+}
+{% endschema %}

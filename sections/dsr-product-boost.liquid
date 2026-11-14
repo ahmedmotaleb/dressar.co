@@ -1,0 +1,445 @@
+{%- comment -%}
+  Dressar - product page boosts (sales-optimized draft, Oct 2026)
+
+  One place for the product-page additions that are not regular theme blocks:
+  - styles for the trust list and the size-help link (the "dsr_trust" custom
+    liquid block in templates/product.json), for the sale badge that
+    snippets/price.liquid now fills with the amount saved, and for the
+    inventory line;
+  - a sticky "add to cart" bar for phones and tablets (below 990px), where
+    96% of sessions happen, laid out after the 2S Homewear reference: the
+    product's photo, its name, the current price, the chosen colour and size
+    (with "Change", back to the choice) and the add button. It is the only
+    sticky bar in the theme; it hides itself whenever a drawer, the menu or a
+    modal has locked the page (Dawn adds body.overflow-hidden / -tablet /
+    -mobile), so it never sits on top of a dialog. The page and the WhatsApp
+    button keep clear of it (its height, --dsr-sticky-height).
+
+  The sticky bar never adds to cart on its own. It presses the main product
+  form's own button, so the chosen variant, the cart drawer, the free-shipping
+  bar and every app hook keep working unchanged. Until the customer has picked
+  an option herself it scrolls her to the picker instead, so nobody orders the
+  pre-selected first size by accident.
+{%- endcomment -%}
+
+{%- if product -%}
+  {%- liquid
+    assign sticky_media = product.selected_or_first_available_variant.featured_media | default: product.featured_media
+  -%}
+  <div class="dsr-sticky-atc" data-dsr-sticky-atc hidden>
+    {%- if sticky_media -%}
+      {{
+        sticky_media.preview_image
+        | image_url: width: 144
+        | image_tag:
+          widths: '48, 96, 144',
+          sizes: '48px',
+          width: 48,
+          height: 64,
+          loading: 'lazy',
+          alt: '',
+          class: 'dsr-sticky-atc__thumb',
+          data-dsr-sticky-thumb: ''
+      }}
+    {%- endif -%}
+    <div class="dsr-sticky-atc__info">
+      <p class="dsr-sticky-atc__title">{{ product.title | escape }}</p>
+      <span class="dsr-sticky-atc__price" data-dsr-sticky-price></span>
+      <span class="dsr-sticky-atc__meta">
+        <span class="dsr-sticky-atc__choice" data-dsr-sticky-meta></span>
+        <button type="button" class="dsr-sticky-atc__change" data-dsr-sticky-change>
+          {{- 'dressar.product.change' | t -}}
+        </button>
+      </span>
+    </div>
+    <button type="button" class="button dsr-sticky-atc__btn" data-dsr-sticky-btn>
+      <span class="svg-wrapper dsr-sticky-atc__icon" aria-hidden="true">
+        {{- 'icon-cart-empty.svg' | inline_asset_content -}}
+      </span>
+      <span data-dsr-sticky-label>{{ 'products.product.add_to_cart' | t }}</span>
+    </button>
+  </div>
+{%- endif -%}
+
+{% style %}
+  .dsr-trust {
+    margin: 1.6rem 0 0.4rem;
+  }
+  .dsr-trust__list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .dsr-trust__list li {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 1rem 1.2rem;
+    border-radius: 8px;
+    background: #f6f2f0;
+    color: #121212;
+    font-size: 1.3rem;
+    line-height: 1.4;
+  }
+  .dsr-trust__list li span {
+    font-size: 1.6rem;
+    line-height: 1;
+  }
+  .dsr-trust__help {
+    display: block;
+    margin-top: 1rem;
+    padding: 1.1rem 1.2rem;
+    border: 1px solid #25d366;
+    border-radius: 8px;
+    color: #11753f;
+    font-size: 1.35rem;
+    text-align: center;
+    text-decoration: none;
+  }
+  .dsr-trust__help:hover {
+    background: #effaf3;
+  }
+
+  .product__info-container .price--on-sale .price__badge-sale {
+    border-color: #910505;
+    background: #910505;
+    color: #fff;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+  .product__info-container .product__inventory {
+    font-size: 1.4rem;
+  }
+
+  variant-selects.dsr-pick-hint {
+    animation: dsr-pick-hint 0.5s ease 2;
+    border-radius: 8px;
+  }
+  @keyframes dsr-pick-hint {
+    50% {
+      box-shadow: 0 0 0 3px rgba(145, 5, 5, 0.35);
+    }
+  }
+
+  .dsr-sticky-atc {
+    display: none;
+  }
+  @media screen and (max-width: 989px) {
+    .dsr-sticky-atc {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 899;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+      border-top: 1px solid rgba(18, 18, 18, 0.08);
+      background: #fff;
+      box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.08);
+      transform: translateY(110%);
+      visibility: hidden;
+      transition: transform 0.25s ease, visibility 0s linear 0.25s;
+    }
+    .dsr-sticky-atc[hidden] {
+      display: none;
+    }
+    .dsr-sticky-atc.is-visible {
+      transform: translateY(0);
+      visibility: visible;
+      transition: transform 0.25s ease, visibility 0s;
+    }
+    body:is(.overflow-hidden, .overflow-hidden-tablet, .overflow-hidden-mobile) .dsr-sticky-atc.is-visible {
+      transform: translateY(110%);
+      visibility: hidden;
+      transition: transform 0.25s ease, visibility 0s linear 0.25s;
+    }
+    .dsr-sticky-atc__btn[aria-disabled='true'] {
+      opacity: 0.5;
+    }
+    .dsr-sticky-atc__thumb {
+      flex: 0 0 auto;
+      width: 48px;
+      height: 64px;
+      border-radius: 6px;
+      object-fit: cover;
+      background: #f2eee9;
+    }
+    .dsr-sticky-atc__info {
+      display: flex;
+      flex: 1 1 auto;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+    .dsr-sticky-atc__title {
+      margin: 0;
+      overflow: hidden;
+      color: #121212;
+      font-size: 12px;
+      line-height: 1.3;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .dsr-sticky-atc__price {
+      color: #121212;
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    .dsr-sticky-atc__meta {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      min-width: 0;
+      color: rgba(18, 18, 18, 0.7);
+      font-size: 12px;
+      line-height: 1.3;
+    }
+    .dsr-sticky-atc__choice {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .dsr-sticky-atc__choice:empty {
+      display: none;
+    }
+    .dsr-sticky-atc__change {
+      flex: 0 0 auto;
+      min-height: 24px;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: none;
+      color: #121212;
+      font: inherit;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      cursor: pointer;
+    }
+    .dsr-sticky-atc__btn {
+      display: inline-flex;
+      flex: 0 0 auto;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+      min-height: 48px;
+      margin: 0;
+      padding: 0 16px;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    .dsr-sticky-atc__btn::before,
+    .dsr-sticky-atc__btn::after {
+      border-radius: 8px;
+    }
+    .dsr-sticky-atc__icon,
+    .dsr-sticky-atc__icon svg {
+      width: 28px;
+      height: 28px;
+      margin: -4px;
+    }
+    body.dsr-has-sticky {
+      padding-bottom: var(--dsr-sticky-height, 8.8rem);
+    }
+    body.dsr-sticky-on .dsr-wa {
+      bottom: calc(var(--dsr-sticky-height, 8.8rem) + 1rem);
+    }
+  }
+{% endstyle %}
+
+<script>
+  (function () {
+    var bar = document.querySelector('[data-dsr-sticky-atc]');
+    var info = document.querySelector('product-info[id^="MainProduct-"]');
+    if (!bar || !info) return;
+
+    var priceEl = bar.querySelector('[data-dsr-sticky-price]');
+    var metaEl = bar.querySelector('[data-dsr-sticky-meta]');
+    var stickyBtn = bar.querySelector('[data-dsr-sticky-btn]');
+    var stickyLabel = bar.querySelector('[data-dsr-sticky-label]') || stickyBtn;
+    var changeBtn = bar.querySelector('[data-dsr-sticky-change]');
+    var thumb = bar.querySelector('[data-dsr-sticky-thumb]');
+    var pickLabel = {{ 'dressar.product.pick_size' | t | json }};
+
+    function mainButton() {
+      return info.querySelector('product-form .product-form__submit');
+    }
+
+    function picker() {
+      return info.querySelector('variant-selects');
+    }
+
+    // Options with a single value (one colour, one fabric) are not a choice.
+    function choiceGroups() {
+      var groups = [];
+      info.querySelectorAll('variant-selects fieldset').forEach(function (fieldset) {
+        var radios = fieldset.querySelectorAll('input[type="radio"]');
+        if (radios.length > 1) groups.push({ radios: radios });
+      });
+      info.querySelectorAll('variant-selects select').forEach(function (select) {
+        if (select.options.length > 1) groups.push({ select: select });
+      });
+      return groups;
+    }
+
+    // "Black / 2XL": the colour always (it shows on the page), the other
+    // choices once she has picked; nothing for options with one value.
+    function chosenValues() {
+      return choiceGroups()
+        .filter(function (group) {
+          if (picked) return true;
+          var box = group.radios && group.radios[0].closest('.product-form__input');
+          return Boolean(box && box.matches('.product-form__input--dsr-photos, .product-form__input--swatch'));
+        })
+        .map(function (group) {
+          if (group.select) return group.select.value;
+          var checked = Array.prototype.filter.call(group.radios, function (radio) {
+            return radio.checked;
+          })[0];
+          return checked ? checked.value : '';
+        })
+        .filter(Boolean)
+        .join(' / ');
+    }
+
+    // A size counts as chosen once she touches the picker, or when the link
+    // already named a variant (an ad pointing at one size, for example).
+    // Links from a product card's colour swatch name a variant too, but only
+    // the colour was chosen there; they carry pick=color (assets/dsr-card.js).
+    var search = window.location.search;
+    var picked =
+      choiceGroups().length === 0 || (/[?&]variant=/.test(search) && !/[?&]pick=color(&|$)/.test(search));
+
+    function sync() {
+      var price = info.querySelector('.price');
+      if (price) {
+        var current = price.classList.contains('price--on-sale')
+          ? price.querySelector('.price__sale .price-item--last')
+          : price.querySelector('.price__regular .price-item--regular');
+        if (current) priceEl.textContent = current.textContent.trim();
+      }
+
+      metaEl.textContent = chosenValues();
+
+      // The photo of the chosen variant: the gallery's current one.
+      var photo = info.querySelector('.product__media-item.is-active img, .product__media-list .product__media-item:first-child img');
+      if (thumb && photo && photo.currentSrc && thumb.getAttribute('src') !== photo.currentSrc) {
+        thumb.removeAttribute('srcset');
+        thumb.setAttribute('src', photo.currentSrc);
+      }
+
+      var btn = mainButton();
+      if (!btn) return;
+      var label = btn.querySelector('span');
+      stickyLabel.textContent = picked ? (label || btn).textContent.trim() : pickLabel;
+      // Sold out / unavailable: the bar says so and stays inert-looking. A tap
+      // still scrolls to the picker so another size can be chosen.
+      stickyBtn.setAttribute('aria-disabled', picked && btn.disabled ? 'true' : 'false');
+      measure();
+    }
+
+    var queued = false;
+    function schedule() {
+      if (queued) return;
+      queued = true;
+      window.requestAnimationFrame(function () {
+        queued = false;
+        sync();
+      });
+    }
+
+    info.addEventListener('change', function (event) {
+      if (event.target.closest && event.target.closest('variant-selects')) {
+        picked = true;
+        schedule();
+      }
+    });
+
+    function toPicker() {
+      var btn = mainButton();
+      var target = picker() || btn;
+      if (!target) return;
+      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (target.tagName === 'VARIANT-SELECTS') {
+        target.classList.add('dsr-pick-hint');
+        window.setTimeout(function () {
+          var current = picker();
+          if (current) current.classList.remove('dsr-pick-hint');
+        }, 1200);
+      }
+    }
+
+    stickyBtn.addEventListener('click', function () {
+      var btn = mainButton();
+      if (picked && btn && !btn.disabled) {
+        btn.click();
+        return;
+      }
+      toPicker();
+    });
+
+    // "Change": back to the colour and size choice.
+    if (changeBtn) changeBtn.addEventListener('click', toPicker);
+
+    new MutationObserver(schedule).observe(info, {
+      subtree: true,
+      childList: true,
+      attributes: true,
+      attributeFilter: ['disabled'],
+    });
+
+    var anchor = info.querySelector('product-form') || mainButton();
+    function setVisible(show) {
+      bar.classList.toggle('is-visible', show);
+      document.body.classList.toggle('dsr-sticky-on', show);
+    }
+
+    // The page and the WhatsApp button keep clear of the bar (its height).
+    function measure() {
+      if (bar.offsetHeight) document.body.style.setProperty('--dsr-sticky-height', bar.offsetHeight + 'px');
+    }
+
+    bar.hidden = false;
+    document.body.classList.add('dsr-has-sticky');
+    sync();
+    measure();
+    window.addEventListener('resize', measure, { passive: true });
+
+    if ('IntersectionObserver' in window && anchor) {
+      new IntersectionObserver(function (entries) {
+        setVisible(!entries[0].isIntersecting);
+      }).observe(anchor);
+    } else {
+      setVisible(true);
+    }
+  })();
+
+  // Sympl: when the shopper picks another variant, Dawn fetches the product
+  // section for it. Swap in that render's widget so the instalment amount
+  // follows the selected variant's price (snippets/sympl-widget.liquid).
+  // pubsub.js and constants.js are deferred, so wait for DOMContentLoaded.
+  document.addEventListener('DOMContentLoaded', function () {
+    if (typeof subscribe !== 'function' || typeof PUB_SUB_EVENTS === 'undefined') return;
+
+    subscribe(PUB_SUB_EVENTS.variantChange, function (event) {
+      var html = event.data && event.data.html;
+      if (!html) return;
+      document.querySelectorAll('[data-dsr-sympl-product]').forEach(function (current) {
+        var fresh = html.getElementById(current.id);
+        if (fresh) current.replaceWith(document.importNode(fresh, true));
+      });
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Dressar product boosts",
+  "settings": []
+}
+{% endschema %}

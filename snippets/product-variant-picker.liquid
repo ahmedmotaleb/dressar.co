@@ -1,0 +1,184 @@
+{%- doc -%}
+  Renders a product variant picker as buttons, swatches, or dropdowns.
+
+  @param {product} product - The product whose options and selected variant are rendered.
+  @param {block} block - The variant-picker block and its picker settings.
+  @param {string} product_form_id - The ID of the product form associated with the picker inputs.
+  @param {object} [section] - The current product section context, supplied implicitly when rendered from that section and used to namespace picker controls.
+
+  @example
+  {% render 'product-variant-picker', product: product, block: block, product_form_id: product_form_id %}
+{%- enddoc -%}
+{%- liquid
+  # Dressar colour photos (snippets/dsr-color-photos.liquid), when the block's
+  # "Colour photos" setting is on. The colour option is the one Dawn would show
+  # as swatches; with linked colour products and no swatches, the option those
+  # products use for their colour. The photos replace the swatches when the
+  # product's variants have photos or other colours are linked; otherwise
+  # Dawn's swatches stay.
+  assign dsr_photos = false
+  assign dsr_links = null
+  assign dsr_color_position = 0
+  assign dsr_link_count = 0
+  if block.settings.dsr_color_photos
+    assign dsr_links = product.metafields.custom.color_products.value
+    for linked in dsr_links
+      if linked.id != product.id
+        assign dsr_link_count = dsr_link_count | plus: 1
+      endif
+    endfor
+
+    for option in product.options_with_values
+      assign dsr_swatches = option.values | map: 'swatch' | compact | size
+      if dsr_swatches > 0 and block.settings.swatch_shape != 'none' and block.settings.picker_type != 'dropdown'
+        assign dsr_color_position = option.position
+        break
+      endif
+    endfor
+
+    if dsr_color_position == 0 and dsr_link_count > 0
+      for linked in dsr_links
+        for linked_option in linked.options_with_values
+          assign dsr_swatches = linked_option.values | map: 'swatch' | compact | size
+          if dsr_swatches > 0
+            assign dsr_linked_name = linked_option.name | downcase
+            for option in product.options_with_values
+              assign dsr_own_name = option.name | downcase
+              if dsr_own_name == dsr_linked_name
+                assign dsr_color_position = option.position
+                break
+              endif
+            endfor
+            break
+          endif
+        endfor
+        if dsr_color_position > 0
+          break
+        endif
+      endfor
+    endif
+
+    assign dsr_variant_photos = product.variants | map: 'featured_media' | compact | size
+    if dsr_variant_photos > 0 or dsr_link_count > 0
+      assign dsr_photos = true
+    endif
+  endif
+-%}
+{%- if product.has_only_default_variant -%}
+  {%- if dsr_photos and dsr_link_count > 0 -%}
+    {%- render 'dsr-color-photos', product: product, block: block, links: dsr_links -%}
+  {%- endif -%}
+{%- else -%}
+  <variant-selects
+    id="variant-selects-{{ section.id }}"
+    data-section="{{ section.id }}"
+    data-product-handle="{{ product.handle }}"
+    data-product-title="{{ product.title | escape }}"
+    data-product-id="{{ product.id }}"
+    data-currency-code="{{ cart.currency.iso_code }}"
+    data-selected-price-amount="{{ product.selected_or_first_available_variant.price | default: 0 | money_amount | escape }}"
+    {{ block.shopify_attributes }}
+  >
+    {%- if dsr_photos and dsr_color_position == 0 and dsr_link_count > 0 -%}
+      {%- render 'dsr-color-photos', product: product, block: block, links: dsr_links -%}
+    {%- endif -%}
+    {%- for option in product.options_with_values -%}
+      {%- liquid
+        assign swatch_count = option.values | map: 'swatch' | compact | size
+        assign picker_type = block.settings.picker_type
+
+        if swatch_count > 0 and block.settings.swatch_shape != 'none'
+          if block.settings.picker_type == 'dropdown'
+            assign picker_type = 'swatch_dropdown'
+          else
+            assign picker_type = 'swatch'
+          endif
+        endif
+      -%}
+      {%- capture dawn_option -%}
+      {%- if picker_type == 'swatch' -%}
+        <fieldset class="js product-form__input product-form__input--swatch">
+          <legend class="form__label">
+            {{ option.name -}}
+            <span class="dsr-label-sep" aria-hidden="true"> — </span>
+            <span data-selected-value>
+              {{- option.selected_value -}}
+            </span>
+          </legend>
+          {% render 'product-variant-options',
+            option: option,
+            block: block,
+            picker_type: picker_type
+          %}
+        </fieldset>
+      {%- elsif picker_type == 'button' -%}
+        <fieldset class="js product-form__input product-form__input--pill">
+          {%- comment -%}
+            Dressar: the chosen value after the option name ("Size — 2XL", as in
+            the 2S reference); Dawn's variant picker updates it on each choice.
+          {%- endcomment -%}
+          <legend class="form__label">
+            {{ option.name -}}
+            <span class="dsr-label-sep" aria-hidden="true"> — </span>
+            <span data-selected-value>
+              {{- option.selected_value -}}
+            </span>
+          </legend>
+          {% render 'product-variant-options',
+            option: option,
+            block: block,
+            picker_type: picker_type
+          %}
+        </fieldset>
+      {%- else -%}
+        <div class="product-form__input product-form__input--dropdown">
+          <label class="form__label" for="Option-{{ section.id }}-{{ forloop.index0 }}">
+            {{ option.name }}
+          </label>
+          <div class="select">
+            {%- if picker_type == 'swatch_dropdown' -%}
+              <span
+                data-selected-value
+                class="dropdown-swatch"
+              >
+                {% render 'swatch', swatch: option.selected_value.swatch, shape: block.settings.swatch_shape %}
+              </span>
+            {%- endif -%}
+            <select
+              id="Option-{{ section.id }}-{{ forloop.index0 }}"
+              class="select__select"
+              name="options[{{ option.name | escape }}]"
+              form="{{ product_form_id }}"
+            >
+              {% render 'product-variant-options',
+                option: option,
+                block: block,
+                picker_type: picker_type
+              %}
+            </select>
+            <span class="svg-wrapper">
+              {{- 'icon-caret.svg' | inline_asset_content -}}
+            </span>
+          </div>
+        </div>
+      {%- endif -%}
+      {%- endcapture -%}
+      {%- if dsr_photos and option.position == dsr_color_position -%}
+        {%- comment -%}
+          Dressar: the colour photos, on the product page only. Dawn's own
+          picker for this option follows, inert in a template. In the
+          quick-add dialog (which shows this same section),
+          assets/dsr-color-photos.js swaps the photos for it.
+        {%- endcomment -%}
+        {%- render 'dsr-color-photos', product: product, block: block, option: option, links: dsr_links -%}
+        <template data-dsr-dawn-picker>{{ dawn_option }}</template>
+      {%- else -%}
+        {{ dawn_option }}
+      {%- endif -%}
+    {%- endfor -%}
+
+    <script type="application/json" data-selected-variant>
+      {{ product.selected_or_first_available_variant | json }}
+    </script>
+  </variant-selects>
+{%- endif -%}

@@ -1,0 +1,203 @@
+{% doc %}
+  @prompt
+    I NEED ANNOUNMCENT BAR ABOVE COLLECTION PAFGE , SPECICALLY TO EVERY COLLECTION SO I CAN GIVE DISCOUNT OR ANNUNMENT DIFFERENT IN EVERY COLLECTION , I NEED TO CHANGE THE COLOR AND WIDTH AND TO BE MOVEMENT LIKE CIRCLE , I WANT EVERY ANNOUNMECT FOR DIFFERNT COLLECTION MUST REALTED TO IT , I ADDED CUSTOM METAFIELD BUT NOT READED 
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-collection-announcement-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    background-color: {{ block.settings.background_color }};
+    padding: {{ block.settings.bar_height }}px 0;
+    position: relative;
+  }
+
+  .ai-collection-announcement-wrapper-{{ ai_gen_id }} {
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    margin: 0 auto;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .ai-collection-announcement-track-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    animation: ai-collection-announcement-scroll-{{ ai_gen_id }} {{ block.settings.animation_speed }}s linear infinite;
+    width: max-content;
+  }
+
+  .ai-collection-announcement-item-{{ ai_gen_id }} {
+    white-space: nowrap;
+    color: {{ block.settings.text_color }};
+    font-size: {{ block.settings.font_size }}px;
+    font-weight: {{ block.settings.font_weight }};
+    display: flex;
+    align-items: center;
+    gap: 40px;
+  }
+
+  @keyframes ai-collection-announcement-scroll-{{ ai_gen_id }} {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-collection-announcement-wrapper-{{ ai_gen_id }} {
+      width: 100%;
+    }
+
+    .ai-collection-announcement-item-{{ ai_gen_id }} {
+      font-size: {{ block.settings.font_size | times: 0.9 }}px;
+    }
+  }
+{% endstyle %}
+
+<collection-announcement-{{ ai_gen_id }}
+  class="ai-collection-announcement-{{ ai_gen_id }}"
+  {{ block.shopify_attributes }}
+>
+  <div class="ai-collection-announcement-wrapper-{{ ai_gen_id }}">
+    <div class="ai-collection-announcement-track-{{ ai_gen_id }}">
+      {% liquid
+        assign announcement_message = ''
+        
+        if collection and collection.metafields.custom.announcement_text != blank
+          assign announcement_message = collection.metafields.custom.announcement_text
+        elsif collection and collection.metafields.custom.announcement != blank
+          assign announcement_message = collection.metafields.custom.announcement
+        elsif block.settings.announcement_text != blank
+          assign announcement_message = block.settings.announcement_text
+        elsif collection
+          assign announcement_message = 'Special offer on ' | append: collection.title
+        else
+          assign announcement_message = 'Welcome to our store!'
+        endif
+      %}
+      
+      {% for i in (1..10) %}
+        <div class="ai-collection-announcement-item-{{ ai_gen_id }}">
+          {{ announcement_message }}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</collection-announcement-{{ ai_gen_id }}>
+
+{% schema %}
+{
+  "name": "Announcement bar",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "paragraph",
+      "content": "This block will display collection-specific announcements. Add a metafield to your collections with namespace 'custom' and key 'announcement_text' or 'announcement'."
+    },
+    {
+      "type": "richtext",
+      "id": "announcement_text",
+      "label": "Default announcement",
+      "default": "<p>Special offer: 20% off this collection!</p>"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "bar_height",
+      "label": "Bar height",
+      "min": 8,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "label": "Font size",
+      "min": 12,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "font_weight",
+      "label": "Font weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi-bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "range",
+      "id": "animation_speed",
+      "label": "Animation speed",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "s",
+      "default": 20
+    }
+  ],
+  "presets": [
+    {
+      "name": "Announcement bar"
+    }
+  ]
+}
+{% endschema %}

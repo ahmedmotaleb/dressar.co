@@ -1,0 +1,39 @@
+{%- doc -%}
+  Free-shipping progress for the cart drawer and the cart page, rendered from
+  the cart itself, so it is part of every cart re-render (adding, changing a
+  quantity, removing) without a request of its own.
+
+  It measures the cart's subtotal after product discounts
+  (`cart.items_subtotal_price`), the amount Shopify's free-shipping discounts
+  check. The threshold and the on/off switch are in Theme settings > Dressar >
+  Free shipping and must match the store's discount: the bar only repeats what
+  the discount does. Nothing renders for an empty cart or when it's off.
+
+  @example
+  {% render 'dsr-free-shipping' %}
+{%- enddoc -%}
+
+{%- if settings.free_shipping_enabled and settings.free_shipping_threshold > 0 and cart.item_count > 0 -%}
+  {%- liquid
+    assign threshold = settings.free_shipping_threshold | times: 100
+    assign subtotal = cart.items_subtotal_price
+    assign remaining = threshold | minus: subtotal
+    assign percent = subtotal | times: 100 | divided_by: threshold | floor
+    if percent > 100
+      assign percent = 100
+    endif
+    assign remaining_money = remaining | money
+  -%}
+  <div class="dsr-shipping{% if remaining <= 0 %} dsr-shipping--qualified{% endif %}" role="status">
+    <p class="dsr-shipping__text">
+      {%- if remaining <= 0 -%}
+        {{ 'dressar.free_shipping.qualified' | t }}
+      {%- else -%}
+        {{ 'dressar.free_shipping.remaining_html' | t: amount: remaining_money }}
+      {%- endif -%}
+    </p>
+    <div class="dsr-shipping__track" aria-hidden="true">
+      <span class="dsr-shipping__fill" style="width: {{ percent }}%;"></span>
+    </div>
+  </div>
+{%- endif -%}

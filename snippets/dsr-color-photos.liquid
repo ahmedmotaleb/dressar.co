@@ -1,0 +1,105 @@
+{%- doc -%}
+  Dressar colour photo selector: the product's colours as their own product
+  photos (3:4), with the selected colour's name above them. It replaces Dawn's
+  colour swatches in the product page's variant picker
+  (snippets/product-variant-picker.liquid).
+
+  - The product's own colours stay Dawn's radio inputs (product-variant-options,
+    picker type `dsr_photo`), so choosing one runs Dawn's variant change:
+    price, stock, sizes, main photo, URL, sticky bar and Sympl all follow.
+  - Colours sold as separate products come from the product's "Other colours"
+    metafield (custom.color_products, a list of products) and are links to
+    those products (snippets/dsr-color-link.liquid). They show in the
+    metafield's order. If the list includes this product, its own colours
+    take its place in that order; if not, they come first.
+  - Without an option to attach to (no colour option), the row is shown on
+    its own: this product's photo, selected, then the linked products.
+
+  Below 990px the row scrolls sideways; from 990px it wraps
+  (assets/dsr-product.css). assets/dsr-color-photos.js keeps the selected
+  colour in view.
+
+  @param {product} product - The product.
+  @param {block} block - The variant-picker block.
+  @param {product_option} [option] - The colour option. Leave out for the row on its own.
+  @param {product[]} [links] - The products from custom.color_products.
+
+  @example
+  {%- render 'dsr-color-photos', product: product, block: block, option: option, links: links -%}
+{%- enddoc -%}
+{%- liquid
+  assign self_listed = false
+  for linked in links
+    if linked.id == product.id
+      assign self_listed = true
+      break
+    endif
+  endfor
+
+  assign links_before = ''
+  assign links_after = ''
+  assign passed_self = false
+  for linked in links
+    if linked.id == product.id
+      assign passed_self = true
+      continue
+    endif
+    capture link_html
+      render 'dsr-color-link', link_product: linked
+    endcapture
+    if self_listed and passed_self == false
+      assign links_before = links_before | append: link_html
+    else
+      assign links_after = links_after | append: link_html
+    endif
+  endfor
+
+  assign label_id = 'DsrColorPhotos-' | append: section.id
+-%}
+{%- if option -%}
+  <fieldset class="js product-form__input product-form__input--dsr-photos">
+    <legend class="form__label">
+      {{ option.name -}}
+      <span class="dsr-label-sep" aria-hidden="true"> — </span>
+      <span data-selected-value>
+        {{- option.selected_value -}}
+      </span>
+    </legend>
+    <dsr-color-photos class="dsr-color-photos" data-key="{{ section.id }}-{{ product.id }}">
+      <div class="dsr-color-photos__track">
+        {{- links_before -}}
+        {%- render 'product-variant-options',
+          option: option,
+          block: block,
+          picker_type: 'dsr_photo',
+          product: product
+        -%}
+        {{- links_after -}}
+      </div>
+    </dsr-color-photos>
+  </fieldset>
+{%- else -%}
+  {%- liquid
+    assign own_name = product.metafields.shopify['color-pattern'].value.first.label.value
+  -%}
+  <div class="product-form__input product-form__input--dsr-photos" role="group" aria-labelledby="{{ label_id }}">
+    <p class="form__label" id="{{ label_id }}">
+      {{ 'dressar.product.colour' | t -}}
+      {%- if own_name != blank -%}
+        <span class="dsr-label-sep" aria-hidden="true"> — </span><span>{{ own_name | escape }}</span>
+      {%- endif -%}
+    </p>
+    <dsr-color-photos class="dsr-color-photos" data-key="{{ section.id }}-{{ product.id }}">
+      <div class="dsr-color-photos__track">
+        {{- links_before -}}
+        <span class="dsr-color-photo dsr-color-photo--current" aria-current="true">
+          {%- render 'dsr-color-photo-tile', media: product.featured_media, name: own_name -%}
+          <span class="visually-hidden">
+            {%- if own_name != blank -%}{{ own_name | escape }}{%- else -%}{{ product.title | escape }}{%- endif -%}
+          </span>
+        </span>
+        {{- links_after -}}
+      </div>
+    </dsr-color-photos>
+  </div>
+{%- endif -%}

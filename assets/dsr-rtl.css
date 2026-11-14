@@ -1,0 +1,485 @@
+/* ==========================================================================
+   Dressar right-to-left layer (Stage 8, docs/stages/stage-8.md)
+
+   Loaded only when <html dir="rtl"> (snippets/dsr-direction.liquid: Arabic,
+   with Theme settings > Dressar > "Right-to-left layout" on).
+
+   The browser mirrors flex and grid rows, text alignment and the start/end of
+   inline content on its own. Dawn still places a few things with physical
+   left/right values; this file mirrors those, component by component. Dawn's
+   slider scripts are made direction-aware in global.js (SliderComponent).
+   ========================================================================== */
+
+/* ---------- Icons that point along the reading direction ---------- */
+
+[dir='rtl'] .icon-arrow {
+  transform: scaleX(-1);
+}
+
+[dir='rtl'] .slider-button--next .icon {
+  transform: rotate(90deg);
+}
+
+[dir='rtl'] .slider-button--prev .icon {
+  transform: rotate(-90deg);
+}
+
+[dir='rtl'] .slider-button--next:not([disabled]):hover .icon {
+  transform: rotate(90deg) scale(1.1);
+}
+
+[dir='rtl'] .slider-button--prev:not([disabled]):hover .icon {
+  transform: rotate(-90deg) scale(1.1);
+}
+
+/* Dawn's pagination class names are swapped (--next marks the previous link). */
+[dir='rtl'] .pagination__item--next .icon {
+  margin-left: 0;
+  margin-right: -0.2rem;
+  transform: rotate(-90deg);
+}
+
+[dir='rtl'] .pagination__item--next:hover .icon {
+  transform: rotate(-90deg) scale(1.07);
+}
+
+[dir='rtl'] .pagination__item--prev .icon {
+  margin-right: 0;
+  margin-left: -0.2rem;
+  transform: rotate(90deg);
+}
+
+[dir='rtl'] .pagination__item--prev:hover .icon {
+  transform: rotate(90deg) scale(1.07);
+}
+
+/* Back arrows (Dawn turns them 180°): on rtl pages "back" points right. */
+[dir='rtl'] .mobile-facets__close-button .icon-arrow {
+  transform: none;
+  margin-right: 0;
+  margin-left: 1rem;
+}
+
+[dir='rtl'] .announcement-bar__link .icon-arrow {
+  margin-left: 0;
+  margin-right: 0.8rem;
+}
+
+[dir='rtl'] .predictive-search__item--term .icon-arrow {
+  margin-left: 0;
+  margin-right: calc(var(--font-heading-scale) * 2rem);
+}
+
+/* ---------- Disclosure carets ---------- */
+
+[dir='rtl'] summary .icon-caret {
+  right: auto;
+  left: 1.5rem;
+}
+
+[dir='rtl'] .header__menu-item .icon-caret,
+[dir='rtl'] .dsr-header .header__menu-item .icon-caret {
+  right: auto;
+  left: 0.8rem;
+}
+
+[dir='rtl'] .header__submenu .icon-caret {
+  margin-left: 0;
+  margin-right: 1rem;
+}
+
+[dir='rtl'] .facets__summary {
+  padding: 0 0 0 1.75rem;
+}
+
+[dir='rtl'] .facets__summary .icon-caret {
+  right: auto;
+  left: 0;
+}
+
+/* ---------- Header dropdowns near the far edge ---------- */
+
+[dir='rtl'] .dsr-header .header__inline-menu > .list-menu > li:nth-last-child(-n + 2) .header__submenu.list-menu--disclosure {
+  right: auto;
+  left: 0;
+}
+
+/* ---------- Menu drawer: opens from the right, submenus from the left ---------- */
+
+[dir='rtl'] .menu-drawer {
+  left: auto;
+  right: 0;
+  transform: translateX(100%);
+}
+
+.js[dir='rtl'] .menu-drawer__submenu {
+  left: auto;
+  right: 0;
+  transform: translateX(-100%);
+}
+
+.js[dir='rtl'] details[open].menu-opening > .menu-drawer,
+[dir='rtl'] details[open].menu-opening > .menu-drawer__submenu {
+  transform: translateX(0);
+}
+
+[dir='rtl'] .menu-drawer__close-button {
+  padding: 1.2rem 3rem 1.2rem 2.6rem;
+  text-align: right;
+}
+
+[dir='rtl'] .menu-drawer__close-button .svg-wrapper {
+  margin-right: 0;
+  margin-left: 1rem;
+}
+
+[dir='rtl'] .menu-drawer__menu-item > .svg-wrapper {
+  right: auto;
+  left: 3rem;
+}
+
+/* ---------- Cart drawer: opens from the left ---------- */
+
+[dir='rtl'] .drawer__inner {
+  border-right: 0.1rem solid rgba(var(--color-foreground), 0.2);
+  border-left: 0;
+  transform: translateX(-100%);
+}
+
+[dir='rtl'] .active .drawer__inner {
+  transform: translateX(0);
+}
+
+[dir='rtl'] .drawer__close {
+  right: auto;
+  left: -10px;
+}
+
+[dir='rtl'] .cart-drawer__warnings .drawer__close {
+  right: auto;
+  left: 5px;
+}
+
+/* ---------- Filters ---------- */
+
+[dir='rtl'] .facets__display {
+  left: auto;
+  right: -1.2rem;
+}
+
+[dir='rtl'] .mobile-facets__inner {
+  margin-left: 0;
+  margin-right: auto;
+  border-width: 0 var(--drawer-border-width) 0 0;
+}
+
+.js[dir='rtl'] .disclosure-has-popup:not(.menu-opening) .mobile-facets__inner {
+  transform: translateX(-105vw);
+}
+
+.js[dir='rtl'] .mobile-facets__submenu {
+  left: auto;
+  right: 0;
+  transform: translateX(-100%);
+}
+
+.js[dir='rtl'] details[open].menu-opening > .mobile-facets__submenu {
+  transform: translateX(0);
+}
+
+/* ---------- Pickup availability drawer ---------- */
+
+[dir='rtl'] .pickup-availability-drawer {
+  right: auto;
+  left: 0;
+  transform: translateX(-100%);
+}
+
+[dir='rtl'] .pickup-availability-drawer[open] {
+  transform: translateX(0);
+}
+
+/* ---------- Sliders: the page margin and snap padding sit on the right ---------- */
+
+@media screen and (max-width: 749px) {
+  [dir='rtl'] .slider.slider--mobile {
+    scroll-padding-left: 0;
+    scroll-padding-right: 1.5rem;
+  }
+
+  [dir='rtl'] .slider--mobile:after {
+    padding-left: 0;
+    padding-right: 1.5rem;
+  }
+
+  [dir='rtl'] .grid--peek.slider .grid__item:first-of-type {
+    margin-left: 0;
+    margin-right: 1.5rem;
+  }
+
+  [dir='rtl'] .grid--peek.slider:after {
+    margin-left: 0;
+    margin-right: calc(-1 * var(--grid-mobile-horizontal-spacing));
+  }
+}
+
+@media screen and (min-width: 750px) {
+  [dir='rtl'] .slider.slider--tablet-up {
+    scroll-padding-left: 0;
+    scroll-padding-right: 1rem;
+  }
+}
+
+@media screen and (max-width: 989px) {
+  [dir='rtl'] .slider.slider--tablet {
+    scroll-padding-left: 0;
+    scroll-padding-right: 1.5rem;
+  }
+
+  [dir='rtl'] .slider--tablet:after {
+    padding-left: 0;
+    padding-right: 1.5rem;
+    margin-left: 0;
+    margin-right: calc(-1 * var(--grid-desktop-horizontal-spacing));
+  }
+
+  [dir='rtl'] .slider--tablet.grid--peek .grid__item:first-of-type {
+    margin-left: 0;
+    margin-right: 1.5rem;
+  }
+
+  [dir='rtl'] .collection .slider--tablet.product-grid {
+    scroll-padding-left: 0;
+    scroll-padding-right: 1.5rem;
+  }
+}
+
+@media screen and (min-width: 990px) {
+  [dir='rtl'] .slider--desktop {
+    scroll-padding-left: 0;
+    scroll-padding-right: var(--desktop-margin-left-first-item);
+  }
+
+  [dir='rtl'] .slider--desktop:after {
+    padding-left: 0;
+    padding-right: 5rem;
+    margin-left: 0;
+    margin-right: calc(-1 * var(--grid-desktop-horizontal-spacing));
+  }
+
+  [dir='rtl'] .slider--desktop .slider__slide:first-child {
+    margin-left: 0;
+    scroll-margin-left: 0;
+    margin-right: var(--desktop-margin-left-first-item);
+    scroll-margin-right: var(--desktop-margin-left-first-item);
+  }
+
+  [dir='rtl'] .slider-component-full-width .slider--desktop {
+    scroll-padding-left: 0;
+    scroll-padding-right: 1.5rem;
+  }
+
+  [dir='rtl'] .slider-component-full-width .slider--desktop .slider__slide:first-child {
+    margin-left: 0;
+    scroll-margin-left: 0;
+    margin-right: 1.5rem;
+    scroll-margin-right: 1.5rem;
+  }
+
+  [dir='rtl'] .slider-component-full-width .slider--desktop:after {
+    padding-left: 0;
+    padding-right: 1.5rem;
+  }
+}
+
+/* ---------- Form fields: label, text and buttons start on the right ---------- */
+
+[dir='rtl'] .field__input,
+[dir='rtl'] .customer .field input {
+  text-align: right;
+}
+
+[dir='rtl'] .field__label,
+[dir='rtl'] .customer .field label,
+[dir='rtl'] .field__input:focus ~ .field__label,
+[dir='rtl'] .field__input:not(:placeholder-shown) ~ .field__label,
+[dir='rtl'] .field__input:-webkit-autofill ~ .field__label,
+[dir='rtl'] .customer .field input:focus ~ label,
+[dir='rtl'] .customer .field input:not(:placeholder-shown) ~ label,
+[dir='rtl'] .customer .field input:-webkit-autofill ~ label {
+  left: auto;
+  right: calc(var(--inputs-border-width) + 2rem);
+}
+
+[dir='rtl'] .field__input:focus,
+[dir='rtl'] .field__input:not(:placeholder-shown),
+[dir='rtl'] .field__input:-webkit-autofill,
+[dir='rtl'] .customer .field input:focus,
+[dir='rtl'] .customer .field input:not(:placeholder-shown),
+[dir='rtl'] .customer .field input:-webkit-autofill {
+  padding: 2.2rem 2rem 0.8rem 1.5rem;
+}
+
+[dir='rtl'] .field__button {
+  right: auto;
+  left: 0;
+}
+
+[dir='rtl'] .select .svg-wrapper,
+[dir='rtl'] .customer select + .svg-wrapper {
+  right: auto;
+  left: 0;
+}
+
+[dir='rtl'] .select__select,
+[dir='rtl'] .customer select {
+  padding: 0 2rem 0 calc(var(--inputs-border-width) + 3rem);
+}
+
+/* Search: submit and reset buttons on the left */
+[dir='rtl'] .search__input.field__input {
+  padding-right: 1.5rem;
+  padding-left: 9.8rem;
+}
+
+[dir='rtl'] .search__input.field__input:focus,
+[dir='rtl'] .search__input.field__input:not(:placeholder-shown) {
+  padding-right: 2rem;
+  padding-left: 9.8rem;
+}
+
+[dir='rtl'] .search__button {
+  right: auto;
+  left: var(--inputs-border-width);
+}
+
+[dir='rtl'] .reset__button {
+  right: auto;
+  left: calc(var(--inputs-border-width) + 4.4rem);
+}
+
+[dir='rtl'] .reset__button:not(:focus-visible)::after,
+[dir='rtl'] .reset__button:not(:focus)::after {
+  border-right: 0;
+  border-left: 0.1rem solid rgba(var(--color-foreground), 0.08);
+  right: auto;
+  left: 0;
+}
+
+/* Newsletter: the arrow button on the left */
+[dir='rtl'] .newsletter-form__field-wrapper .field__input {
+  padding-right: 1.5rem;
+  padding-left: 5rem;
+}
+
+[dir='rtl'] .newsletter-form__field-wrapper .field__input:focus,
+[dir='rtl'] .newsletter-form__field-wrapper .field__input:not(:placeholder-shown) {
+  padding-right: 2rem;
+  padding-left: 5rem;
+}
+
+[dir='rtl'] .newsletter-form__button {
+  right: auto;
+  left: var(--inputs-border-width);
+}
+
+/* Quantity: the outer buttons keep their inset from the border */
+[dir='rtl'] .quantity__button:first-child {
+  margin-left: 0;
+  margin-right: calc(var(--inputs-border-width));
+}
+
+[dir='rtl'] .quantity__button:last-child {
+  margin-right: 0;
+  margin-left: calc(var(--inputs-border-width));
+}
+
+/* ---------- Filter checkboxes and price range ---------- */
+
+[dir='rtl'] .facet-checkbox > svg,
+[dir='rtl'] .facet-checkbox > .svg-wrapper {
+  margin-right: 0;
+  margin-left: 1.2rem;
+}
+
+[dir='rtl'] .facet-checkbox .svg-wrapper {
+  left: auto;
+  right: 0.3rem;
+}
+
+[dir='rtl'] .mobile-facets__label > svg {
+  margin-right: 0;
+  margin-left: 1.2rem;
+}
+
+[dir='rtl'] .mobile-facets__label .icon-checkmark {
+  left: auto;
+  right: 2.8rem;
+}
+
+[dir='rtl'] .mobile-facets__summary .svg-wrapper,
+[dir='rtl'] .mobile-facets__arrow,
+[dir='rtl'] .mobile-facets__summary .icon-caret {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+[dir='rtl'] .facets__price .field + .field-currency {
+  margin-left: 0;
+  margin-right: 2rem;
+}
+
+[dir='rtl'] .facets__price .field-currency {
+  margin-right: 0;
+  margin-left: 0.6rem;
+}
+
+[dir='rtl'] .facets__price .field__label {
+  left: auto;
+  right: 1.5rem;
+}
+
+/* ---------- Product page ---------- */
+
+[dir='rtl'] .accordion .svg-wrapper {
+  margin-right: 0;
+  margin-left: calc(var(--font-heading-scale) * 1rem);
+}
+
+[dir='rtl'] .icon-with-text--vertical .svg-wrapper,
+[dir='rtl'] .icon-with-text--vertical img {
+  margin-right: 0;
+  margin-left: var(--icon-spacing);
+}
+
+[dir='rtl'] .product-form__input .svg-wrapper {
+  right: auto;
+  left: 1.5rem;
+}
+
+[dir='rtl'] .thumbnail__badge {
+  right: auto;
+  left: calc(0.4rem + var(--media-border-width));
+}
+
+/* ---------- Prices: the gap after each price sits on its left ---------- */
+
+[dir='rtl'] .price .price-item {
+  margin: 0 0 0 1rem;
+}
+
+/* ---------- Product thumbnails: Dawn's own 0.5rem snap padding, on the right ---------- */
+
+@media screen and (max-width: 749px) {
+  [dir='rtl'] .thumbnail-slider .thumbnail-list.slider {
+    scroll-padding-left: 0;
+    scroll-padding-right: 0.5rem;
+  }
+}
+
+@media screen and (min-width: 750px) {
+  [dir='rtl'] .thumbnail-slider .thumbnail-list.slider--tablet-up {
+    scroll-padding-left: 0;
+    scroll-padding-right: 0.5rem;
+  }
+}

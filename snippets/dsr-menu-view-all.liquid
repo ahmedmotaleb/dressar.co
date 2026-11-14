@@ -1,0 +1,30 @@
+{%- doc -%}
+  Renders a "View all" list item that links to a parent menu item's own URL.
+  In Dawn's header a parent with children only opens its submenu, so the
+  parent's page (for example "All Categories" → /collections) was unreachable.
+  Renders nothing for placeholder parents whose URL is "#".
+
+  @param {object} link - The parent menu link.
+  @param {string} id - The ID for the link element.
+  @param {string} class - The link's classes, matching its sibling items.
+  @param {string} [active_class] - The class added when the parent page is the current page.
+
+  @example
+  {% render 'dsr-menu-view-all', link: link, id: 'HeaderDrawer-all-view-all', class: 'menu-drawer__menu-item link' %}
+{%- enddoc -%}
+
+{%- if link.url != blank and link.url != '#' -%}
+  <li class="dsr-menu-view-all">
+    <a
+      id="{{ id }}"
+      href="{{ link.url }}"
+      class="{{ class }}{% if link.current and active_class %} {{ active_class }}{% endif %}"
+      {% if link.current %}
+        aria-current="page"
+      {% endif %}
+    >
+      {{- 'sections.featured_collection.view_all' | t -}}
+      <span class="visually-hidden">: {{ link.title | strip | escape }}</span>
+    </a>
+  </li>
+{%- endif -%}

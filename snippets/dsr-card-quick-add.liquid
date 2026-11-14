@@ -1,0 +1,125 @@
+{%- doc -%}
+  Quick add on a product card: a small shopping-bag button on the photo's
+  bottom corner (the end side, so bottom-left on right-to-left pages), built
+  on Dawn's own quick-add parts.
+
+  - One variant: adds it straight to the cart through Dawn's product-form
+    (assets/product-form.js), which refreshes the cart drawer and count and
+    ignores clicks while a request is running.
+  - Several variants: adds the exact variant chosen on the card (its colour
+    and size rows, assets/dsr-card.js), through the same product-form. With
+    no complete, in-stock choice it opens Dawn's quick-add dialog instead,
+    with the product's own colour and size picker (quick-add-modal,
+    assets/quick-add.js), on the colour picked on the card.
+  - Quantity rules: always the dialog.
+  - Sold out: the button is disabled.
+
+  card-product renders it twice: part 'button' inside the photo box, and
+  part 'modal' (the dialog, multi-variant products only) with the card
+  content, where Dawn keeps it.
+
+  @param {product} card_product - The product on the card.
+  @param {string} section_id - The section ID, to keep IDs unique when a product shows in several sections.
+  @param {boolean} [horizontal] - A horizontal card (the product page's complementary products): the button sits at the card's end instead of on its small photo.
+  @param {string} part - 'button' or 'modal'.
+
+  @example
+  {%- render 'dsr-card-quick-add', card_product: card_product, section_id: section_id, part: 'button' -%}
+{%- enddoc -%}
+{%- liquid
+  assign qa_variant = card_product.selected_or_first_available_variant
+  assign qa_modal_id = 'QuickAdd-' | append: section_id | append: '-' | append: card_product.id
+  assign qa_form_id = 'quick-add-' | append: section_id | append: card_product.id
+  assign qa_title_id = 'title-' | append: section_id | append: '-' | append: card_product.id
+
+  assign qa_use_modal = false
+  assign qa_rules = false
+  if qa_variant.quantity_rule.min > 1 or qa_variant.quantity_rule.max != null or qa_variant.quantity_rule.increment > 1
+    assign qa_rules = true
+  endif
+  if card_product.variants_count > 1 or qa_rules
+    assign qa_use_modal = true
+  endif
+-%}
+
+{%- if part == 'modal' -%}
+  {%- if qa_use_modal and card_product.available -%}
+    <quick-add-modal id="{{ qa_modal_id }}" class="quick-add-modal">
+      <div
+        role="dialog"
+        aria-label="{{ 'products.product.choose_product_options' | t: product_name: card_product.title | escape }}"
+        aria-modal="true"
+        class="quick-add-modal__content global-settings-popup"
+        tabindex="-1"
+      >
+        <button
+          id="ModalClose-{{ section_id }}-{{ card_product.id }}"
+          type="button"
+          class="quick-add-modal__toggle"
+          aria-label="{{ 'accessibility.close' | t }}"
+        >
+          {{- 'icon-close.svg' | inline_asset_content -}}
+        </button>
+        <div id="QuickAddInfo-{{ section_id }}-{{ card_product.id }}" class="quick-add-modal__content-info"></div>
+      </div>
+    </quick-add-modal>
+  {%- endif -%}
+{%- else -%}
+  <div class="dsr-quick-add{% if horizontal %} dsr-quick-add--horizontal{% endif %} no-js-hidden">
+    {%- comment -%}
+      One product form for every product (Dawn's product-form.js: loading,
+      errors, cart drawer and count).
+      - One variant: the bag adds it.
+      - Several variants: the bag adds the exact variant chosen on the card
+        (colour and size rows, assets/dsr-card.js fills in its id). With the
+        choice incomplete or not in stock, it opens the existing quick-add
+        dialog instead (data-dsr-dialog), so nothing unintended is added.
+      - Quantity rules: always the dialog (data-dsr-dialog-only).
+    {%- endcomment -%}
+    <product-form data-section-id="{{ section_id }}">
+      {%- form 'product',
+        card_product,
+        id: qa_form_id,
+        class: 'form',
+        novalidate: 'novalidate',
+        data-type: 'add-to-cart-form'
+      -%}
+        <input
+          type="hidden"
+          name="id"
+          value="{% unless qa_use_modal %}{{ qa_variant.id }}{% endunless %}"
+          class="product-variant-id"
+          {% unless qa_variant.available %}
+            disabled
+          {% endunless %}
+        >
+        <button
+          id="{{ qa_form_id }}-submit"
+          type="submit"
+          name="add"
+          class="dsr-quick-add__button"
+          aria-haspopup="dialog"
+          aria-labelledby="{{ qa_form_id }}-label {{ qa_title_id }}"
+          {% if qa_use_modal %}
+            data-product-url="{{ card_product.url }}"
+            data-dsr-dialog="#{{ qa_modal_id }}"
+            {% if qa_rules %}
+              data-dsr-dialog-only
+            {% endif %}
+          {% endif %}
+          {% unless card_product.available %}
+            disabled
+          {% endunless %}
+        >
+          {%- comment -%} product-form.js reads the first span and the sold-out message. {%- endcomment -%}
+          <span id="{{ qa_form_id }}-label" class="visually-hidden">{{ 'dressar.card.quick_add' | t }}</span>
+          <span class="sold-out-message hidden visually-hidden">{{ 'products.product.sold_out' | t }}</span>
+          <span class="svg-wrapper dsr-quick-add__icon" aria-hidden="true">
+            {{- 'icon-cart-empty.svg' | inline_asset_content -}}
+          </span>
+          {%- render 'loading-spinner' -%}
+        </button>
+      {%- endform -%}
+    </product-form>
+  </div>
+{%- endif -%}

@@ -1,0 +1,45 @@
+{%- doc -%}
+  Renders the Sympl instalment widget for an amount. The widget script is
+  loaded once in layout/theme.liquid. Nothing renders when Sympl is switched
+  off in Theme settings > Dressar, when no store code is set, or when the
+  amount is zero.
+
+  @param {number} amount - The amount in the currency's minor unit, e.g. `cart.total_price` or a variant price.
+  @param {boolean} [is_cart] - Whether the amount is a cart total. Defaults to `false`.
+  @param {product} [sympl_product] - The product, passed to Sympl as base64 JSON on the product page.
+  @param {string} [id] - A section ID. When set, the widget can be swapped for the selected variant's price.
+
+  @example
+  {% render 'sympl-widget', amount: cart.total_price, is_cart: true %}
+{%- enddoc -%}
+
+{%- if settings.sympl_enabled and settings.sympl_store_code != blank and amount > 0 -%}
+  {%- comment -%}
+    A plain decimal (1149.0), not `money_without_currency`: this shop's money
+    format prints thousands with a comma ("1,149"), which reads as 1.
+  {%- endcomment -%}
+  {%- assign sympl_amount = amount | divided_by: 100.0 -%}
+  <div
+    class="dsr-sympl"
+    {% if id %}
+      id="Sympl-{{ id }}" data-dsr-sympl-product
+    {% endif %}
+  >
+    <sympl-widget
+      productprice="{{ sympl_amount }}"
+      storecode="{{ settings.sympl_store_code | escape }}"
+      {% if is_cart %}
+        isCart="true"
+      {% endif %}
+      {% if sympl_product %}
+        product="{{ sympl_product | json | base64_encode }}"
+      {% endif %}
+    ></sympl-widget>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .dsr-sympl {
+    margin-top: 1.6rem;
+  }
+{% endstylesheet %}

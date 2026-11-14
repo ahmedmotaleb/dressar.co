@@ -1,0 +1,56 @@
+/* Dressar breadcrumbs (Stage 8, snippets/dsr-breadcrumbs.liquid). */
+
+.dsr-breadcrumbs {
+  margin: 0 0 1rem;
+  font-size: 1.2rem;
+  line-height: 1.5;
+}
+
+.dsr-breadcrumbs__list {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  column-gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dsr-breadcrumbs__item {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  color: rgba(var(--color-foreground), 0.7);
+}
+
+.dsr-breadcrumbs__item + .dsr-breadcrumbs__item::before {
+  content: '/' / '';
+  margin-inline-end: 0.6rem;
+  color: rgba(var(--color-foreground), 0.45);
+}
+
+/* One line: the current page (often a long product title) shortens with an ellipsis. */
+.dsr-breadcrumbs__item[aria-current='page'] {
+  display: block;
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: rgb(var(--color-foreground));
+}
+
+/* At least 24 px tall, so the links are easy to tap (WCAG 2.5.8). */
+.dsr-breadcrumbs__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.4rem;
+  color: inherit;
+  text-decoration: none;
+  text-underline-offset: 0.3rem;
+}
+
+.dsr-breadcrumbs__link:hover {
+  color: rgb(var(--color-foreground));
+  text-decoration: underline;
+}

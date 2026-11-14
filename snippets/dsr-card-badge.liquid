@@ -1,0 +1,33 @@
+{%- doc -%}
+  The sold-out or sale badge of a product card. The sale badge states the
+  markdown printed on the card itself (the product's lowest price against
+  its lowest compare-at price), floored, and says "Sale" below 1%. It never
+  shows a figure the card doesn't back up.
+
+  Dawn prints a card's badge twice (one copy for cards with media, one for
+  cards without); both use this snippet so they can't disagree.
+
+  @param {product} card_product - The product on the card.
+  @param {string} id - The badge's ID, referenced by the card link's aria-labelledby.
+
+  @example
+  {% render 'dsr-card-badge', card_product: card_product, id: badge_id %}
+{%- enddoc -%}
+
+{%- if card_product.available == false -%}
+  <span id="{{ id }}" class="badge badge--bottom-left color-{{ settings.sold_out_badge_color_scheme }}">
+    {{- 'products.product.sold_out' | t -}}
+  </span>
+{%- elsif card_product.compare_at_price > card_product.price -%}
+  {%- liquid
+    assign sale_savings = card_product.compare_at_price | minus: card_product.price
+    assign sale_percent = sale_savings | times: 100.0 | divided_by: card_product.compare_at_price | floor
+  -%}
+  <span id="{{ id }}" class="badge badge--bottom-left color-{{ settings.sale_badge_color_scheme }}">
+    {%- if sale_percent >= 1 -%}
+      {{- 'dressar.card.sale_percent' | t: percent: sale_percent -}}
+    {%- else -%}
+      {{- 'products.product.on_sale' | t -}}
+    {%- endif -%}
+  </span>
+{%- endif -%}
