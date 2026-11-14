@@ -10,8 +10,8 @@
   - Colour shown: the colour of the first in-stock variant whose photo is the
     card's photo, else of the first in-stock variant.
   - Price variant: the cheapest in-stock variant in that colour (the cheapest
-    of the colour when none is in stock); "from" when that colour's sizes cost
-    different amounts.
+    of the colour when none is in stock); "from" when that colour's sizes in
+    stock (all its sizes, when none is) cost different amounts.
 
   @param {product} card_product - The product on the card.
 
@@ -62,15 +62,17 @@
   assign cheapest = null
   assign low = null
   assign high = null
+  assign low_all = null
+  assign high_all = null
   for variant in card_product.variants
     if color_index >= 0 and variant.options[color_index] != color
       continue
     endif
-    if low == null or variant.price < low
-      assign low = variant.price
+    if low_all == null or variant.price < low_all
+      assign low_all = variant.price
     endif
-    if high == null or variant.price > high
-      assign high = variant.price
+    if high_all == null or variant.price > high_all
+      assign high_all = variant.price
     endif
     if cheapest == null or variant.price < cheapest.price
       assign cheapest = variant
@@ -79,10 +81,18 @@
       if priced == null or variant.price < priced.price
         assign priced = variant
       endif
+      if low == null or variant.price < low
+        assign low = variant.price
+      endif
+      if high == null or variant.price > high
+        assign high = variant.price
+      endif
     endif
   endfor
   if priced == null
     assign priced = cheapest | default: shown
+    assign low = low_all
+    assign high = high_all
   endif
   assign from = ''
   if high > low

@@ -195,6 +195,7 @@ if (!customElements.get('dsr-card-options')) {
       // The price and sale badge for the choice on the card, from one variant:
       // the exact one once a size is chosen, otherwise the cheapest in-stock
       // variant of the chosen colour (any variant when none is in stock).
+      // "From" when that colour's sizes in stock cost different amounts.
       updatePrice() {
         if (!this.variants || !this.variants.length || !this.card || this.variants[0].length < 7) return;
         const color = this.color();
@@ -206,9 +207,11 @@ if (!customElements.get('dsr-card-options')) {
         }
         if (!scope.length) return;
         const inStock = scope.filter(([, available]) => available);
-        const variant = (inStock.length ? inStock : scope).reduce((low, next) => (next[6] < low[6] ? next : low));
+        const pool = inStock.length ? inStock : scope;
+        const variant = pool.reduce((low, next) => (next[6] < low[6] ? next : low));
         const [, , , price, compare, percent] = variant;
-        const from = new Set(scope.map((entry) => entry[6])).size > 1;
+        // "From" only when the sizes that can be bought cost different amounts.
+        const from = new Set(pool.map((entry) => entry[6])).size > 1;
         const text = from ? dsrCardDecode(this.dataset.from || '__price__').replace('__price__', price) : price;
 
         const block = this.card.querySelector('.card-information .price');

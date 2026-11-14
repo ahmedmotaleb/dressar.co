@@ -25,7 +25,7 @@ Now (`snippets/dsr-card-variant.liquid`):
 - **Colour shown:** the colour of the in-stock variant whose photo is the card's photo, else of the first in-stock variant. That colour's circle starts selected.
 - **Price variant:** the cheapest in-stock variant in that colour (the cheapest of the colour when none is in stock).
   - The card prints its price and compare-at price, and the badge comes from it.
-  - "From" appears only when that colour's sizes cost different amounts.
+  - "From" appears only when that colour's sizes in stock (all of its sizes, when none is in stock) cost different amounts. Example: velvet skirt in olive, where only the 449 3XL is in stock, shows "449", not "From 449".
 - **On a choice:** picking a colour moves all three to that colour; picking a size, to the exact variant (`assets/dsr-card.js`). The prices for this come with the card (formatted by Shopify), so there's no extra request and no reload.
 
 `snippets/price.liquid` gains two optional parameters for this (`dsr_variant`, `dsr_from`). The product page's prices are unchanged.

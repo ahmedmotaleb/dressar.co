@@ -306,6 +306,8 @@ async function main() {
     check(`${L} A: one colour: one circle, selected (thin dark ring), named "Navy"`, c.swatches.length === 1 && c.swatches[0].pressed && c.swatches[0].value === 'Navy' && /^solid 1px 2px$/.test(c.swatches[0].outline), JSON.stringify(c.swatches));
     check(`${L} A: its sizes in stock open, the rest struck through`, c.sizes.join() === 'M,L:x,XL:x,XXL:x,3XL', c.sizes.join());
     check(`${L} A: price 399 against 649 (the cheapest in-stock size), badge 39% (38.5 rounded)`, has(c.price, 39900) && has(c.compare, 64900) && c.badge === '39%', JSON.stringify(c));
+    const fromWordA = strings.products.product.price.from_price_html.split('{{')[0].trim();
+    check(`${L} A: no "${fromWordA}": the sizes in stock (M, 3XL) cost the same`, !c.price.includes(fromWordA), c.price);
     await click('turquoise-velvet-jacket', '.dsr-card-size[data-value="3XL"]');
     c = await card('turquoise-velvet-jacket');
     check(`${L} A: choosing 3XL moves price and badge to that variant (399 against 699, 43%)`, has(c.price, 39900) && has(c.compare, 69900) && c.badge === '43%', JSON.stringify([c.price, c.compare, c.badge]));
