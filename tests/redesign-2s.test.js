@@ -178,7 +178,7 @@ async function main() {
             price: at('[id^="price-"]'),
             colour: at('variant-selects'),
             sizeGuide: at('.product-popup-modal__opener'),
-            stock: at('.product__inventory'),
+            sku: at('.product__sku'),
             add: at('.product-form__submit'),
             shipping: at('.icon-with-text'),
             description: at('.product__description'),
@@ -196,8 +196,8 @@ async function main() {
       });
       // The rating under the name is Judge.me's badge, an app block (its code lives in the app,
       // so it isn't rendered here): its place in the template is checked below.
-      const seq = ['title', 'price', 'colour', 'sizeGuide', 'stock', 'add', 'shipping', 'description', 'facts'];
-      check(`${tag}: order: name, rating, price, colour, size, size guide, stock, add to cart, shipping and exchange, description, fabric and fit`, seq.every((k, i) => r.order[k] > -1 && (i === 0 || r.order[k] > r.order[seq[i - 1]])), JSON.stringify(r.order));
+      const seq = ['title', 'price', 'colour', 'sizeGuide', 'sku', 'add', 'shipping', 'description', 'facts'];
+      check(`${tag}: order: name, rating, price, colour, size, size guide, product code, add to cart, shipping and exchange, description, fabric and fit`, seq.every((k, i) => r.order[k] > -1 && (i === 0 || r.order[k] > r.order[seq[i - 1]])), JSON.stringify(r.order));
       check(`${tag}: name ${desktop ? 24 : 20}px, price ${desktop ? 20 : 18}px bold`, r.titleSize === (desktop ? 24 : 20) && r.priceSize === (desktop ? 20 : 18) && Number(r.priceWeight) === 700, JSON.stringify([r.titleSize, r.priceSize, r.priceWeight]));
       check(`${tag}: labels "Color — olive", "Size — L"`, r.colourLegend === 'Color — olive' && r.sizeLegend === 'Size — L', `${r.colourLegend} | ${r.sizeLegend}`);
       // (Exact sizes and colours: tests/pdp-selectors.test.js.)

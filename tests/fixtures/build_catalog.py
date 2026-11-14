@@ -104,5 +104,12 @@ out = {
     "empty": {"title": "Empty", "size": 0, "description": ""}
   }
 }
+# Product descriptions (body_html) as the store's Arabic storefront serves
+# them, copied 2026-11-14 for the size tables "Find your size" reads.
+import os
+DESC = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "descriptions.json")))
+for p in out["products"]:
+    if p["handle"] in DESC:
+        p["description"] = DESC[p["handle"]]
 json.dump(out, open(sys.argv[2], "w"), ensure_ascii=False, indent=1)
 print(len(P), "products")

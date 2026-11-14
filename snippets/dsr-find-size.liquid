@@ -1,0 +1,196 @@
+{%- doc -%}
+  "Find your size" on the product page (docs/stages/pdp-ux.md): a button that
+  opens a dialog asking for height and weight, plus the body measurements this
+  product's sizes are set by, and answers with a size.
+
+  The answer only comes from data the store already publishes:
+  1. the product's own size table, in its description: the columns that say
+     what body measurement each size fits ("يناسب محيط وسط حتى" / "Fits waist
+     up to"). Flat garment widths are not used, since turning them into body
+     sizes would need an allowance nobody has stated;
+  2. otherwise the Dressar size chart (the block's "Size chart" setting,
+     copied from the chart on the size-chart page).
+  The store has no height or weight to size data, so those two never pick a
+  size on their own: the dialog asks for a measurement instead. Nothing typed
+  leaves the page (no request, no storage).
+
+  Renders nothing for a product without a size option. The size and colour
+  options are found by the names in Theme settings > Dressar ("Size option
+  names", "Colour option names").
+
+  @param {product} product - The product.
+  @param {object} block - The "Find your size" block (its settings).
+  @param {object} section - The main product section.
+
+  @example
+  {% render 'dsr-find-size', product: product, block: block, section: section %}
+{%- enddoc -%}
+
+{%- liquid
+  assign size_option = null
+  assign size_names = settings.card_size_option_names | downcase | split: ','
+  for option in product.options_with_values
+    assign option_name = option.name | downcase | strip
+    for name in size_names
+      assign wanted = name | strip
+      if wanted != blank and option_name == wanted
+        assign size_option = option
+        break
+      endif
+    endfor
+    if size_option
+      break
+    endif
+  endfor
+
+  assign color_index = -1
+  assign color_names = settings.card_color_option_names | downcase | split: ','
+  for option in product.options_with_values
+    assign option_name = option.name | downcase | strip
+    for name in color_names
+      assign wanted = name | strip
+      if wanted != blank and option_name == wanted and color_index == -1
+        assign color_index = option.position | minus: 1
+      endif
+    endfor
+  endfor
+
+  assign table_parts = product.description | split: '<table'
+-%}
+
+{%- if size_option -%}
+  {%- assign modal_id = 'DsrFindSize-' | append: section.id -%}
+  <modal-opener class="dsr-pdp-tool-opener" data-modal="#{{ modal_id }}">
+    <button
+      type="button"
+      class="dsr-pdp-tool"
+      id="DsrFindSizeOpener-{{ section.id }}"
+      aria-haspopup="dialog"
+    >
+      <span class="dsr-pdp-tool__icon" aria-hidden="true">
+        {%- comment -%} A hanger. {%- endcomment -%}
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+          <path d="M9.6 6.4a2.4 2.4 0 1 1 3.4 2.2c-.6.3-1 .9-1 1.6v.8"/>
+          <path d="M12 11 3.2 16.9c-.8.5-.4 1.6.5 1.6h16.6c.9 0 1.3-1.1.5-1.6L12 11Z"/>
+        </svg>
+      </span>
+      <span class="dsr-pdp-tool__label">{{ 'dressar.find_size.button' | t }}</span>
+    </button>
+  </modal-opener>
+
+  <modal-dialog id="{{ modal_id }}" class="product-popup-modal dsr-find-size-modal">
+    <div
+      role="dialog"
+      aria-labelledby="{{ modal_id }}-title"
+      aria-modal="true"
+      class="product-popup-modal__content"
+      tabindex="-1"
+    >
+      <button
+        id="ModalClose-{{ modal_id }}"
+        type="button"
+        class="product-popup-modal__toggle"
+        aria-label="{{ 'accessibility.close' | t }}"
+      >
+        {{- 'icon-close.svg' | inline_asset_content -}}
+      </button>
+      <div class="product-popup-modal__content-info">
+        <h2 class="h3 dsr-fs__title" id="{{ modal_id }}-title">{{ 'dressar.find_size.button' | t }}</h2>
+
+        <dsr-find-size data-section="{{ section.id }}">
+          <form class="dsr-fs__form" novalidate>
+            <div class="dsr-fs__row">
+              <label class="dsr-fs__field">
+                <span class="dsr-fs__label">{{ 'dressar.find_size.height' | t }}</span>
+                <input class="dsr-fs__input" type="number" name="height" inputmode="decimal" min="100" max="230" step="any" required autocomplete="off">
+              </label>
+              <label class="dsr-fs__field">
+                <span class="dsr-fs__label">{{ 'dressar.find_size.weight' | t }}</span>
+                <input class="dsr-fs__input" type="number" name="weight" inputmode="decimal" min="30" max="250" step="any" required autocomplete="off">
+              </label>
+            </div>
+
+            <fieldset class="dsr-fs__measures" data-measures hidden>
+              <legend class="dsr-fs__label">{{ 'dressar.find_size.measures' | t }}</legend>
+              <p class="dsr-fs__hint">{{ 'dressar.find_size.measures_hint' | t }}</p>
+              <div class="dsr-fs__row">
+                {%- assign measure_keys = 'bust,waist,hips' | split: ',' -%}
+                {%- for key in measure_keys -%}
+                  {%- assign label_key = 'dressar.find_size.' | append: key -%}
+                  <label class="dsr-fs__field" data-measure="{{ key }}" hidden>
+                    <span class="dsr-fs__label">{{ label_key | t }}</span>
+                    <input class="dsr-fs__input" type="number" name="{{ key }}" inputmode="decimal" min="50" max="200" step="any" autocomplete="off">
+                  </label>
+                {%- endfor -%}
+              </div>
+            </fieldset>
+
+            <p class="dsr-fs__error" data-error role="alert" hidden></p>
+            <button type="submit" class="button button--primary dsr-fs__submit">{{ 'dressar.find_size.submit' | t }}</button>
+          </form>
+
+          <div class="dsr-fs__result" data-result role="status" aria-live="polite"></div>
+          <p class="dsr-fs__privacy">{{ 'dressar.find_size.privacy' | t }}</p>
+          <div class="dsr-fs__help">{%- render 'dsr-size-help', product: product -%}</div>
+
+          {%- comment -%}
+            The product's sizes and variants (by option value), its size tables
+            (only the <table> parts of the description) and the size chart.
+          {%- endcomment -%}
+          <script type="application/json" data-dsr-fs-data>
+            {
+              "sizeIndex": {{ size_option.position | minus: 1 }},
+              "colorIndex": {{ color_index }},
+              "options": [
+                {%- for option in product.options_with_values -%}
+                  [{%- for value in option.values -%}{"id": {{ value.id | json }}, "name": {{ value.name | json }}}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}]
+                  {%- unless forloop.last -%},{%- endunless -%}
+                {%- endfor -%}
+              ],
+              "variants": [
+                {%- for variant in product.variants -%}
+                  [{{ variant.options | json }}, {{ variant.available | json }}]{%- unless forloop.last -%},{%- endunless -%}
+                {%- endfor -%}
+              ],
+              "tables": [
+                {%- for part in table_parts offset: 1 -%}
+                  {%- assign table_html = part | split: '</table>' | first | prepend: '<table' | append: '</table>' -%}
+                  {{ table_html | json }}{%- unless forloop.last -%},{%- endunless -%}
+                {%- endfor -%}
+              ],
+              "chart": {{ block.settings.chart | json }},
+              "heightMin": {{ block.settings.height_min | json }},
+              "heightMax": {{ block.settings.height_max | json }},
+              "t": {
+                "need": {{ 'dressar.find_size.need' | t: list: '{list}' | json }},
+                "or": {{ 'dressar.find_size.or' | t | json }},
+                "bust": {{ 'dressar.find_size.bust_name' | t | json }},
+                "waist": {{ 'dressar.find_size.waist_name' | t | json }},
+                "hips": {{ 'dressar.find_size.hips_name' | t | json }},
+                "result": {{ 'dressar.find_size.result' | t: size: '{size}' | json }},
+                "fits": {{ 'dressar.find_size.fits' | t: size: '{size}' | json }},
+                "cm": {{ 'dressar.find_size.cm' | t | json }},
+                "basisProduct": {{ 'dressar.find_size.basis_product' | t | json }},
+                "basisChart": {{ 'dressar.find_size.basis_chart' | t | json }},
+                "available": {{ 'dressar.find_size.available' | t: color: '{color}' | json }},
+                "soldOut": {{ 'dressar.find_size.sold_out' | t: color: '{color}' | json }},
+                "availablePlain": {{ 'dressar.find_size.available_plain' | t | json }},
+                "soldOutPlain": {{ 'dressar.find_size.sold_out_plain' | t | json }},
+                "choose": {{ 'dressar.find_size.choose' | t: size: '{size}' | json }},
+                "tooBig": {{ 'dressar.find_size.too_big' | t: size: '{size}' | json }},
+                "heightNote": {{ 'dressar.find_size.height_note' | t: min: '{min}', max: '{max}' | json }},
+                "weightNote": {{ 'dressar.find_size.weight_note' | t | json }},
+                "oneSize": {{ 'dressar.find_size.one_size' | t: size: '{size}' | json }},
+                "noData": {{ 'dressar.find_size.no_data' | t | json }},
+                "invalidHeight": {{ 'dressar.find_size.invalid_height' | t | json }},
+                "invalidWeight": {{ 'dressar.find_size.invalid_weight' | t | json }},
+                "invalidMeasure": {{ 'dressar.find_size.invalid_measure' | t | json }}
+              }
+            }
+          </script>
+        </dsr-find-size>
+      </div>
+    </div>
+  </modal-dialog>
+  <script src="{{ 'dsr-find-size.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
