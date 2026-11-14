@@ -286,7 +286,10 @@ On touch screens, the card slideshow's first slide (an empty copy of the photo u
 - **No visual check on the Shopify preview.** This environment can't open the storefront, so the preview theme `#168399831271` was checked file by file (MD5), not by eye. All visual checks above come from the local harness, not from Shopify.
 - **The Judge.me badge on the product page can't be rendered locally**: it is an app block. The test checks its position in the template. On the card, the rating comes from Shopify's reviews metafields. If Judge.me's metafield sync is off for the store, cards show no ratings: there are no fake stars.
 - **The rating row takes no space when a product has no reviews** (as the brief asked). In a row where only some products have reviews, the prices therefore don't line up across cards.
-- **Screenshots with the store's real products** need the Shopify connector's theme access (`theme_screenshot`, `theme_bash`), which it refused with "requires additional permissions". Reconnecting the connector with theme access would allow them. All screenshots here come from the local harness.
+- **Real-data screenshots**: `docs/stages/2s-shots/real/`. These are the live theme (before) and the preview theme (after), loaded from dressar.co with the store's own products, in English and Arabic: product page at 360, 390 and 430px, grid at 390 and 1440px, and the sticky bar. They were possible once this environment was allowed to reach the store's domains.
+  - Each page's theme ID was checked.
+  - App widgets that load from other hosts (Judge.me's badge, Sympl) don't show in them.
+  - They found one bug the harness had missed: cards with Judge.me reviews showed a Liquid error, because Shopify keeps the rating as text. It is fixed in `420cca2`. The test harness now refuses text-vs-number comparisons the way Shopify does, and the full suite passes with it.
 - **The theme IDs in the brief are out of date.**
   - The live theme is now `#168303165671` (the earlier preview copy), published on Nov 11. Its code is `b7da168`.
   - `#167837270247` (live Nov 10–11) is the rollback and was left unchanged. So were `#167717929191` and `#168327643367`.
