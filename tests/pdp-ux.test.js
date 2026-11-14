@@ -267,6 +267,8 @@ async function main() {
         a = await ask(page, { height: 163, weight: 60, ...vals });
         check(`${tag}: ${JSON.stringify(vals)} -> ${size} (${why})`, a.size === resultText(size) && a.lines.includes(fsT.basis_product), JSON.stringify(a));
       }
+      a = await ask(page, { height: 163, weight: 60, hips: 122 });
+      check(`${tag}: 3XL isn't made in olive: says it isn't available in olive`, a.stock === 'out' && a.stockText === fill(fsT.sold_out, { color: 'olive' }) && !a.choose, JSON.stringify(a));
       a = await ask(page, { height: 163, weight: 60, waist: 79 });
       const limits = `${fill(fsT.fits, { size: 'L' })} ${fsT.waist_name} 80 ${fsT.cm} · ${fsT.hips_name} 110 ${fsT.cm}`;
       check(`${tag}: shows the table's limits for that size`, a.lines.includes(limits), JSON.stringify(a.lines));

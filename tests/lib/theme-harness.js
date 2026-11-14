@@ -366,7 +366,11 @@ function createHarness({ root, fixtures, locale = 'en.default', origin = 'http:/
       v = v[category] ?? v.other;
     }
     if (typeof v !== 'string') return `translation missing: ${locale}.${key}`;
-    return v.replace(/{{\s*(\w+)\s*}}/g, (_, k) => (vars[k] ?? ''));
+    const out = v.replace(/{{\s*(\w+)\s*}}/g, (_, k) => (vars[k] ?? ''));
+    // Like Shopify: the text is HTML-escaped unless the key ends in _html, so an
+    // apostrophe reaches JSON or an attribute as &#39;.
+    if (/_html$/.test(key)) return html(out);
+    return html(out.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'));
   };
   const filters = {
     t,

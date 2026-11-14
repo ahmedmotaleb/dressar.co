@@ -30,6 +30,12 @@
     return k;
   };
   // Placeholders are __name__: Shopify's Liquid won't take braces inside a string in {{ }}.
+  // Shopify HTML-escapes translated text ("can&#39;t"); the dialog writes plain text.
+  const decode = (text) => {
+    const area = document.createElement('textarea');
+    area.innerHTML = String(text);
+    return area.value;
+  };
   const fill = (text, values) => text.replace(/__(\w+)__/g, (m, k) => (k in values ? values[k] : m));
 
   // A size table's rows: [{ keys: ['M', '38'], limits: { waist: 76, hips: 106 } }].
@@ -83,6 +89,9 @@
     connectedCallback() {
       if (this.data) return;
       this.data = JSON.parse(this.querySelector('[data-dsr-fs-data]').textContent);
+      Object.keys(this.data.t).forEach((k) => {
+        this.data.t[k] = decode(this.data.t[k]);
+      });
       this.form = this.querySelector('form');
       this.result = this.querySelector('[data-result]');
       this.error = this.querySelector('[data-error]');
@@ -192,8 +201,8 @@
         { text: `${fill(t.fits, { size: fit.size.name })} ${limits}`, small: true },
         { text: this.source.basis, small: true },
       ];
-      if (stock) lines.push({ text: stock.text, stock: stock.available ? 'in' : 'out' });
-      this.say([...lines, ...notes], stock && stock.available ? fit.size : null);
+      lines.push({ text: stock.text, stock: stock.available ? 'in' : 'out' });
+      this.say([...lines, ...notes], stock.available ? fit.size : null);
     }
 
     // Whether the size is in stock with the options chosen on the page now
@@ -206,8 +215,8 @@
         const v = values.find((value) => chosenIds.map(String).includes(String(value.id)));
         return v ? v.name : null;
       });
-      const variant = this.data.variants.find(([options]) => options.every((o, i) => chosen[i] === null || o === chosen[i]));
-      if (!variant) return null;
+      // No such variant (e.g. a colour not made in that size) counts as not available.
+      const variant = this.data.variants.find(([options]) => options.every((o, i) => chosen[i] === null || o === chosen[i])) || [null, false];
       const t = this.data.t;
       const color = this.data.colorIndex >= 0 ? chosen[this.data.colorIndex] : null;
       if (variant[1]) return { available: true, text: color ? fill(t.available, { color }) : t.availablePlain };
