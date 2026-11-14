@@ -154,6 +154,12 @@ So height and weight never pick a size. The size comes from body measurements, i
 **Privacy**
 - No request and no storage while a size is worked out.
 
+## Found in the store's descriptions
+
+- The product descriptions put their size table's title ("جدول المقاسات (سم) | Size Guide") in an **h4**, right after the page's h2 headings, which skips a level (axe: heading-order).
+- That is the merchant's HTML, fixed in the product editor by making it an h3, not theme code.
+- `tests/a11y.test.js` now skips heading-order inside a description only (now that the fixtures carry the real descriptions); everywhere else the rule still counts.
+
 ## Not verified here
 
 - **Local harness only.** The checks use the theme's real Liquid, CSS and JS with fixture products. The Shopify preview can't be opened from this environment, so the live preview hasn't been looked at.

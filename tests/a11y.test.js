@@ -46,8 +46,16 @@ async function main() {
     if (!(await page.evaluate(() => Boolean(window.axe)))) await page.addScriptTag({ content: axeSource });
     return page.evaluate(
       async ({ tags, include }) => {
-        const r = await window.axe.run(include ? { include: [include] } : document, { runOnly: { type: 'tag', values: tags } });
-        return r.violations.map((v) => ({ id: v.id, impact: v.impact, nodes: v.nodes.map((n) => n.target.join(' ')).slice(0, 3) }));
+        const r = await window.axe.run(include ? { include: [include] } : document, { runOnly: { type: 'tag', values: tags }, elementRef: true });
+        // Headings inside a product description are the merchant's own HTML, not the
+        // theme's: the store's descriptions put "جدول المقاسات (سم) | Size Guide" in an
+        // h4 (tests/fixtures/descriptions.json). Their order is fixed in the product
+        // editor, so heading-order isn't counted there (docs/stages/pdp-ux.md).
+        const merchant = (n) => n.element && n.element.closest('.product__description, .rte');
+        return r.violations
+          .map((v) => ({ ...v, nodes: v.id === 'heading-order' ? v.nodes.filter((n) => !merchant(n)) : v.nodes }))
+          .filter((v) => v.nodes.length)
+          .map((v) => ({ id: v.id, impact: v.impact, nodes: v.nodes.map((n) => n.target.join(' ')).slice(0, 3) }));
       },
       { tags: TAGS, include }
     );
