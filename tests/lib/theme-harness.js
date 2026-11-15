@@ -407,10 +407,21 @@ function createHarness({ root, fixtures, locale = 'en.default', origin = 'http:/
           o.width = (Number(o.height) * img.width) / img.height;
         }
       }
+      // Like Shopify, `widths` becomes a srcset (only widths the image has).
+      if (o.widths && img) {
+        const base = String(url).split('?')[0];
+        o.srcset = String(o.widths)
+          .split(',')
+          .map((w) => Number(w.trim()))
+          .filter((w) => w && (!img.width || w <= img.width))
+          .map((w) => `${base}?width=${w} ${w}w`)
+          .join(', ');
+      }
+      delete o.widths;
       const extraAlt = ` alt="${attr(o.alt)}"`;
       delete o.alt;
       // Like Shopify, other attributes (data-*) pass straight through.
-      const extra = ['class', 'alt', 'sizes', 'loading', 'fetchpriority', 'width', 'height', 'style', ...Object.keys(o).filter((k) => k.startsWith('data-'))]
+      const extra = ['class', 'alt', 'srcset', 'sizes', 'loading', 'fetchpriority', 'width', 'height', 'style', ...Object.keys(o).filter((k) => k.startsWith('data-'))]
         .filter((k) => o[k] !== undefined && o[k] !== false)
         .map((k) => ` ${k}="${attr(k === 'height' || k === 'width' ? Math.round(Number(o[k])) : o[k])}"`)
         .join('');
