@@ -2307,6 +2307,19 @@
     "breadcrumbs": {
       "label": "مسار التصفح",
       "home": "الرئيسية"
+    },
+    "video_stories": {
+      "label": "قصص بالفيديو",
+      "carousel": "عرض متحرك",
+      "slide_role": "شريحة",
+      "slide": "{{ index }} من {{ count }}",
+      "video_label": "فيديو {{ index }}",
+      "play": "تشغيل الفيديو",
+      "pause": "إيقاف الفيديو مؤقتًا",
+      "mute": "كتم الصوت",
+      "unmute": "تشغيل الصوت",
+      "previous": "الفيديو السابق",
+      "next": "الفيديو التالي"
     }
   }
 }

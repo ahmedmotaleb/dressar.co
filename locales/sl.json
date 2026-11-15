@@ -654,6 +654,19 @@
       "invalid_weight": "Enter your weight in kg (30–250).",
       "invalid_measure": "Enter measurements in cm (50–200).",
       "privacy": "Your measurements stay on your device. We don't send or save them."
+    },
+    "video_stories": {
+      "label": "Video stories",
+      "carousel": "carousel",
+      "slide_role": "slide",
+      "slide": "{{ index }} of {{ count }}",
+      "video_label": "Video {{ index }}",
+      "play": "Play video",
+      "pause": "Pause video",
+      "mute": "Mute",
+      "unmute": "Turn sound on",
+      "previous": "Previous video",
+      "next": "Next video"
     }
   }
 }
