@@ -68,6 +68,7 @@ The section gets a **Layout** setting: *Editorial mosaic* (the default, so the e
 | `assets/dsr-mosaic.css` (new) | Mosaic grid and cards |
 | `tests/lib/theme-harness.js` | `image_tag` prints `srcset` for `widths`, as Shopify does |
 | `tests/editorial-mosaic.test.js` (new) | Tests |
+| `tests/home.test.js` | "Shop by category" checks also read the mosaic (6 linked collections with photos; 2 cards in the first row on phones, 3 from 750px) |
 
 ## Tests
 

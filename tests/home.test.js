@@ -207,16 +207,20 @@ async function main() {
 
     // Shop by category.
     const cats = await page.evaluate(() => {
-      const items = [...document.querySelectorAll('#shopify-section-template--1__collection_list_DJAc8Q .collection-list > li')];
+      // Classic grid or the editorial mosaic (docs/stages/editorial-mosaic.md): cards in the first row.
+      const items = [...document.querySelectorAll('#shopify-section-template--1__collection_list_DJAc8Q :is(.collection-list, .dsr-mosaic) > li')];
       const tops = items.map((li) => li.offsetTop);
       return {
         hrefs: [...new Set(items.flatMap((li) => [...li.querySelectorAll('a')].map((a) => a.getAttribute('href'))))],
         columns: tops.filter((top) => top === tops[0]).length,
         photos: items.every((li) => li.querySelector('img')),
+        mosaic: Boolean(document.querySelector('#shopify-section-template--1__collection_list_DJAc8Q .dsr-mosaic')),
       };
     });
+    // The mosaic's desktop layout starts at 750px (featured, tall, square in the first row).
+    const catColumns = cats.mosaic ? (width >= 750 ? 3 : 2) : desktop ? 3 : 2;
     check(`${tag} shop by category: 6 collections linked, with photos`, cats.hrefs.length === 6 && cats.hrefs.every((h) => /^\/collections\/[\w-]+$/.test(h)) && cats.photos, cats.hrefs.join(','));
-    check(`${tag} shop by category: ${desktop ? 3 : 2} columns`, cats.columns === (desktop ? 3 : 2), String(cats.columns));
+    check(`${tag} shop by category: ${catColumns} cards in the first row`, cats.columns === catColumns, String(cats.columns));
 
     if (width === 390 || width === 1280) {
       // Nothing moves on its own.
