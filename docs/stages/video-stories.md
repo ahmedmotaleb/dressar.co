@@ -112,3 +112,24 @@ Brief: "Shopify Dawn — Premium Shoppable Video Stories". A reusable section, *
 - **Real phones:** Android Chrome and iPhone Safari were not available. Only Chromium with phone emulation was tested. iOS autoplay rules, Low Power Mode and H.264 playback need checking on a real iPhone.
 - **Theme editor:** adding, removing or reordering a block makes the editor re-render the section. That re-render (section removed and inserted again) and block selection were tested in a test page; a specific block reorder was not, not in the real Shopify editor.
 - **The 2S reference recording** named in the brief didn't come through, so the look follows the written brief.
+
+## Real preview
+
+Unpublished theme `#168454979815`, "DRESSAR PREVIEW (Claude) — Video Stories 2026-11-15", a copy of the live theme. The demo template `templates/index.video-stories.json` uses the store's four vertical videos and four real products. One product is sold out, so the sold-out label shows on the card.
+
+**URLs:**
+- Arabic: `https://dressar.co/ar/?view=video-stories&preview_theme_id=168454979815`
+- English: the same without `/ar`.
+
+**Checked in Chromium on the real storefront:**
+- Arabic pages are RTL and English pages LTR.
+- One video plays, muted.
+- Swiping moves to the next card and that one plays.
+- Product links go to the real URLs, with real prices; "Sold out" shows for the sold-out dress.
+- No sideways scrolling.
+
+**HLS:** Chromium here plays HLS natively, so it plays Shopify's HLS stream.
+
+**Screenshots:** `docs/stages/video-stories-shots/` (360, 390, 430, 1440px, and after a swipe).
+
+**Header:** on the demo page the store's home-page header is transparent and lies over the first section, because Video Stories is that page's first section. Placed below other sections, it doesn't.
