@@ -99,7 +99,7 @@ async function main() {
           iconToTitle: title ? r(title).top - r(icon).bottom : null,
           titleToText: title && text ? r(text).top - r(title).bottom : null,
           title: title && { text: title.textContent.trim(), size: cs(title).fontSize, weight: cs(title).fontWeight, family: cs(title).fontFamily },
-          text: text && { size: cs(text).fontSize, weight: cs(text).fontWeight },
+          text: text && { size: cs(text).fontSize, weight: cs(text).fontWeight, bidi: cs(text).unicodeBidi },
           fits: [c, title, text].filter(Boolean).every((el) => el.scrollWidth <= el.clientWidth + 1) && r(c).right <= window.innerWidth && r(c).left >= 0,
         };
       });
@@ -141,6 +141,7 @@ async function main() {
       const mobile = width < 750;
       check(`${tag} the merchant's cards, in order`, JSON.stringify(m.cards.map((c) => c.title && c.title.text)) === JSON.stringify(merchantTitles), JSON.stringify(m.cards.map((c) => c.title && c.title.text)));
       check(`${tag} text fits its card`, m.cards.every((c) => c.fits));
+      check(`${tag} each line keeps its own direction (punctuation in place)`, m.cards.every((c) => c.text.bidi === 'plaintext'));
       check(`${tag} no sideways scrolling`, !m.overflow);
       if (mobile) {
         check(`${tag} section background #F7F5F2, 16px padding`, m.sectionBg === 'rgb(247, 245, 242)' && m.sectionPadding === '16px', `${m.sectionBg} ${m.sectionPadding}`);

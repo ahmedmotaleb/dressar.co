@@ -60,6 +60,13 @@
     flex: 1;
   }
 
+  /* Each line in its own direction, so an English line on an Arabic page
+     keeps its full stop at its end. */
+  .ai-icon-text-grid-{{ ai_gen_id }} .dsr-benefit__title,
+  .ai-icon-text-grid-{{ ai_gen_id }} .dsr-benefit__text {
+    unicode-bidi: plaintext;
+  }
+
   .ai-icon-text-grid-{{ ai_gen_id }} .dsr-benefit__title {
     margin: 0 0 {{ block.settings.title_spacing }}px;
     font-size: {{ block.settings.title_size }}px;
