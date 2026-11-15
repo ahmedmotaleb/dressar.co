@@ -56,3 +56,12 @@ Brief: "DRESSAR — Fix Collection Section Heading Typography". The Arabic headi
 - **Schema:** the settings, their defaults, and the existing setting IDs.
 
 **Screenshots:** `docs/stages/heading-typography-shots/heading-{ar,en}-{360,390,430,1440}.png` (local render with the test fixtures). Real-preview shots are in the PR.
+
+## Real preview
+
+Unpublished theme `#168455471335`, "DRESSAR PREVIEW (Claude) — Nov 15 design briefs", a copy of the live theme made on Nov 15 that holds all four Nov 15 changes. Screenshots of the White Friday row heading are in `docs/stages/heading-typography-preview-shots/before-heading-*` and `after-heading-*` (Arabic `/ar` and English, 360, 390, 430, 1440px).
+
+| | Before | After |
+|---|---|---|
+| Phones | Poppins 200, 30px (Arabic in the device font) | Cairo 600, 26px, right-aligned in Arabic |
+| Desktop | Poppins 200, 40px | Cairo 600, 34px |
