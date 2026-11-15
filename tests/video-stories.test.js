@@ -77,7 +77,7 @@ async function main() {
     const strings = readJson(path.join(root, 'locales', `${locale}.json`));
     const vs = strings.dressar.video_stories;
 
-    const open = async ({ width = 390, height = 844, layout = 'split', settings = {}, reduced = false, init = null } = {}) => {
+    const open = async ({ width = 390, height = 844, layout = 'split', settings = {}, reduced = false, init = null, hls = false } = {}) => {
       const harness = createHarness({ root, fixtures: path.join(root, 'tests/fixtures/store.json'), locale, templatePatch: patchFor(layout, settings) });
       const sf = storefront({ root, harness, catalog });
       const mobile = width < 750;
@@ -87,6 +87,13 @@ async function main() {
       page.videoRequests = [];
       page.on('pageerror', (e) => page.errors.push(e.message));
       page.on('console', (m) => m.type() === 'error' && !/Failed to load resource/.test(m.text()) && page.errors.push(m.text()));
+      // Whether the browser says it plays HLS itself is pinned per test: Chromium builds differ.
+      await page.addInitScript((hls) => {
+        const original = HTMLMediaElement.prototype.canPlayType;
+        HTMLMediaElement.prototype.canPlayType = function (type) {
+          return /mpegurl/i.test(type) ? (hls ? 'maybe' : '') : original.call(this, type);
+        };
+      }, hls);
       if (init) await page.addInitScript(init);
       await routeTheme(page, { root, fontsDir, harness, imageSize: sf.imageSize, globalsFor: () => sf.globalsFor(), cartSection: sf.cartSection, cartJson: sf.cartJson, pages: (u) => sf.pages(u) });
       await page.route('**/test-videos/**', (route) => {
@@ -334,6 +341,33 @@ async function main() {
       await wait(page, 1000);
       const st = await state(page);
       check(`${L} data saver on: nothing autoplays`, playingCount(st) === 0, JSON.stringify(st[0].playing));
+      await page.context().close();
+    }
+    {
+      // HLS: Shopify storefronts list an HLS stream next to the MP4. Chromium has no
+      // native HLS, so it gets the MP4; a browser that plays HLS itself gets the
+      // stream, and the MP4 if the stream fails (here the .m3u8 is a 404).
+      let page = await open();
+      await scrollToSection(page, 0);
+      await wait(page, 1000);
+      let r = await page.evaluate(() => {
+        const v = document.querySelector('dsr-video-stories .dsr-vs__slide.is-active video');
+        return { hls: v.dataset.hls, src: v.getAttribute('src'), playing: !v.paused };
+      });
+      check(`${L} HLS: each video carries its HLS stream`, /story-1\.m3u8$/.test(r.hls || ''), JSON.stringify(r));
+      check(`${L} HLS: without native HLS the MP4 plays`, /story-1\.webm$/.test(r.src || '') && r.playing, JSON.stringify(r));
+      await page.context().close();
+      page = await open({ hls: true });
+      await scrollToSection(page, 0);
+      await wait(page, 1500);
+      r = await page.evaluate(() => {
+        const slide = document.querySelector('dsr-video-stories .dsr-vs__slide.is-active');
+        const v = slide.querySelector('video');
+        return { src: v.getAttribute('src'), playing: !v.paused, error: slide.classList.contains('is-error') };
+      });
+      check(`${L} HLS: native HLS asks for the stream first`, page.videoRequests.some((f) => f.startsWith('story-1.m3u8')), page.videoRequests.join());
+      check(`${L} HLS: a failed stream falls back to the MP4, which plays`, /story-1\.webm$/.test(r.src || '') && r.playing && !r.error, JSON.stringify(r));
+      check(`${L} HLS: no JS errors`, page.errors.length === 0, page.errors.join(' | '));
       await page.context().close();
     }
     {

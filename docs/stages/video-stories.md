@@ -34,7 +34,11 @@ Brief: "Shopify Dawn — Premium Shoppable Video Stories". A reusable section, *
 **Loading**
 - Videos use `preload="none"` and their source is only set (`data-src` → `src`) when a card becomes active.
 - Cards two or more away from the active one drop their source again, so a long row never holds many videos.
-- **Video file:** the Shopify MP4 closest to 720px tall without going over.
+- **Video file:**
+  - Where the browser plays HLS itself (Safari, iPhone; some Chrome builds), Shopify's HLS stream, which adapts to the screen and connection.
+  - Elsewhere, an MP4: the one closest to 720px tall without going over.
+  - On the real storefront, Liquid lists only the 1080p MP4 and the HLS stream, so in practice the MP4 is the 1080p file.
+  - If the HLS stream fails, the MP4 is used instead.
 - **Posters:**
   - The block's poster image if set, else Shopify's own preview frame.
   - `image_tag` with widths 270–720 and `sizes`.
@@ -76,7 +80,7 @@ Brief: "Shopify Dawn — Premium Shoppable Video Stories". A reusable section, *
 
 ## Tests
 
-`tests/video-stories.test.js`: 158 checks in Chromium (Playwright), Arabic and English. The page holds two Video Stories sections. The checks cover:
+`tests/video-stories.test.js`: 168 checks in Chromium (Playwright), Arabic and English. The page holds two Video Stories sections. The checks cover:
 - **Layout** at 360, 390, 430 and 1440px:
   - 9:16 cards, the active card centred, neighbours peeking;
   - no sideways page scroll.
@@ -91,6 +95,7 @@ Brief: "Shopify Dawn — Premium Shoppable Video Stories". A reusable section, *
   - a hidden tab;
   - two sections competing.
 - **No autoplay:** reduced motion, Save-Data, autoplay refused by the browser, the autoplay setting off.
+- **HLS:** the MP4 without native HLS; the stream first with native HLS, falling back to the MP4 when it fails.
 - **Loop off:** advances to the next card.
 - **Content:**
   - the product link (URL, price, sold out);

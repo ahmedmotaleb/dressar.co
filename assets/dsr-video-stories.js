@@ -43,6 +43,12 @@
 
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const saveData = () => Boolean(navigator.connection && navigator.connection.saveData);
+  // HLS only where the browser plays it itself (Safari, iPhone); no library.
+  let hlsSupport = null;
+  const canPlayHls = () => {
+    if (hlsSupport === null) hlsSupport = document.createElement('video').canPlayType('application/vnd.apple.mpegurl') !== '';
+    return hlsSupport;
+  };
 
   class DsrVideoStories extends HTMLElement {
     connectedCallback() {
@@ -161,7 +167,7 @@
       const video = this.video(index);
       if (!video || video.getAttribute('src') || !video.dataset.src) return;
       video.preload = 'metadata';
-      video.src = video.dataset.src;
+      video.src = video.dataset.hls && canPlayHls() ? video.dataset.hls : video.dataset.src;
     }
 
     // Cards two or more away give their video back, so long rows stay light.
@@ -327,7 +333,15 @@
       const video = event.currentTarget;
       const slide = video.closest('.dsr-vs__slide');
       if (event.type === 'playing') slide.classList.add('is-playing');
-      if (event.type === 'error') slide.classList.add('is-error');
+      if (event.type === 'error') {
+        // The HLS stream failed: fall back to the MP4 once, then give up on the poster.
+        if (video.dataset.hls && video.getAttribute('src') === video.dataset.hls && video.dataset.src) {
+          video.src = video.dataset.src;
+          reconcile();
+          return;
+        }
+        slide.classList.add('is-error');
+      }
       if (event.type === 'ended' && this.slides.indexOf(slide) === this.active && this.active < this.slides.length - 1) {
         this.goTo(this.active + 1);
       }

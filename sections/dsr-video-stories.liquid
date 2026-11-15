@@ -12,7 +12,8 @@
     tab is hidden, and makes sure only one video plays on the whole page,
     however many Video Stories sections there are.
   - Nothing downloads up front: each video gets its source only when its card
-    becomes the active one (preload "metadata" for that card only); posters
+    becomes the active one (preload "metadata" for that card only), as an HLS
+    stream where the browser plays HLS itself, else an MP4; posters
     are sized images, lazy past the first card. Reduced motion or a data
     saver: nothing autoplays, the play button starts a video.
   - A linked product shows a small link with its photo, name, real price and
@@ -88,9 +89,16 @@
           assign poster = block.settings.poster | default: video.preview_image
 
           # The MP4 closest to 720px tall without going over (a phone-sized 9:16
-          # card), else the smallest one there is.
+          # card), else the smallest one there is. Storefronts usually list only
+          # the 1080p MP4 plus an HLS stream, so the HLS stream is passed on too:
+          # browsers that play HLS themselves (Safari, iPhone) use it and get a
+          # size that suits the screen and connection.
           assign source = null
+          assign hls = null
           for s in video.sources
+            if s.format == 'm3u8' and hls == null
+              assign hls = s
+            endif
             if s.format == 'mp4'
               if source == null
                 assign source = s
@@ -145,6 +153,9 @@
                 aria-label="{{ label | escape }}"
                 data-src="{{ source.url }}"
                 data-type="{{ source.mime_type }}"
+                {% if hls %}
+                  data-hls="{{ hls.url }}"
+                {% endif %}
               ></video>
               <div class="dsr-vs__controls">
                 <button type="button" class="dsr-vs__control" data-dsr-vs-play aria-label="{{ 'dressar.video_stories.play' | t | escape }}" aria-pressed="false">
