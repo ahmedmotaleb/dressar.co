@@ -90,3 +90,9 @@ The section gets a **Layout** setting: *Editorial mosaic* (the default, so the e
   - "Classic grid" brings back Dawn's list.
 
 **Screenshots:** `docs/stages/editorial-mosaic-shots/` is a local render with placeholder images. Real-preview before and after shots, with the store's own category images, are in the PR.
+
+## Real preview
+
+Unpublished theme `#168455471335`, "DRESSAR PREVIEW (Claude) — Nov 15 design briefs", a copy of the live theme, with the store's own six categories and images. Screenshots are in `docs/stages/editorial-mosaic-preview-shots/before-mosaic-*` and `after-mosaic-*` (Arabic `/ar` and English, 360, 390, 430, 768, 990, 1440px).
+
+The featured card is Skirts, the first block. It sits on the right on the Arabic page and on the left on the English page. Every card opens its collection.
