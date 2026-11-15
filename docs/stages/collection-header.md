@@ -62,3 +62,15 @@ Still passing: `collection.test.js` (300, filters, sort and pagination), `rtl.te
 ## Notes
 
 The store's collection descriptions are written in both languages (Arabic paragraph, then English). On phones the first 3 lines are the Arabic paragraph on both language versions. Showing only the page's language in descriptions would need the descriptions translated in Shopify (Translate & Adapt), or a rule for splitting them. That is not part of this change.
+
+## Real preview
+
+Unpublished theme `#168455471335`, "DRESSAR PREVIEW (Claude) — Nov 15 design briefs", a copy of the live theme. Screenshots of `/collections/white-friday-sale` are in `docs/stages/collection-header-preview-shots/before-collection-*` and `after-collection-*` (Arabic `/ar` and English, 360, 390, 430, 1440px).
+
+| White Friday Sale, phones | Before | After |
+|---|---|---|
+| First product card from the top of the page | 437px | 310px (127px higher) |
+| Title | "عروض الجمعة البيضاء \| White Friday Sale" on two lines | "عروض الجمعة البيضاء" (Arabic) / "White Friday Sale" (English) |
+| Breadcrumbs | shown | hidden (structured data kept) |
+
+Desktop is unchanged: 546px and 589px before and after, breadcrumbs and the whole title.
