@@ -78,3 +78,12 @@ Every existing setting ID is kept.
 - Theme Check flags the two new snippets as "OrphanedSnippet" (a suggestion). Both are rendered, from `blocks/`, which that check doesn't scan.
 - The block now declares 54 settings, against Theme Check's suggested 40. It already declared 46, and other live blocks declare up to 80.
 - The section below on the live page is the Judge.me testimonials app block. The test harness can't render it; spacing below is checked on the real preview.
+
+## Real preview
+
+Unpublished theme `#168455471335`, "DRESSAR PREVIEW (Claude) — Nov 15 design briefs", a copy of the live theme. Screenshots are in `docs/stages/store-benefits-preview-shots/before-benefits-*` and `after-benefits-*` (Arabic `/ar` and English, 360, 390, 430, 1440px).
+
+- **Phones:** the band is 255–304px tall, down from 438–500px; 12px margins plus the neighbours' own spacing above and below.
+- **Desktop:** unchanged.
+- **Store copy:** the Arabic page shows some English benefit copy. That comes from the store's saved translations of this block and was there before; it is not changed here.
+- **Full stop:** an English line used to show its full stop on the wrong side on the Arabic page. Each line now keeps its own direction.
