@@ -154,6 +154,59 @@
         "label": "Cairo for Arabic on product pages and cards",
         "info": "The theme fonts have no Arabic letters, so Arabic text otherwise uses the shopper's device font. Cairo (31 KB, served by the theme, loaded only when Arabic text is shown) is used in the product details, the sticky add-to-cart bar and the product cards.",
         "default": true
+      },
+      {
+        "type": "header",
+        "content": "Collection section headings",
+        "info": "Headings of the Featured collection and Collection list sections."
+      },
+      {
+        "type": "checkbox",
+        "id": "dsr_heading_cairo",
+        "label": "Cairo for Arabic headings",
+        "info": "Arabic letters in Cairo at the weight below. Latin letters keep the theme's heading font and its own weight.",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "dsr_heading_size_mobile",
+        "label": "Heading size, mobile",
+        "min": 18,
+        "max": 36,
+        "step": 1,
+        "unit": "px",
+        "default": 26
+      },
+      {
+        "type": "range",
+        "id": "dsr_heading_size_desktop",
+        "label": "Heading size, desktop",
+        "min": 22,
+        "max": 48,
+        "step": 1,
+        "unit": "px",
+        "default": 34
+      },
+      {
+        "type": "select",
+        "id": "dsr_heading_weight",
+        "label": "Arabic heading weight",
+        "options": [
+          { "value": "500", "label": "Medium" },
+          { "value": "600", "label": "SemiBold" },
+          { "value": "700", "label": "Bold" }
+        ],
+        "default": "600"
+      },
+      {
+        "type": "range",
+        "id": "dsr_heading_line_height",
+        "label": "Heading line height",
+        "min": 110,
+        "max": 160,
+        "step": 5,
+        "unit": "%",
+        "default": 135
       }
     ]
   },
