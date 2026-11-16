@@ -1,0 +1,26 @@
+{%- comment -%}
+  One store benefit card: icon, title, description. Styled by the "Icons with
+  text" block that holds it (blocks/ai_gen_block_c719b9a.liquid).
+
+  Accepts:
+  - icon {String}: see snippets/dsr-benefit-icon.liquid
+  - title {String}
+  - description {String}
+  - attributes {String}: optional, e.g. block.shopify_attributes
+
+  Usage:
+  {% render 'dsr-benefit', icon: 'shipping', title: title, description: description %}
+{%- endcomment -%}
+<div class="dsr-benefit" {{ attributes }}>
+  <div class="dsr-benefit__icon">
+    {%- render 'dsr-benefit-icon', icon: icon -%}
+  </div>
+  <div class="dsr-benefit__content">
+    {%- if title != blank -%}
+      <h3 class="dsr-benefit__title">{{ title }}</h3>
+    {%- endif -%}
+    {%- if description != blank -%}
+      <p class="dsr-benefit__text">{{ description }}</p>
+    {%- endif -%}
+  </div>
+</div>
