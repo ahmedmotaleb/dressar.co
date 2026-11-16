@@ -178,7 +178,7 @@
         {%- endif -%}
       </ul>
       {%- if show_mobile_slider or show_desktop_slider -%}
-        <div class="slider-buttons">
+        <div class="slider-buttons dsr-row-pager">
           <button
             type="button"
             class="slider-button slider-button--prev"
@@ -190,10 +190,13 @@
               {{- 'icon-caret.svg' | inline_asset_content -}}
             </span>
           </button>
-          <div class="slider-counter caption">
+          {%- comment -%}
+            No visible "1 / 8" counter. Screen readers still hear the position:
+            global.js keeps updating these spans as the row moves.
+          {%- endcomment -%}
+          <div class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
             <span class="slider-counter--current">1</span>
-            <span aria-hidden="true"> / </span>
-            <span class="visually-hidden">{{ 'general.slider.of' | t }}</span>
+            {{ 'general.slider.of' | t }}
             <span class="slider-counter--total">{{ products_to_display }}</span>
           </div>
           <button

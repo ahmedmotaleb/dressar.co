@@ -81,6 +81,11 @@ async function main() {
             pagerToViewAll: pagerShown && va ? Math.round(r(a).top - r(pager).bottom) : null,
             viewAllToEnd: a ? Math.round(r(box).bottom - r(a).bottom) : null,
             btn: a && { h: Math.round(r(a).height), bg: cs.backgroundColor, color: cs.color, edge: after.boxShadow, text: a.textContent.trim(), href: a.getAttribute('href') },
+            // Text a sighted shopper sees: everything outside .visually-hidden.
+            pagerText: pager ? [...pager.querySelectorAll('*')].filter((e) => !e.closest('.visually-hidden') && r(e).width > 1).map((e) => [...e.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent).join('')).join('').trim() : null,
+            pagerH: pagerShown ? Math.round(r(pager).height) : null,
+            visibleCounter: Boolean(pager && pager.querySelector('.slider-counter')),
+            status: pager && pager.querySelector('[role="status"][aria-live="polite"]') ? pager.querySelector('[role="status"]').textContent.replace(/\s+/g, ' ').trim() : null,
             sliderButtons: pagerShown ? [...pager.querySelectorAll('button')].map((b) => [Math.round(r(b).width), Math.round(r(b).height), b.getAttribute('aria-label')]) : [],
           };
         });
@@ -98,7 +103,9 @@ async function main() {
         const header = document.querySelector('header.header');
         const controls = header ? [...header.querySelectorAll('a, button, summary')].filter((e) => r(e).width > 0 && getComputedStyle(e).visibility !== 'hidden').map((e) => [Math.round(r(e).width), Math.round(r(e).height), Math.round(r(e).left), Math.round(r(e).right)]) : [];
         const logo = document.querySelector('.header__heading-logo, .header__heading-link img');
+        const slideshowCounters = document.querySelectorAll('.shopify-section[id*="__slideshow_"] .slider-counter').length;
         return {
+          slideshowCounters,
           overflow: document.documentElement.scrollWidth > window.innerWidth,
           rows,
           otherButtons,
@@ -126,6 +133,20 @@ async function main() {
         check(`${tag} header: controls inside the screen`, m.header.controls.every(([, , l, r]) => l >= 0 && r <= width), JSON.stringify(m.header.controls));
       }
       check(`${tag} media grid: images cover their frame, responsive and lazy, with alt`, m.grid.imgs.length === 3 && m.grid.imgs.every((i) => i.fit === 'cover' && i.fills && i.srcset && i.sizes && i.lazy && i.alt), JSON.stringify(m.grid.imgs.map((i) => [i.fit, i.fills, i.srcset, i.lazy])));
+      check(`${tag} no visible "1 / 8" counter under the product rows`, m.rows.every((x) => !x.visibleCounter && !x.pagerText), JSON.stringify(m.rows.map((x) => x.pagerText)));
+      check(`${tag} arrows only: no space kept for the counter`, m.rows.every((x) => x.pagerH === null || x.pagerH <= 45), JSON.stringify(m.rows.map((x) => x.pagerH)));
+      check(`${tag} screen readers still get the position`, m.rows.every((x) => x.status && /^1 \S+ \d+$/.test(x.status)), JSON.stringify(m.rows.map((x) => x.status)));
+      check(`${tag} slideshow keeps its own counter`, m.slideshowCounters > 0, String(m.slideshowCounters));
+      {
+        const sel = '.shopify-section[id*="__dsr_row_new_arrivals"]';
+        const next = page.locator(`${sel} .slider-button--next`);
+        if (await next.isVisible() && await next.isEnabled()) {
+          await next.click();
+          await page.waitForTimeout(700);
+          const after = await page.evaluate((s) => { const q = document.querySelector(s); return { status: q.querySelector('[role="status"]').textContent.replace(/\s+/g, ' ').trim(), prevOn: !q.querySelector('.slider-button--prev').disabled }; }, sel);
+          check(`${tag} "next" moves the row and updates the status`, /^2 /.test(after.status) && after.prevOn, JSON.stringify(after));
+        }
+      }
       check(`${tag} other buttons untouched`, m.otherButtons.every((h) => h !== '40px'), m.otherButtons.join());
       check(`${tag} no JS errors`, errors.length === 0, errors.join(' | '));
 

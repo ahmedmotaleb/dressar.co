@@ -71,3 +71,6 @@
     margin: 0;
   }
 }
+
+/* Product rows: no visible "1 / 8" counter, so the two arrows sit together. */
+.dsr-row-pager { gap: 8px; }
