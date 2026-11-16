@@ -62,6 +62,9 @@ const SECOND = [{ video: video(2) }, { video: video(3), product: skirt }, {}];
 const patchFor = (layout, firstSettings = {}) => (name, template) => {
   if (name !== 'index') return template;
   const t = JSON.parse(JSON.stringify(template));
+  // The home page's own Video Stories section is left out: these pages hold the two test sections only.
+  delete t.sections.dsr_video_stories;
+  t.order = t.order.filter((id) => id !== 'dsr_video_stories');
   t.sections.vs_one = section(FIRST, firstSettings);
   t.sections.vs_two = section(SECOND, { heading: 'More stories' });
   t.order = layout === 'together' ? ['vs_one', 'vs_two', ...t.order] : ['vs_one', ...t.order, 'vs_two'];

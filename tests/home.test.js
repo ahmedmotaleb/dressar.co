@@ -32,7 +32,7 @@ const ORDER = [
   'dsr_row_complete_looks',
   'slideshow_ATRpFY',
   'dsr_row_back_to_uni',
-  '1783545576ddb21e92',
+  'dsr_video_stories', // Video Stories in place of the AI "Dressar Signature" video block (kept, switched off)
   'multicolumn_YVGgni',
   '1783546806decc8eee',
   '17855997423e962d80',

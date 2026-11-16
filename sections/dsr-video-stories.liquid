@@ -82,7 +82,7 @@
       aria-label="{{ carousel_label | escape }}"
     {% endif %}
   >
-    <div class="dsr-vs__track" data-dsr-vs-track>
+    <div class="dsr-vs__track" data-dsr-vs-track tabindex="0">
       {%- for block in section.blocks -%}
         {%- liquid
           assign video = block.settings.video

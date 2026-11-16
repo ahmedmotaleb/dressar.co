@@ -129,6 +129,11 @@
   -webkit-overflow-scrolling: touch;
 }
 
+.dsr-vs__track:focus-visible {
+  outline: 2px solid rgb(var(--color-foreground));
+  outline-offset: 2px;
+}
+
 .dsr-vs__track::-webkit-scrollbar {
   display: none;
 }
