@@ -647,7 +647,60 @@
       "block_order": [
         "ai_gen_block_f4a271d_B6tKPW"
       ],
-      "settings": {}
+      "settings": {},
+      "disabled": true
+    },
+    "dsr_video_stories": {
+      "type": "dsr-video-stories",
+      "blocks": {
+        "story_1": {
+          "type": "video",
+          "settings": {
+            "video": "shopify://files/videos/mobile 08(1).mp4"
+          }
+        },
+        "story_2": {
+          "type": "video",
+          "settings": {
+            "video": "shopify://files/videos/VID-20250923-WA0011_4e048d90-ea29-403c-8cf3-801662c84fdb.mp4"
+          }
+        },
+        "story_3": {
+          "type": "video",
+          "settings": {
+            "video": "shopify://files/videos/SnapInsta.to_AQPf1yPNZOhoo1YXTPWZeciWwuMfBV_4Q99TRd2iYZ9kBIltoXWjysYwZYz2Wy9je7VkBHVSJ76IoFpBbCvwcef6ZhJsIMWF6ArUph8.mp4"
+          }
+        },
+        "story_4": {
+          "type": "video",
+          "settings": {
+            "video": "shopify://files/videos/lv_0_٢٠٢٥١٢٢٢١٧٠٠٤٢.mp4"
+          }
+        }
+      },
+      "block_order": [
+        "story_1",
+        "story_2",
+        "story_3",
+        "story_4"
+      ],
+      "name": "Video Stories",
+      "settings": {
+        "heading": "Dressar Signature",
+        "heading_size": "h2",
+        "heading_alignment": "center",
+        "mobile_layout": "start",
+        "autoplay": true,
+        "loop": true,
+        "card_radius": 12,
+        "desktop_cards": 4,
+        "show_product_cta": true,
+        "color_scheme": "scheme-1",
+        "padding_top_mobile": 24,
+        "padding_bottom_mobile": 24,
+        "padding_top_desktop": 40,
+        "padding_bottom_desktop": 40
+      }
     },
     "multicolumn_YVGgni": {
       "type": "multicolumn",
@@ -1024,6 +1077,7 @@
     "slideshow_ATRpFY",
     "dsr_row_back_to_uni",
     "1783545576ddb21e92",
+    "dsr_video_stories",
     "multicolumn_YVGgni",
     "1783546806decc8eee",
     "17855997423e962d80",
