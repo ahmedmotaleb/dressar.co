@@ -1,0 +1,284 @@
+/* ==========================================================================
+   Editorial mosaic (Collection list, layout "Editorial mosaic")
+   docs/stages/editorial-mosaic.md
+
+   CSS grid with fixed proportions, so nothing moves while images load.
+   The featured collection comes first in the markup and is placed by the
+   grid, which follows the reading direction: it sits on the left in English
+   and on the right in Arabic.
+
+   Phones, "Featured": two columns. The featured card spans two rows beside
+   two smaller square cards; the others follow two to a row (square), and an
+   odd last one spans the row (2:1). "Even": 4:5 cards. Desktop, "Featured": four columns. The featured card is 2×2,
+   the second is a tall card, the third and fourth are squares, the rest are
+   wide pairs (an odd last one spans the row). "Even" layouts: plain columns.
+   ========================================================================== */
+
+.dsr-mosaic {
+  --dsr-mosaic-gap: 8px;
+  --dsr-mosaic-radius: 6px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--dsr-mosaic-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dsr-mosaic__item {
+  display: flex;
+  min-width: 0;
+}
+
+/* ---------- The card ---------- */
+
+.dsr-mosaic__card {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: var(--dsr-mosaic-radius);
+  color: rgb(var(--color-foreground));
+  text-decoration: none;
+  isolation: isolate;
+}
+
+.dsr-mosaic__card:focus-visible {
+  outline: 2px solid rgb(var(--color-foreground));
+  outline-offset: 2px;
+}
+
+.dsr-mosaic__media {
+  position: relative;
+  display: block;
+  flex: 1 1 auto;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: var(--dsr-mosaic-radius);
+  background: rgba(var(--color-foreground), 0.06);
+}
+
+.dsr-mosaic__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+@media (hover: hover) {
+  .dsr-mosaic__card:hover .dsr-mosaic__image {
+    transform: scale(1.03);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dsr-mosaic__image {
+    transition: none;
+  }
+
+  .dsr-mosaic__card:hover .dsr-mosaic__image {
+    transform: none;
+  }
+}
+
+.dsr-mosaic__label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  min-width: 0;
+}
+
+.dsr-mosaic__title {
+  min-width: 0;
+  overflow: hidden;
+  font-family: var(--font-body-family);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  unicode-bidi: plaintext;
+}
+
+.dsr-arabic-font .dsr-mosaic__title {
+  font-family: var(--dsr-font-arabic-body, var(--font-body-family));
+}
+
+[dir='rtl'] .dsr-mosaic__title {
+  letter-spacing: 0;
+}
+
+.dsr-mosaic__arrow {
+  flex: none;
+  transition: transform 0.2s ease;
+}
+
+[dir='rtl'] .dsr-mosaic__arrow {
+  transform: scaleX(-1);
+}
+
+@media (hover: hover) {
+  .dsr-mosaic__card:hover .dsr-mosaic__arrow {
+    transform: translateX(2px);
+  }
+
+  [dir='rtl'] .dsr-mosaic__card:hover .dsr-mosaic__arrow {
+    transform: scaleX(-1) translateX(2px);
+  }
+}
+
+/* Title on the image: a soft shade at the foot of the picture. */
+.dsr-mosaic--title-overlay .dsr-mosaic__label {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  z-index: 1;
+  padding: 28px 10px 10px;
+  color: #ffffff;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5));
+  border-end-start-radius: var(--dsr-mosaic-radius);
+  border-end-end-radius: var(--dsr-mosaic-radius);
+}
+
+.dsr-mosaic--title-overlay .dsr-mosaic__title {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Title below the image. */
+.dsr-mosaic--title-below .dsr-mosaic__label {
+  padding: 8px 2px 2px;
+}
+
+/* ---------- Phones: featured + two beside it ---------- */
+
+@media screen and (max-width: 749px) {
+  /* Dawn drops the list's side padding on phones (its slider has its own
+     gutter); the mosaic keeps the page's 16px. */
+  .dsr-mosaic {
+    padding-inline: 1.6rem;
+  }
+
+  /* Square small cards keep the section short; the featured card, two rows
+     tall, stays a tall portrait. */
+  .dsr-mosaic--m-feature .dsr-mosaic__media {
+    aspect-ratio: 1 / 1;
+  }
+
+  .dsr-mosaic--m-feature:not(.dsr-mosaic--count-1):not(.dsr-mosaic--count-2) .dsr-mosaic__item--featured {
+    grid-row: span 2;
+  }
+
+  /* The featured card fills its two rows instead of keeping 4:5. */
+  .dsr-mosaic--m-feature:not(.dsr-mosaic--count-1):not(.dsr-mosaic--count-2) .dsr-mosaic__item--featured .dsr-mosaic__media {
+    aspect-ratio: auto;
+    min-height: 0;
+  }
+
+  /* An odd one out after the first three (feature) or at the end (even) spans the row. */
+  .dsr-mosaic--m-feature .dsr-mosaic__item:nth-child(n + 4):last-child:nth-child(even),
+  .dsr-mosaic--m-even .dsr-mosaic__item:last-child:nth-child(odd),
+  .dsr-mosaic--count-1 .dsr-mosaic__item {
+    grid-column: 1 / -1;
+  }
+
+  .dsr-mosaic--m-feature .dsr-mosaic__item:nth-child(n + 4):last-child:nth-child(even) .dsr-mosaic__media,
+  .dsr-mosaic--m-even .dsr-mosaic__item:last-child:nth-child(odd) .dsr-mosaic__media {
+    aspect-ratio: 2 / 1;
+  }
+
+  .dsr-mosaic--title-overlay .dsr-mosaic__label {
+    padding: 24px 8px 8px;
+  }
+}
+
+/* ---------- Desktop ---------- */
+
+@media screen and (min-width: 750px) {
+  .dsr-mosaic__title {
+    font-size: 16px;
+  }
+
+  .dsr-mosaic--title-overlay .dsr-mosaic__label {
+    padding: 40px 16px 14px;
+  }
+
+  .dsr-mosaic--d-even {
+    grid-template-columns: repeat(var(--dsr-mosaic-columns, 3), minmax(0, 1fr));
+  }
+
+  .dsr-mosaic--d-feature {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .dsr-mosaic--d-feature .dsr-mosaic__item .dsr-mosaic__media {
+    aspect-ratio: 1 / 1;
+  }
+
+  /* 1: featured, 2×2. */
+  .dsr-mosaic--d-feature .dsr-mosaic__item--featured {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+
+  /* 2: a tall card beside it. */
+  .dsr-mosaic--d-feature .dsr-mosaic__item:nth-child(2) {
+    grid-row: span 2;
+  }
+
+  /* With three collections, the third is tall too. */
+  .dsr-mosaic--d-feature.dsr-mosaic--count-3 .dsr-mosaic__item:nth-child(3) {
+    grid-row: span 2;
+  }
+
+  .dsr-mosaic--d-feature .dsr-mosaic__item--featured .dsr-mosaic__media,
+  .dsr-mosaic--d-feature .dsr-mosaic__item:nth-child(2) .dsr-mosaic__media,
+  .dsr-mosaic--d-feature.dsr-mosaic--count-3 .dsr-mosaic__item:nth-child(3) .dsr-mosaic__media {
+    aspect-ratio: auto;
+    min-height: 0;
+  }
+
+  /* 5 onwards: wide pairs; an odd last one spans the row. */
+  .dsr-mosaic--d-feature .dsr-mosaic__item:nth-child(n + 5) {
+    grid-column: span 2;
+  }
+
+  .dsr-mosaic--d-feature .dsr-mosaic__item:nth-child(n + 5) .dsr-mosaic__media {
+    aspect-ratio: 2 / 1;
+  }
+
+  .dsr-mosaic--d-feature .dsr-mosaic__item:nth-child(n + 5):last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  .dsr-mosaic--d-feature .dsr-mosaic__item:nth-child(n + 5):last-child:nth-child(odd) .dsr-mosaic__media {
+    aspect-ratio: 4 / 1;
+  }
+
+  /* One or two collections: side by side. */
+  .dsr-mosaic--d-feature.dsr-mosaic--count-1,
+  .dsr-mosaic--d-feature.dsr-mosaic--count-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dsr-mosaic--d-feature.dsr-mosaic--count-1 .dsr-mosaic__item--featured,
+  .dsr-mosaic--d-feature.dsr-mosaic--count-2 .dsr-mosaic__item--featured,
+  .dsr-mosaic--d-feature.dsr-mosaic--count-2 .dsr-mosaic__item:nth-child(2) {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .dsr-mosaic--d-feature.dsr-mosaic--count-1 .dsr-mosaic__item--featured {
+    grid-column: 1 / -1;
+  }
+
+  .dsr-mosaic--d-feature.dsr-mosaic--count-1 .dsr-mosaic__media,
+  .dsr-mosaic--d-feature.dsr-mosaic--count-2 .dsr-mosaic__media {
+    aspect-ratio: 4 / 3;
+  }
+}
