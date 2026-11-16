@@ -32,10 +32,10 @@ const ORDER = [
   'dsr_row_complete_looks',
   'slideshow_ATRpFY',
   'dsr_row_back_to_uni',
+  '17855997423e962d80', // reviews, moved here in the store's editor (Nov 16)
   'dsr_video_stories', // Video Stories in place of the AI "Dressar Signature" video block (kept, switched off)
   'multicolumn_YVGgni',
   '1783546806decc8eee',
-  '17855997423e962d80',
 ];
 
 async function main() {
@@ -65,8 +65,8 @@ async function main() {
     );
     check('template: no AI product carousel or AI slideshow renders', aiCarousels.length === 0, aiCarousels.join(', '));
     check(
-      'template: the replaced AI carousels are kept, switched off (rollback)',
-      ['dsr_white_friday', 'blocks_UNdXLN', '178380029305c1cfb4', 'blocks_ejM6Ri', '178393405299cfb2a3'].every((id) => template.sections[id] && template.sections[id].disabled)
+      'template: the replaced AI carousels are switched off or gone (the store removed them on Nov 16)',
+      ['dsr_white_friday', 'blocks_UNdXLN', '178380029305c1cfb4', 'blocks_ejM6Ri', '178393405299cfb2a3'].every((id) => !template.sections[id] || template.sections[id].disabled)
     );
     check(
       'template: five product rows, 3:4 cards, 8 products, swipeable, with "View all"',
@@ -170,12 +170,16 @@ async function main() {
       check(`${tag} ${row.id}: every card photo is 3:4`, r.ratios.length && r.ratios.every((x) => Math.abs(x - 4 / 3) < 0.01), r.ratios.map((x) => x.toFixed(3)).join(','));
       check(`${tag} ${row.id}: "View all" goes to the collection`, r.viewAll === `/collections/${row.collection}`, r.viewAll);
       check(`${tag} ${row.id}: the DRESSAR card (swatches or sizes)`, r.dsrCard > 0, String(r.dsrCard));
-      // Dawn's sliders: two cards and a peek on phones and tablets; on desktop,
-      // four cards across the page width with the next one peeking at the edge.
+      // Dawn's sliders: on phones and tablets the row's "columns on mobile" (1 or 2)
+      // and a peek; on desktop, four cards across the page width with the next
+      // one peeking at the edge.
       const perView = r.sectionWidth / r.widths[0];
+      const mobileCols = Number(row.columns_mobile || 2);
       check(
-        `${tag} ${row.id}: ${desktop ? 'desktop slider, 4 cards and a peek' : 'swipeable, 2 cards and a peek'}`,
-        desktop ? perView > 4 && perView < 5 && /slider--desktop/.test(r.slider) : perView > 1.9 && perView < 2.6 && /slider--tablet/.test(r.slider),
+        `${tag} ${row.id}: ${desktop ? 'desktop slider, 4 cards and a peek' : `swipeable, ${mobileCols} card${mobileCols > 1 ? 's' : ''} and a peek`}`,
+        desktop
+          ? perView > 4 && perView < 5 && /slider--desktop/.test(r.slider)
+          : (mobileCols === 1 ? perView > 1.0 && perView < 1.6 : perView > 1.9 && perView < 2.6) && /slider--tablet/.test(r.slider),
         `${perView.toFixed(2)} ${r.slider}`
       );
       const index = ORDER.indexOf(row.id) + 1;
