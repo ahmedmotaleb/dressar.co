@@ -1,0 +1,56 @@
+/* ==========================================================================
+   Collection section headings (Featured collection, Collection list)
+   docs/stages/heading-typography.md
+
+   Size, weight and line height come from the theme settings "Collection
+   section headings" (layout/theme.liquid sets the variables). Arabic letters
+   are drawn in Cairo (an Arabic-only subset, so Latin letters keep the theme's
+   heading font). `font-synthesis: none` keeps Latin letters at the theme
+   font's own weight instead of a faked bold. Only typography and alignment
+   change here: the sections' spacing stays as it was.
+   ========================================================================== */
+
+.dsr-section-heading {
+  font-size: var(--dsr-heading-size-mobile, 26px);
+  line-height: var(--dsr-heading-line-height, 1.35);
+  font-weight: var(--dsr-heading-weight, 600);
+  font-synthesis: none;
+  text-wrap: balance;
+}
+
+@media screen and (min-width: 750px) {
+  .dsr-section-heading {
+    font-size: var(--dsr-heading-size-desktop, 34px);
+  }
+}
+
+.dsr-heading-cairo .dsr-section-heading {
+  font-family: var(--dsr-font-section-heading);
+}
+
+/* Alignment (the section setting) on left-to-right pages. */
+.dsr-section-heading--left {
+  text-align: left;
+}
+
+.dsr-section-heading--center {
+  text-align: center;
+}
+
+.dsr-section-heading--right {
+  text-align: right;
+}
+
+/* In the Collection list header the heading shares a row with the
+   "View all" link, so it takes the free width to be aligned in it. */
+.title-wrapper-with-link .dsr-section-heading--center,
+.title-wrapper-with-link .dsr-section-heading--right {
+  flex: 1 1 auto;
+}
+
+/* Arabic pages: always from the right, and no letter spacing (spacing
+   breaks the joins between Arabic letters). */
+[dir='rtl'] .dsr-section-heading {
+  text-align: right;
+  letter-spacing: normal;
+}

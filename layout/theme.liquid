@@ -1,6 +1,6 @@
 <!doctype html>
 {%- capture dsr_dir -%}{%- render 'dsr-direction' -%}{%- endcapture -%}
-<html class="js{% if settings.dsr_arabic_font %} dsr-arabic-font{% endif %}" lang="{{ request.locale.iso_code }}" dir="{{ dsr_dir }}">
+<html class="js{% if settings.dsr_arabic_font %} dsr-arabic-font{% endif %}{% if settings.dsr_heading_cairo %} dsr-heading-cairo{% endif %}" lang="{{ request.locale.iso_code }}" dir="{{ dsr_dir }}">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -89,10 +89,11 @@
         subset only (unicode-range), so it is fetched only when Arabic text is
         drawn with it; Latin text keeps the theme font. Used by the product
         details, the sticky bar and the product cards (assets/dsr-product.css
-        and dsr-card.css, .dsr-arabic-font).
+        and dsr-card.css, .dsr-arabic-font), and by collection section
+        headings (assets/dsr-section-heading.css, .dsr-heading-cairo).
         Licence: docs/fonts/cairo-OFL.txt.
       {%- endcomment -%}
-      {%- if settings.dsr_arabic_font %}
+      {%- if settings.dsr_arabic_font or settings.dsr_heading_cairo %}
       @font-face {
         font-family: 'DSR Cairo';
         font-style: normal;
@@ -101,6 +102,23 @@
         src: url('{{ 'dsr-cairo-arabic.woff2' | asset_url }}') format('woff2');
         unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC;
       }
+      {%- endif %}
+      {%- if settings.dsr_heading_cairo %}
+      {%- comment -%}
+        Collection section headings ask for Cairo at the Arabic heading
+        weight. Their Latin letters are drawn from the theme heading font's
+        own file at every weight (same file and URL as above, so nothing new
+        downloads), so English headings keep the merchant's heading style.
+      {%- endcomment -%}
+      {%- unless settings.type_header_font.system? %}
+      @font-face {
+        font-family: 'DSR Heading Latin';
+        font-style: {{ settings.type_header_font.style }};
+        font-weight: 1 1000;
+        font-display: swap;
+        src: url('{{ settings.type_header_font | font_url }}') format('woff2');
+      }
+      {%- endunless %}
       {%- endif %}
 
       {% for scheme in settings.color_schemes -%}
@@ -166,6 +184,11 @@
         --dsr-font-arabic-body: 'DSR Cairo', {{ settings.type_body_font.family }}, {{ settings.type_body_font.fallback_families }};
         --dsr-font-arabic-heading: 'DSR Cairo', {{ settings.type_header_font.family }}, {{ settings.type_header_font.fallback_families }};
         {%- endif %}
+        --dsr-font-section-heading: 'DSR Cairo',{% unless settings.type_header_font.system? %} 'DSR Heading Latin',{% endunless %} {{ settings.type_header_font.family }}, {{ settings.type_header_font.fallback_families }};
+        --dsr-heading-size-mobile: {{ settings.dsr_heading_size_mobile | default: 26 }}px;
+        --dsr-heading-size-desktop: {{ settings.dsr_heading_size_desktop | default: 34 }}px;
+        --dsr-heading-weight: {{ settings.dsr_heading_weight | default: '600' }};
+        --dsr-heading-line-height: {{ settings.dsr_heading_line_height | default: 135 | divided_by: 100.0 }};
         --font-heading-style: {{ settings.type_header_font.style }};
         --font-heading-weight: {{ settings.type_header_font.weight }};
 
@@ -339,6 +362,15 @@
       <link rel="preload" as="font" href="{{ settings.type_header_font | font_url }}" type="font/woff2" crossorigin>
       {% comment %}theme-check-enable AssetPreload{% endcomment %}
     {%- endunless -%}
+    {%- if settings.dsr_heading_cairo and request.locale.iso_code == 'ar' -%}
+      {% comment %}
+        Arabic pages: Cairo is fetched with the page, so headings drawn in it
+        don't change size when it arrives.
+      {% endcomment %}
+      {% comment %}theme-check-disable AssetPreload{% endcomment %}
+      <link rel="preload" as="font" href="{{ 'dsr-cairo-arabic.woff2' | asset_url }}" type="font/woff2" crossorigin>
+      {% comment %}theme-check-enable AssetPreload{% endcomment %}
+    {%- endif -%}
 
     {%- if localization.available_countries.size > 1 or localization.available_languages.size > 1 -%}
       {{ 'component-localization-form.css' | asset_url | stylesheet_tag: preload: true }}
