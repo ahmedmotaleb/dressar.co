@@ -9,12 +9,19 @@
   {{ 'mask-blobs.css' | asset_url | stylesheet_tag }}
 {%- endif -%}
 
+{%- comment -%}
+  Dressar: with the card quick add on, layout/theme.liquid already loads
+  quick-add.js (every page) and product-form.js (every page but the product
+  page), so they aren't loaded a second time here.
+{%- endcomment -%}
 {%- unless section.settings.quick_add == 'none' -%}
   {{ 'quick-add.css' | asset_url | stylesheet_tag }}
-  <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+  {%- unless settings.card_quick_add and request.page_type != 'product' -%}
+    <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+  {%- endunless -%}
 {%- endunless -%}
 
-{%- if section.settings.quick_add == 'standard' -%}
+{%- if section.settings.quick_add == 'standard' and settings.card_quick_add != true -%}
   <script src="{{ 'quick-add.js' | asset_url }}" defer="defer"></script>
 {%- endif -%}
 

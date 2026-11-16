@@ -10,7 +10,11 @@
   {{ 'quick-add.css' | asset_url | stylesheet_tag }}
 {%- endunless -%}
 
-{%- if section.settings.quick_add == 'standard' -%}
+{%- comment -%}
+  Dressar: with the card quick add on, layout/theme.liquid already loads both
+  scripts on this page, so they aren't loaded a second time here.
+{%- endcomment -%}
+{%- if section.settings.quick_add == 'standard' and settings.card_quick_add != true -%}
   <script src="{{ 'quick-add.js' | asset_url }}" defer="defer"></script>
   <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
 {%- endif -%}
