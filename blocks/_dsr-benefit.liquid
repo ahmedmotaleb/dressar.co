@@ -1,0 +1,46 @@
+{%- comment -%}
+  A store benefit card, added inside the "Icons with text" block
+  (blocks/ai_gen_block_c719b9a.liquid). Merchants add, remove and reorder
+  these cards in the theme editor.
+{%- endcomment -%}
+{%- render 'dsr-benefit', icon: block.settings.icon, title: block.settings.title, description: block.settings.description, attributes: block.shopify_attributes -%}
+
+{% schema %}
+{
+  "name": "Benefit",
+  "settings": [
+    {
+      "type": "select",
+      "id": "icon",
+      "label": "Icon",
+      "options": [
+        { "value": "shipping", "label": "Truck" },
+        { "value": "wallet", "label": "Wallet" },
+        { "value": "inspection", "label": "Inspection" },
+        { "value": "exchange", "label": "Exchange" },
+        { "value": "returns", "label": "Return arrow" },
+        { "value": "secure", "label": "Lock" },
+        { "value": "support", "label": "Support" },
+        { "value": "quality", "label": "Quality badge" },
+        { "value": "gift", "label": "Gift" },
+        { "value": "star", "label": "Star" },
+        { "value": "heart", "label": "Heart" }
+      ],
+      "default": "shipping"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Benefit"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Short description"
+    }
+  ],
+  "presets": [{ "name": "Benefit" }]
+}
+{% endschema %}

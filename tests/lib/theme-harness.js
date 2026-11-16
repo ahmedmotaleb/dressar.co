@@ -348,6 +348,17 @@ function createHarness({ root, fixtures, locale = 'en.default', origin = 'http:/
       ctx.pop();
     },
   });
+  // {% content_for 'blocks' %}: the current theme block's nested blocks, in order.
+  engine.registerTag('content_for', {
+    parse(token) {
+      this.kind = /'([^']+)'/.exec(token.args)[1];
+    },
+    *render(ctx, emitter) {
+      const block = ctx.globals.block;
+      if (this.kind !== 'blocks' || !block || !block.__children) return;
+      emitter.write(yield harness.renderThemeBlocks(block.__children, ctx.globals));
+    },
+  });
   engine.registerTag('sections', {
     parse(token) {
       this.group = /'([^']+)'/.exec(token.args)[1];
@@ -407,10 +418,21 @@ function createHarness({ root, fixtures, locale = 'en.default', origin = 'http:/
           o.width = (Number(o.height) * img.width) / img.height;
         }
       }
+      // Like Shopify, `widths` becomes a srcset (only widths the image has).
+      if (o.widths && img) {
+        const base = String(url).split('?')[0];
+        o.srcset = String(o.widths)
+          .split(',')
+          .map((w) => Number(w.trim()))
+          .filter((w) => w && (!img.width || w <= img.width))
+          .map((w) => `${base}?width=${w} ${w}w`)
+          .join(', ');
+      }
+      delete o.widths;
       const extraAlt = ` alt="${attr(o.alt)}"`;
       delete o.alt;
       // Like Shopify, other attributes (data-*) pass straight through.
-      const extra = ['class', 'alt', 'sizes', 'loading', 'fetchpriority', 'width', 'height', 'style', ...Object.keys(o).filter((k) => k.startsWith('data-'))]
+      const extra = ['class', 'alt', 'srcset', 'sizes', 'loading', 'fetchpriority', 'width', 'height', 'style', ...Object.keys(o).filter((k) => k.startsWith('data-'))]
         .filter((k) => o[k] !== undefined && o[k] !== false)
         .map((k) => ` ${k}="${attr(k === 'height' || k === 'width' ? Math.round(Number(o[k])) : o[k])}"`)
         .join('');
@@ -581,6 +603,11 @@ function createHarness({ root, fixtures, locale = 'en.default', origin = 'http:/
     },
     // Shopify's built-in `_blocks` section: renders each theme block in order.
     async renderBlocksSection(id, json, globals, { groupClass = '' } = {}) {
+      const html = await harness.renderThemeBlocks(json, globals);
+      return `<div id="shopify-section-${id}" class="shopify-section ${groupClass}">${html}</div>`;
+    },
+    // Theme blocks in order, each with its own nested blocks for {% content_for 'blocks' %}.
+    async renderThemeBlocks(json, globals) {
       let html = '';
       for (const bid of json.block_order || Object.keys(json.blocks || {})) {
         const b = json.blocks[bid];
@@ -595,10 +622,13 @@ function createHarness({ root, fixtures, locale = 'en.default', origin = 'http:/
           settingsOut[def.id] = resolveResource(def, v, globals);
         }
         html += await engine.parseAndRender(source, {}, {
-          globals: { ...globals, block: { id: bid, type: b.type, settings: settingsOut, shopify_attributes: '' } },
+          globals: {
+            ...globals,
+            block: { id: bid, type: b.type, settings: settingsOut, shopify_attributes: `data-block-id="${bid}"`, __children: { blocks: b.blocks || {}, block_order: b.block_order } },
+          },
         });
       }
-      return `<div id="shopify-section-${id}" class="shopify-section ${groupClass}">${html}</div>`;
+      return html;
     },
     groupOverride: {},
     async renderGroup(name, globals) {

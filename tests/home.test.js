@@ -32,10 +32,10 @@ const ORDER = [
   'dsr_row_complete_looks',
   'slideshow_ATRpFY',
   'dsr_row_back_to_uni',
-  '1783545576ddb21e92',
+  '17855997423e962d80', // reviews, moved here in the store's editor (Nov 16)
+  'dsr_video_stories', // Video Stories in place of the AI "Dressar Signature" video block (kept, switched off)
   'multicolumn_YVGgni',
   '1783546806decc8eee',
-  '17855997423e962d80',
 ];
 
 async function main() {
@@ -65,8 +65,8 @@ async function main() {
     );
     check('template: no AI product carousel or AI slideshow renders', aiCarousels.length === 0, aiCarousels.join(', '));
     check(
-      'template: the replaced AI carousels are kept, switched off (rollback)',
-      ['dsr_white_friday', 'blocks_UNdXLN', '178380029305c1cfb4', 'blocks_ejM6Ri', '178393405299cfb2a3'].every((id) => template.sections[id] && template.sections[id].disabled)
+      'template: the replaced AI carousels are switched off or gone (the store removed them on Nov 16)',
+      ['dsr_white_friday', 'blocks_UNdXLN', '178380029305c1cfb4', 'blocks_ejM6Ri', '178393405299cfb2a3'].every((id) => !template.sections[id] || template.sections[id].disabled)
     );
     check(
       'template: five product rows, 3:4 cards, 8 products, swipeable, with "View all"',
@@ -170,12 +170,16 @@ async function main() {
       check(`${tag} ${row.id}: every card photo is 3:4`, r.ratios.length && r.ratios.every((x) => Math.abs(x - 4 / 3) < 0.01), r.ratios.map((x) => x.toFixed(3)).join(','));
       check(`${tag} ${row.id}: "View all" goes to the collection`, r.viewAll === `/collections/${row.collection}`, r.viewAll);
       check(`${tag} ${row.id}: the DRESSAR card (swatches or sizes)`, r.dsrCard > 0, String(r.dsrCard));
-      // Dawn's sliders: two cards and a peek on phones and tablets; on desktop,
-      // four cards across the page width with the next one peeking at the edge.
+      // Dawn's sliders: on phones and tablets the row's "columns on mobile" (1 or 2)
+      // and a peek; on desktop, four cards across the page width with the next
+      // one peeking at the edge.
       const perView = r.sectionWidth / r.widths[0];
+      const mobileCols = Number(row.columns_mobile || 2);
       check(
-        `${tag} ${row.id}: ${desktop ? 'desktop slider, 4 cards and a peek' : 'swipeable, 2 cards and a peek'}`,
-        desktop ? perView > 4 && perView < 5 && /slider--desktop/.test(r.slider) : perView > 1.9 && perView < 2.6 && /slider--tablet/.test(r.slider),
+        `${tag} ${row.id}: ${desktop ? 'desktop slider, 4 cards and a peek' : `swipeable, ${mobileCols} card${mobileCols > 1 ? 's' : ''} and a peek`}`,
+        desktop
+          ? perView > 4 && perView < 5 && /slider--desktop/.test(r.slider)
+          : (mobileCols === 1 ? perView > 1.0 && perView < 1.6 : perView > 1.9 && perView < 2.6) && /slider--tablet/.test(r.slider),
         `${perView.toFixed(2)} ${r.slider}`
       );
       const index = ORDER.indexOf(row.id) + 1;
@@ -207,16 +211,20 @@ async function main() {
 
     // Shop by category.
     const cats = await page.evaluate(() => {
-      const items = [...document.querySelectorAll('#shopify-section-template--1__collection_list_DJAc8Q .collection-list > li')];
+      // Classic grid or the editorial mosaic (docs/stages/editorial-mosaic.md): cards in the first row.
+      const items = [...document.querySelectorAll('#shopify-section-template--1__collection_list_DJAc8Q :is(.collection-list, .dsr-mosaic) > li')];
       const tops = items.map((li) => li.offsetTop);
       return {
         hrefs: [...new Set(items.flatMap((li) => [...li.querySelectorAll('a')].map((a) => a.getAttribute('href'))))],
         columns: tops.filter((top) => top === tops[0]).length,
         photos: items.every((li) => li.querySelector('img')),
+        mosaic: Boolean(document.querySelector('#shopify-section-template--1__collection_list_DJAc8Q .dsr-mosaic')),
       };
     });
+    // The mosaic's desktop layout starts at 750px (featured, tall, square in the first row).
+    const catColumns = cats.mosaic ? (width >= 750 ? 3 : 2) : desktop ? 3 : 2;
     check(`${tag} shop by category: 6 collections linked, with photos`, cats.hrefs.length === 6 && cats.hrefs.every((h) => /^\/collections\/[\w-]+$/.test(h)) && cats.photos, cats.hrefs.join(','));
-    check(`${tag} shop by category: ${desktop ? 3 : 2} columns`, cats.columns === (desktop ? 3 : 2), String(cats.columns));
+    check(`${tag} shop by category: ${catColumns} cards in the first row`, cats.columns === catColumns, String(cats.columns));
 
     if (width === 390 || width === 1280) {
       // Nothing moves on its own.

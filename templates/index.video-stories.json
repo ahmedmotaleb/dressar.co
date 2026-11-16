@@ -1,0 +1,57 @@
+{
+  "sections": {
+    "stories": {
+      "type": "dsr-video-stories",
+      "blocks": {
+        "v1": {
+          "type": "video",
+          "settings": {
+            "video": "shopify://files/videos/VID-20250923-WA0011.mp4",
+            "product": "joubert-skirt-with-lining",
+            "caption": ""
+          }
+        },
+        "v2": {
+          "type": "video",
+          "settings": {
+            "video": "shopify://files/videos/SnapInsta.to_AQPf1yPNZOhoo1YXTPWZeciWwuMfBV_4Q99TRd2iYZ9kBIltoXWjysYwZYz2Wy9je7VkBHVSJ76IoFpBbCvwcef6ZhJsIMWF6ArUph8.mp4",
+            "product": "beige-pocket-maxi-skirt",
+            "caption": ""
+          }
+        },
+        "v3": {
+          "type": "video",
+          "settings": {
+            "video": "shopify://files/videos/lv_0_٢٠٢٥١٢٢٢١٧٠٠٤٢.mp4",
+            "product": "full-length-evase-skirt-beige",
+            "caption": ""
+          }
+        },
+        "v4": {
+          "type": "video",
+          "settings": {
+            "video": "shopify://files/videos/SnapInsta.to_AQMML7Q8ggCvo6VU69ymUNMI1fBZypPDMSXpjo6P9gR13-nkIpUpEDWNUuOpq19kGFiuG4-5dtd3BmXs3virVbtXvkNxDHIOtKoPEeo.mp4",
+            "product": "royal-ribbed-maxi-dress",
+            "caption": ""
+          }
+        }
+      },
+      "block_order": ["v1", "v2", "v3", "v4"],
+      "settings": {
+        "heading": "Watch and shop",
+        "heading_size": "h2",
+        "autoplay": true,
+        "loop": true,
+        "card_radius": 12,
+        "desktop_cards": 5,
+        "show_product_cta": true,
+        "color_scheme": "scheme-1",
+        "padding_top_mobile": 24,
+        "padding_bottom_mobile": 24,
+        "padding_top_desktop": 40,
+        "padding_bottom_desktop": 40
+      }
+    }
+  },
+  "order": ["stories"]
+}

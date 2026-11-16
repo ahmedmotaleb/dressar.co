@@ -2616,6 +2616,16 @@
    "size": 26,
    "description": ""
   },
+  "winter-collection": {
+   "title": "Winter Collection | مجموعة الشتاء",
+   "image": [
+    832,
+    1248
+   ],
+   "offset": 9,
+   "size": 26,
+   "description": ""
+  },
   "back-to-university": {
    "title": "Back to University | لبس الجامعة",
    "image": [

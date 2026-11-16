@@ -1,0 +1,440 @@
+/* ==========================================================================
+   Video Stories (sections/dsr-video-stories.liquid, docs/stages/video-stories.md)
+
+   A row of 9:16 cards that scrolls natively with snapping. The active card
+   (assets/dsr-video-stories.js) leads. Phones, "Cards on mobile":
+   - "start" (default, after the 2S Homewear reference): the active card sits
+     at the start of the row (right in Arabic) at 9:16, about 62% of the
+     screen; the others keep its height but are narrower, so the next one
+     peeks in at the far edge.
+   - "center": about two thirds of the screen per card in the middle, the
+     neighbours a little smaller on both sides.
+   From 750px: "Cards in view on desktop" cards across, the active one in the
+   middle. Logical properties throughout, so right-to-left pages mirror.
+   ========================================================================== */
+
+.dsr-vs {
+  --dsr-vs-gap: 12px;
+  --dsr-vs-w: min(66vw, 320px);
+  display: block;
+  overflow: hidden;
+}
+
+@media screen and (min-width: 750px) {
+  .dsr-vs {
+    --dsr-vs-gap: 16px;
+    --dsr-vs-w: clamp(180px, calc((100vw - 96px) / var(--dsr-vs-desktop-cards, 5) - var(--dsr-vs-gap)), 320px);
+  }
+}
+
+/* ---------- Heading and arrows ---------- */
+
+.dsr-vs__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.dsr-vs__heading {
+  margin: 0;
+}
+
+[dir='rtl'] .dsr-vs__heading {
+  font-family: var(--dsr-font-arabic-heading, var(--font-heading-family));
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+/* Centred heading: the arrows (desktop) keep to the end of the row. */
+.dsr-vs__head--center {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+}
+
+.dsr-vs__head--center .dsr-vs__heading {
+  grid-column: 2;
+  text-align: center;
+}
+
+.dsr-vs__head--center .dsr-vs__nav {
+  grid-column: 3;
+  justify-self: end;
+}
+
+/* Phones swipe; the arrows are for wider screens (the arrow keys work everywhere). */
+@media screen and (max-width: 749px) {
+  .dsr-vs .dsr-vs__nav {
+    display: none;
+  }
+
+  .dsr-vs__head--center {
+    display: block;
+  }
+}
+
+.dsr-vs__nav {
+  display: flex;
+  flex: none;
+  gap: 8px;
+  margin-inline-start: auto;
+}
+
+.dsr-vs__arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid rgba(var(--color-foreground), 0.2);
+  border-radius: 50%;
+  background: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+  cursor: pointer;
+}
+
+.dsr-vs__arrow:hover {
+  border-color: rgb(var(--color-foreground));
+}
+
+.dsr-vs__arrow:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.dsr-vs__arrow:focus-visible {
+  outline: 2px solid rgb(var(--color-foreground));
+  outline-offset: 2px;
+}
+
+[dir='rtl'] .dsr-vs__arrow svg {
+  transform: scaleX(-1);
+}
+
+/* ---------- The row ---------- */
+
+.dsr-vs__track {
+  display: flex;
+  gap: var(--dsr-vs-gap);
+  margin: 0;
+  padding-block: 4px;
+  padding-inline: calc((100% - var(--dsr-vs-w)) / 2);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: calc((100% - var(--dsr-vs-w)) / 2);
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.dsr-vs__track:focus-visible {
+  outline: 2px solid rgb(var(--color-foreground));
+  outline-offset: 2px;
+}
+
+.dsr-vs__track::-webkit-scrollbar {
+  display: none;
+}
+
+.dsr-vs__slide {
+  flex: 0 0 var(--dsr-vs-w);
+  scroll-snap-align: center;
+}
+
+/* ---------- A card ---------- */
+
+.dsr-vs__card {
+  position: relative;
+  aspect-ratio: 9 / 16;
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: var(--dsr-vs-radius, 12px);
+  background: rgba(var(--color-foreground), 0.06);
+  transform: scale(0.92);
+  opacity: 0.72;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  cursor: pointer;
+}
+
+.dsr-vs__slide.is-active .dsr-vs__card {
+  transform: none;
+  opacity: 1;
+  cursor: default;
+}
+
+@media screen and (min-width: 750px) {
+  .dsr-vs__card {
+    transform: scale(0.96);
+    opacity: 0.85;
+  }
+}
+
+.dsr-vs__poster,
+.dsr-vs__video,
+.dsr-vs__placeholder {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The video shows over its poster once it actually plays. */
+.dsr-vs__video {
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.dsr-vs__slide.is-playing .dsr-vs__video {
+  opacity: 1;
+}
+
+.dsr-vs__slide.is-error .dsr-vs__video {
+  display: none;
+}
+
+/* ---------- Play / sound buttons (active card only) ---------- */
+
+.dsr-vs__controls {
+  position: absolute;
+  inset-block-start: 10px;
+  inset-inline-end: 10px;
+  z-index: 3;
+  display: flex;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.dsr-vs__slide.is-active .dsr-vs__controls {
+  opacity: 1;
+}
+
+.dsr-vs__control {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(17, 17, 17, 0.5);
+  color: #ffffff;
+  cursor: pointer;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+/* A 44px touch area without drawing any bigger. */
+.dsr-vs__control::before {
+  content: '';
+  position: absolute;
+  inset: -5px;
+}
+
+.dsr-vs__control:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.dsr-vs__icon-sound,
+.dsr-vs__control:not(.is-muted) .dsr-vs__icon-muted {
+  display: none;
+}
+
+.dsr-vs__control:not(.is-muted) .dsr-vs__icon-sound {
+  display: block;
+}
+
+/* ---------- Play / pause: the whole picture ---------- */
+
+.dsr-vs__play {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #ffffff;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dsr-vs__play svg {
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.35));
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* The play mark shows until the video plays; the pause mark only on keyboard focus. */
+.dsr-vs__icon-pause,
+.dsr-vs__play.is-playing .dsr-vs__icon-play {
+  display: none;
+}
+
+.dsr-vs__play.is-playing:focus-visible .dsr-vs__icon-pause {
+  display: block;
+}
+
+.dsr-vs__play:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: -4px;
+  border-radius: var(--dsr-vs-radius, 12px);
+}
+
+@media (hover: hover) {
+  .dsr-vs__play:not(.is-playing):hover svg {
+    transform: scale(1.06);
+  }
+}
+
+/* ---------- Caption and product ---------- */
+
+.dsr-vs__overlay {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  z-index: 2;
+  display: grid;
+  gap: 8px;
+  padding: 40px 10px 10px;
+  background: linear-gradient(to bottom, rgba(17, 17, 17, 0), rgba(17, 17, 17, 0.55));
+  pointer-events: none;
+}
+
+.dsr-vs__caption {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  margin: 0;
+  overflow: hidden;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.dsr-vs__product {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 6px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #111111;
+  text-decoration: none;
+  pointer-events: auto;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.dsr-vs__product:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.dsr-vs__product-image {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.dsr-vs__product-text {
+  display: grid;
+  flex: 1 1 auto;
+  min-width: 0;
+  line-height: 1.25;
+}
+
+.dsr-vs__product-title {
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  unicode-bidi: plaintext;
+}
+
+.dsr-vs__product-price {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.dsr-vs__product--sold-out .dsr-vs__product-price {
+  font-weight: 500;
+  color: rgba(17, 17, 17, 0.7);
+}
+
+.dsr-vs__product-go {
+  display: inline-flex;
+  flex: none;
+  color: rgba(17, 17, 17, 0.6);
+}
+
+[dir='rtl'] .dsr-vs__product-go svg {
+  transform: scaleX(-1);
+}
+
+/* Cards that aren't in the middle keep their overlay quiet. */
+.dsr-vs__slide:not(.is-active) .dsr-vs__overlay {
+  opacity: 0.85;
+}
+
+/* ---------- Phones, "start" layout (2S reference) ---------- */
+
+@media screen and (max-width: 749px) {
+  .dsr-vs--mobile-start {
+    --dsr-vs-gap: 8px;
+    --dsr-vs-w: 62.5vw;
+    --dsr-vs-narrow: calc(var(--dsr-vs-w) * 0.72);
+  }
+
+  /* The row sits 16px in from the screen edges; cards are cut off there. */
+  .dsr-vs--mobile-start .dsr-vs__track {
+    margin-inline: 16px;
+    padding-inline: 0 calc(100% - 32px - var(--dsr-vs-w));
+    scroll-padding-inline: 0;
+  }
+
+  .dsr-vs--mobile-start .dsr-vs__slide {
+    flex-basis: var(--dsr-vs-narrow);
+    scroll-snap-align: start;
+  }
+
+  .dsr-vs--mobile-start .dsr-vs__slide.is-active {
+    flex-basis: var(--dsr-vs-w);
+  }
+
+  /* Every card is as tall as a 9:16 active card; narrower ones crop. */
+  .dsr-vs--mobile-start .dsr-vs__card {
+    aspect-ratio: auto;
+    height: calc(var(--dsr-vs-w) * 16 / 9);
+    transform: none;
+    opacity: 1;
+  }
+
+  .dsr-vs--mobile-start .dsr-vs__slide:not(.is-active) .dsr-vs__overlay {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dsr-vs__card,
+  .dsr-vs__video,
+  .dsr-vs__controls {
+    transition: none;
+  }
+}

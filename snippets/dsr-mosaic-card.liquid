@@ -1,0 +1,61 @@
+{%- comment -%}
+  A category card in the Collection list's editorial mosaic
+  (sections/collection-list.liquid, assets/dsr-mosaic.css): the whole card
+  links to the collection; image, title and a small arrow.
+
+  Accepts:
+  - card_collection {Collection}: blank renders a placeholder card
+  - image {Image}: optional, replaces the collection's own image
+  - image_position {String}: 'focal' (the image's focal point), 'top', 'center' or 'bottom'
+  - sizes {String}: the image's `sizes`, from its place in the grid
+  - index {Number}: position, for the placeholder picture
+
+  Usage:
+  {% render 'dsr-mosaic-card', card_collection: block.settings.collection, sizes: '50vw', index: 1 %}
+{%- endcomment -%}
+{%- liquid
+  assign card_image = image | default: card_collection.featured_image
+  case image_position
+    when 'top'
+      assign object_position = 'center top'
+    when 'bottom'
+      assign object_position = 'center bottom'
+    when 'center'
+      assign object_position = 'center center'
+    else
+      assign object_position = card_image.presentation.focal_point | default: 'center center'
+  endcase
+  if card_collection != blank
+    assign card_title = card_collection.title
+    assign card_url = card_collection.url
+  else
+    assign card_title = 'onboarding.collection_title' | t
+    assign card_url = '#'
+  endif
+-%}
+<a class="dsr-mosaic__card" href="{{ card_url }}">
+  <span class="dsr-mosaic__media">
+    {%- if card_image -%}
+      {%- capture image_style -%}object-position: {{ object_position }};{%- endcapture -%}
+      {{
+        card_image
+        | image_url: width: 1500
+        | image_tag:
+          class: 'dsr-mosaic__image',
+          alt: '',
+          loading: 'lazy',
+          widths: '360, 540, 720, 960, 1200, 1500',
+          sizes: sizes,
+          style: image_style
+      }}
+    {%- else -%}
+      {%- assign placeholder = index | modulo: 4 | plus: 1 -%}
+      {%- assign placeholder_name = 'collection-apparel-' | append: placeholder -%}
+      {{ placeholder_name | placeholder_svg_tag: 'dsr-mosaic__image dsr-mosaic__placeholder placeholder-svg' }}
+    {%- endif -%}
+  </span>
+  <span class="dsr-mosaic__label">
+    <span class="dsr-mosaic__title">{{ card_title | escape }}</span>
+    <svg class="dsr-mosaic__arrow" aria-hidden="true" focusable="false" viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10m-4-4 4 4-4 4"/></svg>
+  </span>
+</a>

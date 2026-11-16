@@ -1,5 +1,6 @@
 {{ 'section-collection-list.css' | asset_url | stylesheet_tag }}
 {{ 'component-card.css' | asset_url | stylesheet_tag }}
+{{ 'dsr-section-heading.css' | asset_url | stylesheet_tag }}
 {{ 'component-slider.css' | asset_url | stylesheet_tag }}
 
 {%- style -%}
@@ -22,15 +23,26 @@
   if section.settings.swipe_on_mobile and section.blocks.size > columns_mobile_int
     assign show_mobile_slider = true
   endif
+
+  # Dressar: the editorial mosaic layout (docs/stages/editorial-mosaic.md).
+  assign mosaic = false
+  if section.settings.layout == 'mosaic'
+    assign mosaic = true
+    assign show_mobile_slider = false
+  endif
 -%}
+
+{%- if mosaic -%}
+  {{ 'dsr-mosaic.css' | asset_url | stylesheet_tag }}
+{%- endif -%}
 
 <div class="color-{{ section.settings.color_scheme }} gradient">
   <div class="collection-list-wrapper page-width isolate{% if show_mobile_slider %} page-width-desktop{% endif %}{% if section.settings.title == blank %} no-heading{% endif %}{% if section.settings.show_view_all == false or section.blocks.size > collections.size %} no-mobile-link{% endif %} section-{{ section.id }}-padding">
-    {%- unless section.settings.title == blank -%}
+    {%- unless section.settings.title == blank or section.settings.show_heading == false -%}
       <div class="title-wrapper-with-link{% if show_mobile_slider %} title-wrapper--self-padded-tablet-down{% else %} title-wrapper--self-padded-mobile{% endif %} title-wrapper--no-top-margin">
         <h2
           id="SectionHeading-{{ section.id }}"
-          class="collection-list-title inline-richtext {{ section.settings.heading_size }}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+          class="collection-list-title inline-richtext {{ section.settings.heading_size }} dsr-section-heading dsr-section-heading--{{ section.settings.heading_alignment | default: 'left' }}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
         >
           {{ section.settings.title }}
         </h2>
@@ -48,6 +60,70 @@
       </div>
     {%- endunless -%}
 
+    {%- if mosaic -%}
+      {%- liquid
+        # The featured collection (the first block marked "Feature this collection",
+        # else the first block) leads; the others follow in the editor's order.
+        assign count = section.blocks.size
+        assign featured_index = 0
+        for block in section.blocks
+          if block.settings.featured
+            assign featured_index = forloop.index0
+            break
+          endif
+        endfor
+        assign rest_mobile = count | minus: 3
+        assign rest_mobile_odd = rest_mobile | modulo: 2
+        assign last_position = count | minus: 1
+      -%}
+      <ul
+        class="dsr-mosaic dsr-mosaic--m-{{ section.settings.mobile_layout }} dsr-mosaic--d-{{ section.settings.desktop_layout }} dsr-mosaic--count-{{ count }} dsr-mosaic--title-{{ section.settings.card_title_position }}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+        style="--dsr-mosaic-gap: {{ section.settings.mosaic_gap }}px; --dsr-mosaic-radius: {{ section.settings.mosaic_radius }}px; --dsr-mosaic-columns: {{ section.settings.columns_desktop }};"
+        role="list"
+      >
+        {%- for position in (0..count) -%}
+          {%- liquid
+            if position == count
+              break
+            endif
+            if position == 0
+              assign block_index = featured_index
+            elsif position <= featured_index
+              assign block_index = position | minus: 1
+            else
+              assign block_index = position
+            endif
+            assign block = section.blocks[block_index]
+
+            # Image sizes from the card's place in the grid (phones: half or full width;
+            # desktop: half or a quarter of the page).
+            assign size_m = '50vw'
+            if section.settings.mobile_layout == 'feature' and position >= 3 and rest_mobile_odd == 1 and position == last_position
+              assign size_m = '100vw'
+            endif
+            assign size_d = '50vw'
+            if section.settings.desktop_layout == 'feature' and position > 0 and position < 4
+              assign size_d = '25vw'
+            elsif section.settings.desktop_layout != 'feature'
+              assign size_d = '33vw'
+            endif
+            assign card_sizes = '(min-width: 750px) ' | append: size_d | append: ', ' | append: size_m
+          -%}
+          <li
+            class="dsr-mosaic__item{% if position == 0 %} dsr-mosaic__item--featured{% endif %}"
+            {{ block.shopify_attributes }}
+          >
+            {% render 'dsr-mosaic-card',
+              card_collection: block.settings.collection,
+              image: block.settings.image,
+              image_position: block.settings.image_position,
+              sizes: card_sizes,
+              index: position
+            %}
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- else -%}
     <slider-component class="slider-mobile-gutter{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
       <ul
         class="collection-list contains-card contains-card--collection{% if settings.card_style == 'standard' %} contains-card--standard{% endif %} grid grid--{{ section.settings.columns_desktop }}-col-desktop grid--{{ section.settings.columns_mobile }}-col-tablet-down{% if section.settings.swipe_on_mobile %} slider slider--tablet grid--peek{% endif %} collection-list--{{ section.blocks.size }}-items"
@@ -112,6 +188,7 @@
         </div>
       {%- endif -%}
     </slider-component>
+    {%- endif -%}
 
     {%- if section.settings.show_view_all and section.blocks.size < collections.size -%}
       <div
@@ -176,6 +253,90 @@
       ],
       "default": "h1",
       "label": "t:sections.all.heading_size.label"
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "label": "Heading alignment",
+      "info": "On right-to-left (Arabic) pages, headings are always right-aligned.",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_heading",
+      "label": "Show heading",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Editorial mosaic"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        { "value": "mosaic", "label": "Editorial mosaic" },
+        { "value": "classic", "label": "Classic grid" }
+      ],
+      "default": "mosaic",
+      "info": "Mosaic: one large featured collection with smaller ones beside it. Classic grid: the Layout and Mobile layout settings below."
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "Mosaic on mobile",
+      "options": [
+        { "value": "feature", "label": "Featured, two beside it" },
+        { "value": "even", "label": "Even, two columns" }
+      ],
+      "default": "feature"
+    },
+    {
+      "type": "select",
+      "id": "desktop_layout",
+      "label": "Mosaic on desktop",
+      "options": [
+        { "value": "feature", "label": "Featured, asymmetric" },
+        { "value": "even", "label": "Even columns" }
+      ],
+      "default": "feature",
+      "info": "Even columns use the number of columns on desktop below."
+    },
+    {
+      "type": "range",
+      "id": "mosaic_gap",
+      "label": "Space between cards",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "mosaic_radius",
+      "label": "Card corner radius",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 6
+    },
+    {
+      "type": "select",
+      "id": "card_title_position",
+      "label": "Card title",
+      "options": [
+        { "value": "overlay", "label": "On the image" },
+        { "value": "below", "label": "Below the image" }
+      ],
+      "default": "overlay"
     },
     {
       "type": "header",
@@ -284,6 +445,31 @@
           "type": "collection",
           "id": "collection",
           "label": "t:sections.collection-list.blocks.featured_collection.settings.collection.label"
+        },
+        {
+          "type": "checkbox",
+          "id": "featured",
+          "label": "Feature this collection",
+          "info": "Mosaic layout: shown large and first. Without one, the first collection is featured.",
+          "default": false
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image",
+          "info": "Mosaic layout: replaces the collection's image. Set its focal point in the image editor to keep the garment in view."
+        },
+        {
+          "type": "select",
+          "id": "image_position",
+          "label": "Image position",
+          "options": [
+            { "value": "focal", "label": "Focal point" },
+            { "value": "top", "label": "Top" },
+            { "value": "center", "label": "Center" },
+            { "value": "bottom", "label": "Bottom" }
+          ],
+          "default": "focal"
         }
       ]
     }

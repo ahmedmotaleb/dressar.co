@@ -166,3 +166,92 @@
 .dsr-collection-hero--description-center .collection-hero__description {
   overflow-wrap: anywhere;
 }
+
+/* ---------- Compact mobile header (docs/stages/collection-header.md) ----------
+   Below 750px: no breadcrumbs (unless the section shows them on mobile; their
+   structured data stays either way), one compact title in the page's
+   language, the description cut to a few lines behind "Read more", and tight
+   spacing down to the filters. Sizes come from the section's "Mobile"
+   settings (sections/main-collection-banner.liquid). Desktop is unchanged. */
+
+@media screen and (max-width: 749px) {
+  .dsr-collection-hero--compact-mobile .collection-hero__inner {
+    padding-top: var(--dsr-ch-top, 12px);
+    padding-bottom: var(--dsr-ch-bottom, 20px);
+  }
+
+  .dsr-collection-hero--no-mobile-breadcrumbs .dsr-breadcrumbs {
+    display: none;
+  }
+
+  .dsr-collection-hero--compact-mobile .collection-hero__title {
+    margin: 0;
+    font-size: var(--dsr-ch-title-size, 22px);
+    font-weight: 500;
+    line-height: 1.35;
+    letter-spacing: 0;
+    text-align: start;
+    font-synthesis: none;
+  }
+
+  /* Arabic pages: Cairo SemiBold, from the right. */
+  [dir='rtl'] .dsr-collection-hero--compact-mobile .collection-hero__title {
+    font-family: var(--dsr-font-arabic-heading, var(--font-heading-family));
+    font-weight: 600;
+  }
+
+  /* A two-language title shows only the page's language. */
+  .dsr-collection-hero--compact-mobile .dsr-title-part--other,
+  .dsr-collection-hero--compact-mobile .dsr-title-sep {
+    display: none;
+  }
+
+  .dsr-collection-hero--compact-mobile .dsr-read-more {
+    display: block;
+  }
+
+  .dsr-collection-hero--compact-mobile .collection-hero__title + .dsr-read-more {
+    margin-top: 8px;
+  }
+
+  .dsr-collection-hero--compact-mobile .collection-hero__description {
+    max-width: none;
+    font-size: 13px;
+    line-height: 1.5;
+    text-align: start;
+  }
+
+  [dir='rtl'] .dsr-collection-hero--compact-mobile .collection-hero__description {
+    font-family: var(--dsr-font-arabic-body, var(--font-body-family));
+  }
+
+  .dsr-collection-hero--compact-mobile .collection-hero__description p {
+    margin: 0 0 0.5em;
+  }
+
+  .dsr-collection-hero--compact-mobile .dsr-read-more[data-collapsed] .collection-hero__description {
+    max-height: calc(var(--dsr-ch-lines, 3) * 1.5em);
+    -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 1.5em), transparent);
+    mask-image: linear-gradient(to bottom, #000 calc(100% - 1.5em), transparent);
+  }
+
+  .dsr-collection-hero--compact-mobile .dsr-read-more__toggle {
+    display: block;
+    margin-top: 4px;
+    padding: 4px 0;
+    min-height: 24px;
+    font-size: 1.1rem;
+  }
+
+  .dsr-collection-hero--compact-mobile .dsr-read-more__toggle[hidden] {
+    display: none;
+  }
+
+  /* The product grid right below starts at the header's own bottom spacing:
+     its section's top padding and the filter bar's own top padding go. */
+  .shopify-section:has(.dsr-collection-hero--compact-mobile) + .shopify-section > [class*='-padding']:first-child,
+  .shopify-section:has(.dsr-collection-hero--compact-mobile) + .shopify-section > * > [class*='-padding']:first-child,
+  .shopify-section:has(.dsr-collection-hero--compact-mobile) + .shopify-section .facets-container {
+    padding-top: 0;
+  }
+}
