@@ -1,4 +1,5 @@
 {{ 'component-card.css' | asset_url | stylesheet_tag }}
+{{ 'dsr-row-footer.css' | asset_url | stylesheet_tag }}
 {{ 'dsr-section-heading.css' | asset_url | stylesheet_tag }}
 {{ 'component-price.css' | asset_url | stylesheet_tag }}
 
@@ -76,7 +77,7 @@
   class="color-{{ section.settings.color_scheme }} isolate gradient"
 >
   <div
-    class="collection{% if section.settings.quick_add == 'bulk' %} collection-quick-add-bulk{% endif %} section-{{ section.id }}-padding{% if section.settings.full_width %} collection--full-width{% endif %}"
+    class="collection{% if section.settings.compact_footer != false %} dsr-compact-footer{% endif %}{% if section.settings.quick_add == 'bulk' %} collection-quick-add-bulk{% endif %} section-{{ section.id }}-padding{% if section.settings.full_width %} collection--full-width{% endif %}"
     id="collection-{{ section.id }}"
     data-id="{{ section.id }}"
   >
@@ -382,7 +383,14 @@
         }
       ],
       "default": "solid"
-    }, 
+    },
+    {
+      "type": "checkbox",
+      "id": "compact_footer",
+      "label": "Compact footer",
+      "info": "Phones: 12px from the cards to the arrows, 16px to \"View all\", 24px above and below the section. All sizes: \"View all\" as a compact 40px outline button.",
+      "default": true
+    },
     {
       "type": "color_scheme",
       "id": "color_scheme",

@@ -101,6 +101,49 @@
     .ai-media-grid-placeholder-{{ ai_gen_id }} {
       min-height: 200px;
     }
+
+    {%- if block.settings.mobile_mosaic != false %}
+      /* Dressar: phone mosaic (docs/stages/mobile-spacing.md). The first image
+         full width at 16:9, the other two side by side at 3:4; each image
+         covers its frame around its focal point. */
+      .ai-media-grid-container-{{ ai_gen_id }} {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: {{ block.settings.mobile_gap | default: 8 }}px;
+        padding-inline: 16px;
+        box-sizing: border-box;
+      }
+
+      .ai-media-grid-item-{{ ai_gen_id }} {
+        border-radius: {{ block.settings.mobile_radius | default: 6 }}px;
+      }
+
+      .ai-media-grid-item-{{ ai_gen_id }}--large {
+        grid-row: 1;
+        grid-column: 1 / -1;
+        aspect-ratio: 16 / 9;
+      }
+
+      .ai-media-grid-item-{{ ai_gen_id }}--small-1,
+      .ai-media-grid-item-{{ ai_gen_id }}--small-2 {
+        grid-row: 2;
+        aspect-ratio: 3 / 4;
+      }
+
+      .ai-media-grid-item-{{ ai_gen_id }}--small-1 {
+        grid-column: 1;
+      }
+
+      .ai-media-grid-item-{{ ai_gen_id }}--small-2 {
+        grid-column: 2;
+      }
+
+      .ai-media-grid-item-{{ ai_gen_id }} img,
+      .ai-media-grid-item-{{ ai_gen_id }} .ai-media-grid-placeholder-{{ ai_gen_id }} {
+        position: absolute;
+        inset: 0;
+        min-height: 0;
+      }
+    {%- endif %}
   }
 {% endstyle %}
 
@@ -108,13 +151,22 @@
   <div class="ai-media-grid-container-{{ ai_gen_id }}">
     <div class="ai-media-grid-item-{{ ai_gen_id }} ai-media-grid-item-{{ ai_gen_id }}--large">
       {% if block.settings.image_large %}
-        <img
-          src="{{ block.settings.image_large | image_url: width: 1200 }}"
-          alt="{{ block.settings.image_large.alt | escape }}"
-          loading="lazy"
-          width="{{ block.settings.image_large.width }}"
-          height="{{ block.settings.image_large.height }}"
-        >
+        {%- liquid
+          assign dsr_image = block.settings.image_large
+          assign dsr_position = dsr_image.presentation.focal_point | default: 'center center'
+          capture dsr_style
+            echo 'object-position: ' | append: dsr_position | append: ';'
+          endcapture
+        -%}
+        {{
+          dsr_image
+          | image_url: width: 1500
+          | image_tag:
+            loading: 'lazy',
+            widths: '360, 540, 720, 960, 1200, 1500',
+            sizes: '(min-width: 750px) 50vw, 100vw',
+            style: dsr_style
+        }}
       {% else %}
         <div class="ai-media-grid-placeholder-{{ ai_gen_id }}">
           {{ 'image' | placeholder_svg_tag }}
@@ -127,13 +179,22 @@
 
     <div class="ai-media-grid-item-{{ ai_gen_id }} ai-media-grid-item-{{ ai_gen_id }}--small-1">
       {% if block.settings.image_small_1 %}
-        <img
-          src="{{ block.settings.image_small_1 | image_url: width: 800 }}"
-          alt="{{ block.settings.image_small_1.alt | escape }}"
-          loading="lazy"
-          width="{{ block.settings.image_small_1.width }}"
-          height="{{ block.settings.image_small_1.height }}"
-        >
+        {%- liquid
+          assign dsr_image = block.settings.image_small_1
+          assign dsr_position = dsr_image.presentation.focal_point | default: 'center center'
+          capture dsr_style
+            echo 'object-position: ' | append: dsr_position | append: ';'
+          endcapture
+        -%}
+        {{
+          dsr_image
+          | image_url: width: 1500
+          | image_tag:
+            loading: 'lazy',
+            widths: '360, 540, 720, 960, 1200, 1500',
+            sizes: '(min-width: 750px) 50vw, 50vw',
+            style: dsr_style
+        }}
       {% else %}
         <div class="ai-media-grid-placeholder-{{ ai_gen_id }}">
           {{ 'image' | placeholder_svg_tag }}
@@ -146,13 +207,22 @@
 
     <div class="ai-media-grid-item-{{ ai_gen_id }} ai-media-grid-item-{{ ai_gen_id }}--small-2">
       {% if block.settings.image_small_2 %}
-        <img
-          src="{{ block.settings.image_small_2 | image_url: width: 800 }}"
-          alt="{{ block.settings.image_small_2.alt | escape }}"
-          loading="lazy"
-          width="{{ block.settings.image_small_2.width }}"
-          height="{{ block.settings.image_small_2.height }}"
-        >
+        {%- liquid
+          assign dsr_image = block.settings.image_small_2
+          assign dsr_position = dsr_image.presentation.focal_point | default: 'center center'
+          capture dsr_style
+            echo 'object-position: ' | append: dsr_position | append: ';'
+          endcapture
+        -%}
+        {{
+          dsr_image
+          | image_url: width: 1500
+          | image_tag:
+            loading: 'lazy',
+            widths: '360, 540, 720, 960, 1200, 1500',
+            sizes: '(min-width: 750px) 50vw, 50vw',
+            style: dsr_style
+        }}
       {% else %}
         <div class="ai-media-grid-placeholder-{{ ai_gen_id }}">
           {{ 'image' | placeholder_svg_tag }}
@@ -234,6 +304,38 @@
       "step": 2,
       "unit": "px",
       "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Mobile",
+      "info": "Below 750px. Desktop keeps the layout above."
+    },
+    {
+      "type": "checkbox",
+      "id": "mobile_mosaic",
+      "label": "Mosaic on phones",
+      "info": "Large image full width (16:9), the two small images side by side (3:4). Off: the images stack.",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "mobile_gap",
+      "label": "Gap between images, mobile",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "mobile_radius",
+      "label": "Corner radius, mobile",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 6
     }
   ],
   "presets": [

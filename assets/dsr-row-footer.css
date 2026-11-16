@@ -1,0 +1,73 @@
+/* ==========================================================================
+   Product rows: compact footer (Featured collection, setting "Compact
+   footer", on by default). docs/stages/mobile-spacing.md
+
+   Scoped to .dsr-compact-footer, so no other button or slider changes.
+   Phones: 12px from the cards to the arrows, 16px from the arrows to
+   "View all", 24px above and below the section. All sizes: "View all" is a
+   compact 40px outline button (whatever "View all style" says).
+   ========================================================================== */
+
+.dsr-compact-footer .collection__view-all > a {
+  min-width: 0;
+  min-height: 40px;
+  height: 40px;
+  padding: 0 2.4rem;
+  font-size: 1.3rem;
+  letter-spacing: 0.06rem;
+  line-height: 1;
+  color: rgb(var(--color-foreground));
+  background-color: transparent;
+  text-decoration: none;
+}
+
+/* Dawn draws a button's edge and shadow with ::before and ::after. */
+.dsr-compact-footer .collection__view-all > a::before {
+  box-shadow: none;
+}
+
+.dsr-compact-footer .collection__view-all > a::after {
+  box-shadow: 0 0 0 1px rgba(var(--color-foreground), 0.8);
+  border-radius: inherit;
+}
+
+.dsr-compact-footer .collection__view-all > a:hover::after {
+  box-shadow: 0 0 0 1.5px rgb(var(--color-foreground));
+}
+
+.dsr-compact-footer .collection__view-all > a:focus-visible {
+  outline: 2px solid rgb(var(--color-foreground));
+  outline-offset: 3px;
+}
+
+[dir='rtl'] .dsr-compact-footer .collection__view-all > a {
+  letter-spacing: 0;
+}
+
+@media screen and (max-width: 749px) {
+  /* Two classes: the section's own padding style comes later in the page. */
+  .collection.dsr-compact-footer {
+    padding-top: 24px;
+    padding-bottom: 24px;
+  }
+
+  /* Dawn gives the sliding grid a bottom margin; the arrows' 12px is the gap. */
+  .dsr-compact-footer slider-component .product-grid.slider {
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .dsr-compact-footer slider-component .slider-buttons {
+    margin-top: 12px;
+  }
+
+  .dsr-compact-footer .collection__view-all {
+    margin-top: 16px;
+    margin-bottom: 0;
+  }
+
+  /* More specific than Dawn's .collection__view-all a:not(.link) margin. */
+  .dsr-compact-footer .collection__view-all > a:not(.link) {
+    margin: 0;
+  }
+}
