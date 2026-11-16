@@ -35,10 +35,14 @@ for (const dir of ['sections', 'blocks']) {
 const tooLong = [];
 const duplicates = [];
 const badDefaults = [];
+const longOptions = [];
 const settingsOf = (list, where) => {
   const ids = new Set();
   for (const s of list || []) {
     if (!s.id) continue;
+    for (const o of s.options || []) {
+      if (o.label && !String(o.label).startsWith('t:') && o.label.length > 50) longOptions.push(`${where}: ${s.id} "${o.label}" (${o.label.length})`);
+    }
     if (ids.has(s.id)) duplicates.push(`${where}: ${s.id}`);
     ids.add(s.id);
     if ((s.type === 'select' || s.type === 'radio') && s.default !== undefined && !(s.options || []).some((o) => o.value === s.default)) {
@@ -59,6 +63,7 @@ for (const [file, schema] of Object.entries(schemas)) {
 check('schema names are at most 25 characters (Shopify refuses longer ones on upload)', tooLong.length === 0, tooLong.join('; '));
 check('setting IDs are unique within each section and block', duplicates.length === 0, duplicates.join('; '));
 check('select defaults are among their options', badDefaults.length === 0, badDefaults.join('; '));
+check('option labels are at most 50 characters (Shopify refuses longer ones on upload)', longOptions.length === 0, longOptions.join('; '));
 
 const themeSettings = JSON.parse(fs.readFileSync(path.join(root, 'config/settings_schema.json'), 'utf8'));
 const globalIds = new Map();

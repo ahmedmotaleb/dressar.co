@@ -630,6 +630,19 @@
     "breadcrumbs": {
       "label": "Breadcrumbs",
       "home": "Home"
+    },
+    "video_stories": {
+      "label": "Video stories",
+      "carousel": "carousel",
+      "slide_role": "slide",
+      "slide": "{{ index }} of {{ count }}",
+      "video_label": "Video {{ index }}",
+      "play": "Play video",
+      "pause": "Pause video",
+      "mute": "Mute",
+      "unmute": "Turn sound on",
+      "previous": "Previous video",
+      "next": "Next video"
     }
   }
 }

@@ -1,0 +1,416 @@
+{%- comment -%}
+  Video Stories (docs/stages/video-stories.md): a carousel of vertical,
+  Shopify-hosted videos, each with an optional caption and a linked product.
+
+  - 9:16 cards with configurable corners. On phones one card sits in the
+    middle with its neighbours peeking in; on wider screens several show. The
+    row scrolls natively (scroll snapping), so swiping works with no library,
+    left to right or right to left with the page.
+  - Only the card in the middle plays: muted, inline, looping when set. The
+    script (assets/dsr-video-stories.js) pauses the previous video before the
+    next starts, pauses everything when the section leaves the screen or the
+    tab is hidden, and makes sure only one video plays on the whole page,
+    however many Video Stories sections there are.
+  - Nothing downloads up front: each video gets its source only when its card
+    becomes the active one (preload "metadata" for that card only), as an HLS
+    stream where the browser plays HLS itself, else an MP4; posters
+    are sized images, lazy past the first card. Reduced motion or a data
+    saver: nothing autoplays, the play button starts a video.
+  - A linked product shows a small link with its photo, name, real price and
+    availability, to its own product page. Nothing about it is made up.
+{%- endcomment -%}
+
+{{ 'dsr-video-stories.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'dsr-video-stories.js' | asset_url }}" defer="defer"></script>
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top_mobile }}px;
+    padding-bottom: {{ section.settings.padding_bottom_mobile }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top_desktop }}px;
+      padding-bottom: {{ section.settings.padding_bottom_desktop }}px;
+    }
+  }
+{%- endstyle -%}
+
+{%- liquid
+  assign heading_id = 'DsrVideoStoriesHeading-' | append: section.id
+  assign count = section.blocks.size
+  assign carousel_label = 'dressar.video_stories.label' | t
+-%}
+
+<dsr-video-stories
+  class="dsr-vs dsr-vs--mobile-{{ section.settings.mobile_layout | default: 'start' }} color-{{ section.settings.color_scheme }} gradient section-{{ section.id }}-padding"
+  data-mobile-layout="{{ section.settings.mobile_layout | default: 'start' }}"
+  data-autoplay="{{ section.settings.autoplay }}"
+  data-loop="{{ section.settings.loop }}"
+  data-label-play="{{ 'dressar.video_stories.play' | t | escape }}"
+  data-label-pause="{{ 'dressar.video_stories.pause' | t | escape }}"
+  data-label-mute="{{ 'dressar.video_stories.mute' | t | escape }}"
+  data-label-unmute="{{ 'dressar.video_stories.unmute' | t | escape }}"
+  style="--dsr-vs-radius: {{ section.settings.card_radius }}px; --dsr-vs-desktop-cards: {{ section.settings.desktop_cards }};"
+>
+  <div class="page-width dsr-vs__head dsr-vs__head--{{ section.settings.heading_alignment | default: 'center' }}">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="dsr-vs__heading inline-richtext {{ section.settings.heading_size }}" id="{{ heading_id }}">
+        {{- section.settings.heading | escape -}}
+      </h2>
+    {%- endif -%}
+    {%- if count > 1 -%}
+      <div class="dsr-vs__nav">
+        <button type="button" class="dsr-vs__arrow" data-dsr-vs-prev aria-label="{{ 'dressar.video_stories.previous' | t | escape }}">
+          <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 8 12l7 7"/></svg>
+        </button>
+        <button type="button" class="dsr-vs__arrow" data-dsr-vs-next aria-label="{{ 'dressar.video_stories.next' | t | escape }}">
+          <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg>
+        </button>
+      </div>
+    {%- endif -%}
+  </div>
+
+  <div
+    class="dsr-vs__viewport"
+    role="region"
+    aria-roledescription="{{ 'dressar.video_stories.carousel' | t | escape }}"
+    {% if section.settings.heading != blank %}
+      aria-labelledby="{{ heading_id }}"
+    {% else %}
+      aria-label="{{ carousel_label | escape }}"
+    {% endif %}
+  >
+    <div class="dsr-vs__track" data-dsr-vs-track tabindex="0">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign video = block.settings.video
+          assign product = block.settings.product
+          assign poster = block.settings.poster | default: video.preview_image
+
+          # The MP4 closest to 720px tall without going over (a phone-sized 9:16
+          # card), else the smallest one there is. Storefronts usually list only
+          # the 1080p MP4 plus an HLS stream, so the HLS stream is passed on too:
+          # browsers that play HLS themselves (Safari, iPhone) use it and get a
+          # size that suits the screen and connection.
+          assign source = null
+          assign hls = null
+          for s in video.sources
+            if s.format == 'm3u8' and hls == null
+              assign hls = s
+            endif
+            if s.format == 'mp4'
+              if source == null
+                assign source = s
+              elsif s.height <= 720 and s.height > source.height
+                assign source = s
+              elsif source.height > 720 and s.height < source.height
+                assign source = s
+              endif
+            endif
+          endfor
+
+          assign label = block.settings.caption | default: product.title | default: video.alt
+          if label == blank
+            assign label = 'dressar.video_stories.video_label' | t: index: forloop.index
+          endif
+          assign slide_label = 'dressar.video_stories.slide' | t: index: forloop.index, count: count
+          assign poster_loading = 'lazy'
+          if forloop.first
+            assign poster_loading = 'eager'
+          endif
+        -%}
+        <div
+          class="dsr-vs__slide"
+          role="group"
+          aria-roledescription="{{ 'dressar.video_stories.slide_role' | t | escape }}"
+          aria-label="{{ slide_label | escape }}"
+          data-index="{{ forloop.index0 }}"
+          {{ block.shopify_attributes }}
+        >
+          <div class="dsr-vs__card">
+            {%- if poster -%}
+              {{
+                poster
+                | image_url: width: 720
+                | image_tag:
+                  class: 'dsr-vs__poster',
+                  alt: '',
+                  widths: '270, 360, 540, 720',
+                  sizes: '(min-width: 990px) 20vw, (min-width: 750px) 30vw, 66vw',
+                  loading: poster_loading
+              }}
+            {%- endif -%}
+            {%- if source -%}
+              <video
+                class="dsr-vs__video"
+                muted
+                playsinline
+                preload="none"
+                {% if section.settings.loop %}
+                  loop
+                {% endif %}
+                aria-label="{{ label | escape }}"
+                data-src="{{ source.url }}"
+                data-type="{{ source.mime_type }}"
+                {% if hls %}
+                  data-hls="{{ hls.url }}"
+                {% endif %}
+              ></video>
+              {%- comment -%}
+                Play / pause: the whole picture is the button. A large play mark
+                shows while the video isn't playing; a pause mark shows on
+                keyboard focus while it plays.
+              {%- endcomment -%}
+              <button type="button" class="dsr-vs__play" data-dsr-vs-play aria-label="{{ 'dressar.video_stories.play' | t | escape }}" aria-pressed="false">
+                <svg class="dsr-vs__icon-play" aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="44" height="44"><path fill="currentColor" d="M7 4.2v15.6c0 .8.9 1.3 1.6.9l12.4-7.8c.6-.4.6-1.4 0-1.8L8.6 3.3C7.9 2.9 7 3.4 7 4.2z"/></svg>
+                <svg class="dsr-vs__icon-pause" aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="40" height="40"><path fill="currentColor" d="M6.5 4h4v16h-4zm7 0h4v16h-4z"/></svg>
+              </button>
+              <div class="dsr-vs__controls">
+                <button type="button" class="dsr-vs__control" data-dsr-vs-mute aria-label="{{ 'dressar.video_stories.unmute' | t | escape }}" aria-pressed="true">
+                  <svg class="dsr-vs__icon-muted" aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z" fill="currentColor"/><path d="m16 9.5 5 5m0-5-5 5"/></svg>
+                  <svg class="dsr-vs__icon-sound" aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z" fill="currentColor"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>
+                </button>
+              </div>
+            {%- elsif poster == blank -%}
+              {{ 'lifestyle-1' | placeholder_svg_tag: 'dsr-vs__placeholder placeholder-svg' }}
+            {%- endif -%}
+
+            {%- assign show_cta = false -%}
+            {%- if section.settings.show_product_cta and product != blank -%}
+              {%- assign show_cta = true -%}
+            {%- endif -%}
+            {%- if block.settings.caption != blank or show_cta -%}
+              <div class="dsr-vs__overlay">
+                {%- if block.settings.caption != blank -%}
+                  <p class="dsr-vs__caption">{{ block.settings.caption | escape }}</p>
+                {%- endif -%}
+                {%- if show_cta -%}
+                  <a class="dsr-vs__product{% unless product.available %} dsr-vs__product--sold-out{% endunless %}" href="{{ product.url }}">
+                    {%- if product.featured_media -%}
+                      {{
+                        product.featured_media
+                        | image_url: width: 96
+                        | image_tag: class: 'dsr-vs__product-image', alt: '', loading: 'lazy', width: 40, height: 40
+                      }}
+                    {%- endif -%}
+                    <span class="dsr-vs__product-text">
+                      <span class="dsr-vs__product-title">{{ product.title | escape }}</span>
+                      <span class="dsr-vs__product-price">
+                        {%- if product.available -%}
+                          {%- liquid
+                            if settings.currency_code_enabled
+                              assign product_price = product.price | money_with_currency
+                            else
+                              assign product_price = product.price | money
+                            endif
+                          -%}
+                          {%- if product.price_varies -%}
+                            {{- 'products.product.price.from_price_html' | t: price: product_price -}}
+                          {%- else -%}
+                            {{- product_price -}}
+                          {%- endif -%}
+                        {%- else -%}
+                          {{- 'products.product.sold_out' | t -}}
+                        {%- endif -%}
+                      </span>
+                    </span>
+                    <span class="dsr-vs__product-go" aria-hidden="true">
+                      <svg focusable="false" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg>
+                    </span>
+                  </a>
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</dsr-video-stories>
+
+{% schema %}
+{
+  "name": "Video Stories",
+  "tag": "section",
+  "class": "section dsr-video-stories-section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "max_blocks": 20,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Watch and shop"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        { "value": "h2", "label": "Small" },
+        { "value": "h1", "label": "Medium" },
+        { "value": "h0", "label": "Large" }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "label": "Heading alignment",
+      "options": [
+        { "value": "start", "label": "Start (right in Arabic, left in English)" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "Cards on mobile",
+      "options": [
+        { "value": "start", "label": "Active card first, the next peeking" },
+        { "value": "center", "label": "Active card in the middle" }
+      ],
+      "default": "start"
+    },
+    {
+      "type": "header",
+      "content": "Playback"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Autoplay the video in the middle",
+      "info": "Always muted. Off for shoppers who ask for reduced motion or save data; they start a video with its play button.",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "loop",
+      "label": "Loop videos",
+      "info": "Off: the next video starts when one ends.",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Cards"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card corner radius",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "desktop_cards",
+      "label": "Cards in view on desktop",
+      "min": 3,
+      "max": 6,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_cta",
+      "label": "Show the linked product",
+      "info": "A small link with the product's photo, name and price on each video that has a product.",
+      "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Section background (color scheme)",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Top padding, mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Bottom padding, mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "label": "Top padding, desktop",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "label": "Bottom padding, desktop",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "video",
+      "name": "Video",
+      "settings": [
+        {
+          "type": "video",
+          "id": "video",
+          "label": "Video",
+          "info": "A Shopify-hosted vertical video (9:16)."
+        },
+        {
+          "type": "image_picker",
+          "id": "poster",
+          "label": "Poster image",
+          "info": "Shown before the video plays. Without one, the video's own preview image."
+        },
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Linked product"
+        },
+        {
+          "type": "text",
+          "id": "caption",
+          "label": "Caption"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Video Stories",
+      "blocks": [{ "type": "video" }, { "type": "video" }, { "type": "video" }]
+    }
+  ]
+}
+{% endschema %}
