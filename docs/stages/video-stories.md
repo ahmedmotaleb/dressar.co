@@ -2,6 +2,17 @@
 
 Brief: "Shopify Dawn — Premium Shoppable Video Stories". A reusable section, **Video Stories**, that shows a row of vertical shoppable videos. It can be added to any page from the theme editor.
 
+## Look (2S Homewear reference)
+
+The 2S Homewear reference screenshots (sent on Nov 16) set the phone layout. **"Cards on mobile: start"** is the default:
+- **Active card:** at the start of the row (right in Arabic), 9:16 and about 62% of the screen.
+- **Other cards:** the same height but 72% as wide (cropped), so the next one peeks in at the far edge.
+- **Row:** sits 16px in from the screen edges, and cards are cut off there.
+- **After a swipe:** the new active card grows and the row lines up on it.
+- **Heading:** centred and semibold (Cairo in Arabic). No arrows on phones (swipe); the arrows show from 750px.
+- **Play and pause:** the whole picture is the play/pause button, with a large white ▶ while the video isn't playing (a ▶ also shows on the other cards). A small mute button stays on the playing card.
+- **Old layout:** "Cards on mobile: center" keeps the earlier one (the active card in the middle, neighbours on both sides). Desktop is as before.
+
 ## What it does
 
 **Layout** (`assets/dsr-video-stories.css`)
@@ -80,7 +91,7 @@ Brief: "Shopify Dawn — Premium Shoppable Video Stories". A reusable section, *
 
 ## Tests
 
-`tests/video-stories.test.js`: 168 checks in Chromium (Playwright), Arabic and English. The page holds two Video Stories sections. The checks cover:
+`tests/video-stories.test.js`: 262 checks in Chromium (Playwright), Arabic and English. The page holds two Video Stories sections. The checks cover:
 - **Layout** at 360, 390, 430 and 1440px:
   - 9:16 cards, the active card centred, neighbours peeking;
   - no sideways page scroll.

@@ -146,10 +146,12 @@ async function main() {
     const wait = (page, ms = 700) => page.waitForTimeout(ms);
 
     // ---------------- Layout ----------------
-    for (const width of [360, 390, 430, 1440]) {
-      const tag = `${L} [${width}]`;
+    const layouts = [360, 390, 430].flatMap((w) => [[w, 'start'], [w, 'center']]).concat([[1440, 'start']]);
+    for (const [width, mobileLayout] of layouts) {
       const desktop = width >= 990;
-      const page = await open({ width });
+      const startLayout = !desktop && mobileLayout === 'start';
+      const tag = `${L} [${width}]${desktop ? '' : ` [${mobileLayout}]`}`;
+      const page = await open({ width, settings: { mobile_layout: mobileLayout } });
       await scrollToSection(page, 0);
       await wait(page, 900);
       const r = await page.evaluate(() => {
@@ -174,6 +176,20 @@ async function main() {
           ratio: cb.height / cb.width,
           radius: getComputedStyle(card).borderTopLeftRadius,
           centreOff: Math.abs(cb.left + cb.width / 2 - (tb.left + tb.width / 2)),
+          rtl: getComputedStyle(s).direction === 'rtl',
+          // The active card's start edge against the row's (right in Arabic).
+          startOff: getComputedStyle(s).direction === 'rtl' ? Math.abs(cb.right - tb.right) : Math.abs(cb.left - tb.left),
+          gutters: [tb.left, window.innerWidth - tb.right],
+          activeWidth: cb.width,
+          others: slides.filter((sl) => sl !== active).map((sl) => [box(sl.querySelector('.dsr-vs__card')).width, box(sl.querySelector('.dsr-vs__card')).height]),
+          next: (() => {
+            const n = slides[slides.indexOf(active) + 1];
+            if (!n) return null;
+            const b = box(n);
+            return { shown: Math.min(b.right, tb.right) - Math.max(b.left, tb.left), farSide: getComputedStyle(s).direction === 'rtl' ? b.right <= cb.left : b.left >= cb.right };
+          })(),
+          arrows: [...s.querySelectorAll('.dsr-vs__arrow')].map((a) => a.getBoundingClientRect().width > 0),
+          headingAlign: getComputedStyle(s.querySelector('.dsr-vs__heading')).textAlign,
           visible: visible.length,
           fully: fully.length,
           activeIndex: slides.indexOf(active),
@@ -183,16 +199,71 @@ async function main() {
       });
       check(`${tag} heading from the section setting`, r.heading && r.heading.trim() === 'Watch and shop', r.heading);
       check(`${tag} cards 9:16, 12px corners`, Math.abs(r.ratio - 16 / 9) < 0.02 && r.radius === '12px', JSON.stringify([r.ratio, r.radius]));
-      check(`${tag} the active card sits in the middle of the row`, r.centreOff <= 2, String(r.centreOff));
-      if (!desktop) check(`${tag} phones: one card in the middle, its neighbours peeking in`, r.fully === 1 && r.visible >= 2, JSON.stringify([r.fully, r.visible]));
-      else check(`${tag} desktop: a full row (4+ cards in view), the middle one active`, r.visible >= 4 && r.activeIndex === 2, JSON.stringify([r.visible, r.activeIndex]));
-      check(`${tag} every card the same size (no layout shift)`, new Set(r.cardHeights).size === 1, r.cardHeights.join());
+      check(`${tag} heading centred`, r.headingAlign === 'center', r.headingAlign);
+      if (startLayout) {
+        // The 2S reference: the active card first and larger, the next one peeking at the far edge.
+        check(`${tag} the first card is active, lined up with the start of the row (${r.rtl ? 'right' : 'left'})`, r.activeIndex === 0 && r.startOff <= 1, JSON.stringify([r.activeIndex, r.startOff]));
+        check(`${tag} the row sits 16px in from the screen edges`, r.gutters.every((g) => Math.abs(g - 16) <= 1), JSON.stringify(r.gutters));
+        check(`${tag} active card about 62% of the screen`, Math.abs(r.activeWidth - width * 0.625) <= 1.5, String(r.activeWidth));
+        check(`${tag} other cards: same height, 72% as wide`, r.others.every(([w, h]) => Math.abs(h - r.activeWidth * 16 / 9) <= 1.5 && Math.abs(w - r.activeWidth * 0.72) <= 1.5), JSON.stringify(r.others.slice(0, 2)));
+        check(`${tag} the next card peeks in at the far edge`, r.next && r.next.farSide && r.next.shown > 40, JSON.stringify(r.next));
+        check(`${tag} phones: no arrows (swipe)`, r.arrows.every((a) => !a), JSON.stringify(r.arrows));
+      } else {
+        check(`${tag} the active card sits in the middle of the row`, r.centreOff <= 2, String(r.centreOff));
+        if (!desktop) check(`${tag} phones: one card in the middle, its neighbours peeking in`, r.fully === 1 && r.visible >= 2, JSON.stringify([r.fully, r.visible]));
+        else check(`${tag} desktop: a full row (4+ cards in view), the middle one active, arrows shown`, r.visible >= 4 && r.activeIndex === 2 && r.arrows.every(Boolean), JSON.stringify([r.visible, r.activeIndex, r.arrows]));
+      }
+      check(`${tag} every card the same height (no layout shift)`, new Set(r.cardHeights).size === 1, r.cardHeights.join());
       check(`${tag} no sideways page scroll`, r.overflow <= 0, String(r.overflow));
       // Playing doesn't change the card's size.
       const before = r.cardHeights[0];
       await wait(page, 600);
       const after = await page.evaluate(() => Math.round(document.querySelector('.dsr-vs__slide').getBoundingClientRect().height));
       check(`${tag} card size unchanged once the video plays`, after === before, `${before} -> ${after}`);
+      check(`${tag} no JS errors`, page.errors.length === 0, page.errors.join(' | '));
+      await page.context().close();
+    }
+
+    // ---------------- "Start" layout: a swipe lines the next card up ----------------
+    {
+      const tag = `${L} [390] [start]`;
+      const page = await open({ width: 390 });
+      await scrollToSection(page, 0);
+      await wait(page, 900);
+      // A touch-style swipe: scroll the row by one narrow card.
+      await page.evaluate(() => {
+        const t = document.querySelector('dsr-video-stories .dsr-vs__track');
+        const step = t.querySelector('.dsr-vs__slide:not(.is-active)').getBoundingClientRect().width;
+        t.scrollBy({ left: (getComputedStyle(t).direction === 'rtl' ? -1 : 1) * step, behavior: 'smooth' });
+      });
+      await wait(page, 1600);
+      const after = await page.evaluate(() => {
+        const s = document.querySelector('dsr-video-stories');
+        const tb = s.querySelector('.dsr-vs__track').getBoundingClientRect();
+        const slides = [...s.querySelectorAll('.dsr-vs__slide')];
+        const a = slides.find((x) => x.classList.contains('is-active'));
+        const b = a.getBoundingClientRect();
+        const rtl = getComputedStyle(s).direction === 'rtl';
+        return { index: slides.indexOf(a), width: b.width, off: rtl ? Math.abs(b.right - tb.right) : Math.abs(b.left - tb.left), playing: slides.map((x) => { const v = x.querySelector('video'); return Boolean(v && !v.paused); }) };
+      });
+      check(`${tag} after a swipe the second card is active, wide, lined up with the start, and playing`, after.index === 1 && Math.abs(after.width - 390 * 0.625) <= 1.5 && after.off <= 1.5 && after.playing[1] && after.playing.filter(Boolean).length === 1, JSON.stringify(after));
+      // Tapping the next card's play mark brings it forward and plays it.
+      await page.evaluate(() => document.querySelectorAll('dsr-video-stories .dsr-vs__slide')[2].querySelector('[data-dsr-vs-play]').click());
+      await wait(page, 1400);
+      const tapped = await page.evaluate(() => {
+        const slides = [...document.querySelector('dsr-video-stories').querySelectorAll('.dsr-vs__slide')];
+        return { index: slides.findIndex((x) => x.classList.contains('is-active')), playing: slides.map((x) => { const v = x.querySelector('video'); return Boolean(v && !v.paused); }) };
+      });
+      check(`${tag} tapping another card's play mark brings it forward and plays it`, tapped.index === 2 && tapped.playing[2] && tapped.playing.filter(Boolean).length === 1, JSON.stringify(tapped));
+      // Tapping the playing video pauses it; the play mark shows.
+      await page.evaluate(() => document.querySelectorAll('dsr-video-stories .dsr-vs__slide')[2].querySelector('[data-dsr-vs-play]').click());
+      await wait(page, 400);
+      const paused = await page.evaluate(() => {
+        const sl = document.querySelectorAll('dsr-video-stories .dsr-vs__slide')[2];
+        const icon = sl.querySelector('.dsr-vs__icon-play');
+        return { paused: sl.querySelector('video').paused, mark: getComputedStyle(icon).display !== 'none', label: sl.querySelector('[data-dsr-vs-play]').getAttribute('aria-label') };
+      });
+      check(`${tag} tapping the playing video pauses it, the play mark shows`, paused.paused && paused.mark && paused.label === vs.play, JSON.stringify(paused));
       check(`${tag} no JS errors`, page.errors.length === 0, page.errors.join(' | '));
       await page.context().close();
     }
@@ -236,11 +307,11 @@ async function main() {
       check(`${tag}: the next card's video loads only now`, st[0].src[1] && page.videoRequests.some((f) => f.startsWith('story-2.webm')), page.videoRequests.join());
 
       // Arrows: next and previous, disabled at the ends.
-      await page.click('dsr-video-stories:first-of-type [data-dsr-vs-next]');
+      await page.evaluate((sel) => document.querySelector(sel).click(), 'dsr-video-stories:first-of-type [data-dsr-vs-next]'); // the arrows are for wider screens; on phones they're hidden
       await wait(page, 900);
       st = await state(page);
       check(`${tag}: "${vs.next}" moves on one card`, st[0].active === 2 && st[0].playing[2] && playingCount(st) === 1, JSON.stringify(st[0].playing));
-      await page.click('dsr-video-stories:first-of-type [data-dsr-vs-prev]');
+      await page.evaluate((sel) => document.querySelector(sel).click(), 'dsr-video-stories:first-of-type [data-dsr-vs-prev]'); // the arrows are for wider screens; on phones they're hidden
       await wait(page, 900);
       st = await state(page);
       check(`${tag}: "${vs.previous}" goes back one`, st[0].active === 1 && st[0].playing[1], String(st[0].active));

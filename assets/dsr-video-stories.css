@@ -2,12 +2,15 @@
    Video Stories (sections/dsr-video-stories.liquid, docs/stages/video-stories.md)
 
    A row of 9:16 cards that scrolls natively with snapping. The active card
-   (assets/dsr-video-stories.js) is full size; the others are a little
-   smaller and lighter, so the one in the middle leads. Phones: about two
-   thirds of the screen per card, the neighbours peeking in. From 750px:
-   "Cards in view on desktop" cards across. The row is padded so any card,
-   the first and last included, can sit in the middle. Logical properties
-   throughout, so right-to-left pages mirror.
+   (assets/dsr-video-stories.js) leads. Phones, "Cards on mobile":
+   - "start" (default, after the 2S Homewear reference): the active card sits
+     at the start of the row (right in Arabic) at 9:16, about 62% of the
+     screen; the others keep its height but are narrower, so the next one
+     peeks in at the far edge.
+   - "center": about two thirds of the screen per card in the middle, the
+     neighbours a little smaller on both sides.
+   From 750px: "Cards in view on desktop" cards across, the active one in the
+   middle. Logical properties throughout, so right-to-left pages mirror.
    ========================================================================== */
 
 .dsr-vs {
@@ -36,6 +39,39 @@
 
 .dsr-vs__heading {
   margin: 0;
+}
+
+[dir='rtl'] .dsr-vs__heading {
+  font-family: var(--dsr-font-arabic-heading, var(--font-heading-family));
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+/* Centred heading: the arrows (desktop) keep to the end of the row. */
+.dsr-vs__head--center {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+}
+
+.dsr-vs__head--center .dsr-vs__heading {
+  grid-column: 2;
+  text-align: center;
+}
+
+.dsr-vs__head--center .dsr-vs__nav {
+  grid-column: 3;
+  justify-self: end;
+}
+
+/* Phones swipe; the arrows are for wider screens (the arrow keys work everywhere). */
+@media screen and (max-width: 749px) {
+  .dsr-vs .dsr-vs__nav {
+    display: none;
+  }
+
+  .dsr-vs__head--center {
+    display: block;
+  }
 }
 
 .dsr-vs__nav {
@@ -160,7 +196,7 @@
   position: absolute;
   inset-block-start: 10px;
   inset-inline-end: 10px;
-  z-index: 2;
+  z-index: 3;
   display: flex;
   gap: 8px;
   opacity: 0;
@@ -200,16 +236,59 @@
   outline-offset: 2px;
 }
 
-.dsr-vs__icon-pause,
-.dsr-vs__control.is-playing .dsr-vs__icon-play,
 .dsr-vs__icon-sound,
 .dsr-vs__control:not(.is-muted) .dsr-vs__icon-muted {
   display: none;
 }
 
-.dsr-vs__control.is-playing .dsr-vs__icon-pause,
 .dsr-vs__control:not(.is-muted) .dsr-vs__icon-sound {
   display: block;
+}
+
+/* ---------- Play / pause: the whole picture ---------- */
+
+.dsr-vs__play {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #ffffff;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dsr-vs__play svg {
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.35));
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* The play mark shows until the video plays; the pause mark only on keyboard focus. */
+.dsr-vs__icon-pause,
+.dsr-vs__play.is-playing .dsr-vs__icon-play {
+  display: none;
+}
+
+.dsr-vs__play.is-playing:focus-visible .dsr-vs__icon-pause {
+  display: block;
+}
+
+.dsr-vs__play:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: -4px;
+  border-radius: var(--dsr-vs-radius, 12px);
+}
+
+@media (hover: hover) {
+  .dsr-vs__play:not(.is-playing):hover svg {
+    transform: scale(1.06);
+  }
 }
 
 /* ---------- Caption and product ---------- */
@@ -218,7 +297,7 @@
   position: absolute;
   inset-inline: 0;
   inset-block-end: 0;
-  z-index: 1;
+  z-index: 2;
   display: grid;
   gap: 8px;
   padding: 40px 10px 10px;
@@ -307,6 +386,44 @@
 /* Cards that aren't in the middle keep their overlay quiet. */
 .dsr-vs__slide:not(.is-active) .dsr-vs__overlay {
   opacity: 0.85;
+}
+
+/* ---------- Phones, "start" layout (2S reference) ---------- */
+
+@media screen and (max-width: 749px) {
+  .dsr-vs--mobile-start {
+    --dsr-vs-gap: 8px;
+    --dsr-vs-w: 62.5vw;
+    --dsr-vs-narrow: calc(var(--dsr-vs-w) * 0.72);
+  }
+
+  /* The row sits 16px in from the screen edges; cards are cut off there. */
+  .dsr-vs--mobile-start .dsr-vs__track {
+    margin-inline: 16px;
+    padding-inline: 0 calc(100% - 32px - var(--dsr-vs-w));
+    scroll-padding-inline: 0;
+  }
+
+  .dsr-vs--mobile-start .dsr-vs__slide {
+    flex-basis: var(--dsr-vs-narrow);
+    scroll-snap-align: start;
+  }
+
+  .dsr-vs--mobile-start .dsr-vs__slide.is-active {
+    flex-basis: var(--dsr-vs-w);
+  }
+
+  /* Every card is as tall as a 9:16 active card; narrower ones crop. */
+  .dsr-vs--mobile-start .dsr-vs__card {
+    aspect-ratio: auto;
+    height: calc(var(--dsr-vs-w) * 16 / 9);
+    transform: none;
+    opacity: 1;
+  }
+
+  .dsr-vs--mobile-start .dsr-vs__slide:not(.is-active) .dsr-vs__overlay {
+    opacity: 1;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

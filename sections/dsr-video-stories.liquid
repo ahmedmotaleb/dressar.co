@@ -44,7 +44,8 @@
 -%}
 
 <dsr-video-stories
-  class="dsr-vs color-{{ section.settings.color_scheme }} gradient section-{{ section.id }}-padding"
+  class="dsr-vs dsr-vs--mobile-{{ section.settings.mobile_layout | default: 'start' }} color-{{ section.settings.color_scheme }} gradient section-{{ section.id }}-padding"
+  data-mobile-layout="{{ section.settings.mobile_layout | default: 'start' }}"
   data-autoplay="{{ section.settings.autoplay }}"
   data-loop="{{ section.settings.loop }}"
   data-label-play="{{ 'dressar.video_stories.play' | t | escape }}"
@@ -53,7 +54,7 @@
   data-label-unmute="{{ 'dressar.video_stories.unmute' | t | escape }}"
   style="--dsr-vs-radius: {{ section.settings.card_radius }}px; --dsr-vs-desktop-cards: {{ section.settings.desktop_cards }};"
 >
-  <div class="page-width dsr-vs__head">
+  <div class="page-width dsr-vs__head dsr-vs__head--{{ section.settings.heading_alignment | default: 'center' }}">
     {%- if section.settings.heading != blank -%}
       <h2 class="dsr-vs__heading inline-richtext {{ section.settings.heading_size }}" id="{{ heading_id }}">
         {{- section.settings.heading | escape -}}
@@ -157,11 +158,16 @@
                   data-hls="{{ hls.url }}"
                 {% endif %}
               ></video>
+              {%- comment -%}
+                Play / pause: the whole picture is the button. A large play mark
+                shows while the video isn't playing; a pause mark shows on
+                keyboard focus while it plays.
+              {%- endcomment -%}
+              <button type="button" class="dsr-vs__play" data-dsr-vs-play aria-label="{{ 'dressar.video_stories.play' | t | escape }}" aria-pressed="false">
+                <svg class="dsr-vs__icon-play" aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="44" height="44"><path fill="currentColor" d="M7 4.2v15.6c0 .8.9 1.3 1.6.9l12.4-7.8c.6-.4.6-1.4 0-1.8L8.6 3.3C7.9 2.9 7 3.4 7 4.2z"/></svg>
+                <svg class="dsr-vs__icon-pause" aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="40" height="40"><path fill="currentColor" d="M6.5 4h4v16h-4zm7 0h4v16h-4z"/></svg>
+              </button>
               <div class="dsr-vs__controls">
-                <button type="button" class="dsr-vs__control" data-dsr-vs-play aria-label="{{ 'dressar.video_stories.play' | t | escape }}" aria-pressed="false">
-                  <svg class="dsr-vs__icon-play" aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M8 5.5v13l10.5-6.5z"/></svg>
-                  <svg class="dsr-vs__icon-pause" aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M7 5h3.5v14H7zm6.5 0H17v14h-3.5z"/></svg>
-                </button>
                 <button type="button" class="dsr-vs__control" data-dsr-vs-mute aria-label="{{ 'dressar.video_stories.unmute' | t | escape }}" aria-pressed="true">
                   <svg class="dsr-vs__icon-muted" aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z" fill="currentColor"/><path d="m16 9.5 5 5m0-5-5 5"/></svg>
                   <svg class="dsr-vs__icon-sound" aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z" fill="currentColor"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>
@@ -249,7 +255,27 @@
         { "value": "h1", "label": "Medium" },
         { "value": "h0", "label": "Large" }
       ],
-      "default": "h1"
+      "default": "h2"
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "label": "Heading alignment",
+      "options": [
+        { "value": "start", "label": "Start (right in Arabic, left in English)" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "Cards on mobile",
+      "options": [
+        { "value": "start", "label": "Active card first and larger, the next one peeking" },
+        { "value": "center", "label": "Active card in the middle, neighbours on both sides" }
+      ],
+      "default": "start"
     },
     {
       "type": "header",

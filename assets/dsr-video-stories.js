@@ -2,7 +2,10 @@
  * Video Stories (sections/dsr-video-stories.liquid, docs/stages/video-stories.md).
  *
  * Each section is a <dsr-video-stories> element: a natively scrolling row of
- * 9:16 cards. The card nearest the middle of the row is the active one.
+ * 9:16 cards. The active card is the one nearest the middle of the row, or,
+ * on phones with "Cards on mobile: start" (data-mobile-layout), the one at
+ * the start of the row; there the active card is wider than the others, so
+ * after it becomes active the row is lined up on it again.
  *
  * One video at a time, page-wide: every section registers with a small
  * coordinator, which plays at most one video. That is the active video of
@@ -42,6 +45,7 @@
   document.addEventListener('visibilitychange', reconcile);
 
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const phone = window.matchMedia('(max-width: 749px)');
   const saveData = () => Boolean(navigator.connection && navigator.connection.saveData);
   // HLS only where the browser plays it itself (Safari, iPhone); no library.
   let hlsSupport = null;
@@ -71,6 +75,8 @@
       this.onKeydown = this.onKeydown.bind(this);
       this.onBlockSelect = this.onBlockSelect.bind(this);
       this.onMotionChange = () => reconcile();
+      // Crossing 750px switches layouts: line the active card up again.
+      this.onLayoutChange = () => this.align(this.active, 'auto');
       this.onVideoEvent = this.onVideoEvent.bind(this);
 
       this.track.addEventListener('scroll', this.onScroll, { passive: true });
@@ -79,6 +85,7 @@
       this.addEventListener('keydown', this.onKeydown);
       this.addEventListener('shopify:block:select', this.onBlockSelect);
       reducedMotion.addEventListener('change', this.onMotionChange);
+      phone.addEventListener('change', this.onLayoutChange);
       this.videos().forEach((video) => {
         ['playing', 'pause', 'ended', 'error'].forEach((type) => video.addEventListener(type, this.onVideoEvent));
       });
@@ -107,7 +114,7 @@
       // Wide screens open on a full row: the middle of the cards in view starts
       // active (a phone, with about one card in view, starts on the first).
       const first = this.slides[0];
-      if (first && this.track.scrollLeft === 0) {
+      if (first && this.track.scrollLeft === 0 && !this.startMode()) {
         const inView = Math.floor(this.track.clientWidth / first.getBoundingClientRect().width);
         const start = Math.min(Math.floor(inView / 2), this.slides.length - 1);
         if (start > 0) {
@@ -116,7 +123,7 @@
           this.track.scrollBy({ left: box.left + box.width / 2 - (row.left + row.width / 2), behavior: 'auto' });
         }
       }
-      this.activate(this.centredIndex());
+      this.activate(this.anchorIndex());
     }
 
     disconnectedCallback() {
@@ -128,6 +135,7 @@
       this.removeEventListener('keydown', this.onKeydown);
       this.removeEventListener('shopify:block:select', this.onBlockSelect);
       reducedMotion.removeEventListener('change', this.onMotionChange);
+      phone.removeEventListener('change', this.onLayoutChange);
       this.videos().forEach((video) => {
         ['playing', 'pause', 'ended', 'error'].forEach((type) => video.removeEventListener(type, this.onVideoEvent));
       });
@@ -214,6 +222,37 @@
 
     // ---------- The active card ----------
 
+    // Phones with the "start" layout line the active card up with the start of the row.
+    startMode() {
+      return this.dataset.mobileLayout === 'start' && phone.matches;
+    }
+
+    rtl() {
+      return getComputedStyle(this).direction === 'rtl';
+    }
+
+    // How far the row must move to line this card up (the start, or the middle).
+    offsetOf(slide) {
+      const row = this.track.getBoundingClientRect();
+      const box = slide.getBoundingClientRect();
+      if (this.startMode()) return this.rtl() ? box.right - row.right : box.left - row.left;
+      return box.left + box.width / 2 - (row.left + row.width / 2);
+    }
+
+    anchorIndex() {
+      if (!this.startMode()) return this.centredIndex();
+      let best = 0;
+      let distance = Infinity;
+      this.slides.forEach((slide, index) => {
+        const d = Math.abs(this.offsetOf(slide));
+        if (d < distance) {
+          distance = d;
+          best = index;
+        }
+      });
+      return best;
+    }
+
     centredIndex() {
       if (!this.slides.length) return -1;
       const box = this.track.getBoundingClientRect();
@@ -247,6 +286,9 @@
         else slide.removeAttribute('aria-current');
         const controls = slide.querySelector('.dsr-vs__controls');
         if (controls) controls.inert = !current;
+        // Other cards' play buttons stay clickable (they bring the card forward) but out of the tab order.
+        const play = slide.querySelector('[data-dsr-vs-play]');
+        if (play) play.tabIndex = current ? 0 : -1;
       });
       if (this.near) this.loadSource(index);
       this.releaseFar();
@@ -258,14 +300,21 @@
     goTo(index) {
       const slide = this.slides[Math.max(0, Math.min(index, this.slides.length - 1))];
       if (!slide) return;
-      // Scroll the row only: the page itself stays put. While the row glides
-      // there, the scroll handler leaves the target alone.
-      const row = this.track.getBoundingClientRect();
-      const box = slide.getBoundingClientRect();
-      const delta = box.left + box.width / 2 - (row.left + row.width / 2);
-      this.target = { index: this.slides.indexOf(slide), until: Date.now() + 1200 };
-      this.track.scrollBy({ left: delta, behavior: reducedMotion.matches ? 'auto' : 'smooth' });
-      this.activate(this.target.index);
+      // Activate first: in the "start" layout that widens the card, and the row
+      // is lined up on its new size.
+      this.activate(this.slides.indexOf(slide));
+      this.align(this.active);
+    }
+
+    // Scroll the row only (the page stays put) to line the card up. While the
+    // row glides there, the scroll handler leaves the target alone.
+    align(index, behavior = reducedMotion.matches ? 'auto' : 'smooth') {
+      const slide = this.slides[index];
+      if (!slide) return;
+      const delta = this.offsetOf(slide);
+      if (Math.abs(delta) < 1) return;
+      this.target = { index, until: Date.now() + 1200 };
+      this.track.scrollBy({ left: delta, behavior });
     }
 
     // A swipe or a scroll: once the row comes to rest, the card in the middle
@@ -273,10 +322,13 @@
     onScroll(event) {
       clearTimeout(this.settle);
       const settle = () => {
-        const centred = this.centredIndex();
-        if (this.target && Date.now() < this.target.until && centred !== this.target.index) return;
+        const anchored = this.anchorIndex();
+        if (this.target && Date.now() < this.target.until && anchored !== this.target.index) return;
         this.target = null;
-        this.activate(centred);
+        const changed = anchored !== this.active;
+        this.activate(anchored);
+        // The new active card is wider: line it up again.
+        if (changed && this.startMode()) this.align(anchored);
       };
       if (event && event.type === 'scrollend') settle();
       else this.settle = setTimeout(settle, 150);
@@ -285,7 +337,15 @@
     onClick(event) {
       if (event.target.closest('[data-dsr-vs-prev]')) return this.goTo(this.active - 1);
       if (event.target.closest('[data-dsr-vs-next]')) return this.goTo(this.active + 1);
-      if (event.target.closest('[data-dsr-vs-play]')) return this.togglePlay();
+      const play = event.target.closest('[data-dsr-vs-play]');
+      if (play) {
+        const index = this.slides.indexOf(play.closest('.dsr-vs__slide'));
+        if (index === this.active) return this.togglePlay();
+        // Another card's play mark: bring that card forward and play it.
+        this.goTo(index);
+        this.startedAt = Date.now();
+        return reconcile();
+      }
       if (event.target.closest('[data-dsr-vs-mute]')) return this.toggleMute();
       const slide = event.target.closest('.dsr-vs__slide');
       // A tap on a neighbouring card brings it to the middle (its product link still opens).
@@ -296,8 +356,7 @@
 
     onKeydown(event) {
       if (!['ArrowLeft', 'ArrowRight'].includes(event.key) || event.target.closest('input, textarea')) return;
-      const rtl = getComputedStyle(this).direction === 'rtl';
-      const forward = (event.key === 'ArrowRight') !== rtl;
+      const forward = (event.key === 'ArrowRight') !== this.rtl();
       event.preventDefault();
       this.goTo(this.active + (forward ? 1 : -1));
     }
