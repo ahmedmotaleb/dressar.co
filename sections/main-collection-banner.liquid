@@ -7,10 +7,42 @@
     .collection-hero--with-image .collection-hero__inner {
       padding-bottom: calc({{ settings.media_shadow_vertical_offset | at_least: 0 }}px + 2rem);
     }
+
+    {%- comment -%} Dressar compact mobile header (docs/stages/collection-header.md). {%- endcomment -%}
+    #shopify-section-{{ section.id }} {
+      --dsr-ch-title-size: {{ section.settings.mobile_title_size | default: 22 }}px;
+      --dsr-ch-lines: {{ section.settings.mobile_description_lines | default: 3 }};
+      --dsr-ch-top: {{ section.settings.mobile_top_padding | default: 12 }}px;
+      --dsr-ch-bottom: {{ section.settings.mobile_bottom_spacing | default: 20 }}px;
+    }
   }
 {%- endstyle -%}
 
-<div class="collection-hero dsr-collection-hero--title-{{ section.settings.title_alignment }} dsr-collection-hero--description-{{ section.settings.description_alignment }}{% if section.settings.show_collection_image and collection.image %} collection-hero--with-image{% endif %} color-{{ section.settings.color_scheme }} gradient">
+{%- liquid
+  capture dsr_dir
+    render 'dsr-direction'
+  endcapture
+  # A title written in two languages ("Back to University | لبس الجامعة"):
+  # phones show only the part in the page's language. The whole title stays
+  # in the heading (search engines, desktop). Arabic text is told apart by
+  # its UTF-8 lead bytes (U+0600–U+06FF).
+  assign dsr_title_parts = collection.title | split: ' | '
+  assign dsr_title_split = false
+  if dsr_title_parts.size == 2
+    assign dsr_arabic_parts = 0
+    for part in dsr_title_parts
+      assign encoded = part | url_encode
+      if encoded contains '%D8' or encoded contains '%D9' or encoded contains '%DA' or encoded contains '%DB'
+        assign dsr_arabic_parts = dsr_arabic_parts | plus: 1
+      endif
+    endfor
+    if dsr_arabic_parts == 1
+      assign dsr_title_split = true
+    endif
+  endif
+-%}
+
+<div class="collection-hero dsr-collection-hero--compact-mobile{% unless section.settings.breadcrumbs_mobile %} dsr-collection-hero--no-mobile-breadcrumbs{% endunless %} dsr-collection-hero--title-{{ section.settings.title_alignment }} dsr-collection-hero--description-{{ section.settings.description_alignment }}{% if section.settings.show_collection_image and collection.image %} collection-hero--with-image{% endif %} color-{{ section.settings.color_scheme }} gradient">
   <div class="collection-hero__inner page-width {% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
     <div class="collection-hero__text-wrapper">
       {%- if section.settings.show_breadcrumbs -%}
@@ -18,7 +50,29 @@
       {%- endif -%}
       <h1 class="collection-hero__title">
         <span class="visually-hidden">{{ 'sections.collection_template.title' | t }}: </span>
-        {{- collection.title | escape -}}
+        {%- if dsr_title_split -%}
+          {%- for part in dsr_title_parts -%}
+            {%- liquid
+              assign encoded = part | url_encode
+              assign is_arabic = false
+              if encoded contains '%D8' or encoded contains '%D9' or encoded contains '%DA' or encoded contains '%DB'
+                assign is_arabic = true
+              endif
+              assign is_current = false
+              if is_arabic and dsr_dir == 'rtl'
+                assign is_current = true
+              elsif is_arabic == false and dsr_dir != 'rtl'
+                assign is_current = true
+              endif
+            -%}
+            {%- unless forloop.first -%}<span class="dsr-title-sep"> | </span>{%- endunless -%}
+            <span class="dsr-title-part{% unless is_current %} dsr-title-part--other{% endunless %}" dir="{% if is_arabic %}rtl{% else %}ltr{% endif %}">
+              {{- part | escape -}}
+            </span>
+          {%- endfor -%}
+        {%- else -%}
+          {{- collection.title | escape -}}
+        {%- endif -%}
       </h1>
 
       {%- if section.settings.show_collection_description and collection.description != blank -%}
@@ -49,21 +103,31 @@
               'dsr-read-more',
               class extends HTMLElement {
                 connectedCallback() {
-                  const content = this.querySelector('.collection-hero__description');
-                  const toggle = this.querySelector('.dsr-read-more__toggle');
-                  if (!content || !toggle) return;
-                  this.setAttribute('data-collapsed', '');
-                  if (content.scrollHeight <= content.clientHeight + 1) {
-                    this.removeAttribute('data-collapsed');
-                    return;
-                  }
-                  toggle.hidden = false;
-                  toggle.addEventListener('click', () => {
-                    const open = toggle.getAttribute('aria-expanded') === 'true';
-                    toggle.setAttribute('aria-expanded', String(!open));
+                  this.content = this.querySelector('.collection-hero__description');
+                  this.toggle = this.querySelector('.dsr-read-more__toggle');
+                  if (!this.content || !this.toggle) return;
+                  this.onClick = () => {
+                    const open = this.toggle.getAttribute('aria-expanded') === 'true';
+                    this.toggle.setAttribute('aria-expanded', String(!open));
                     this.toggleAttribute('data-collapsed', open);
-                    toggle.textContent = open ? toggle.dataset.labelMore : toggle.dataset.labelLess;
-                  });
+                    this.toggle.textContent = open ? this.toggle.dataset.labelMore : this.toggle.dataset.labelLess;
+                  };
+                  this.toggle.addEventListener('click', this.onClick);
+                  // The number of lines shown differs on phones, so check again when the width changes.
+                  this.measure = () => {
+                    if (this.toggle.getAttribute('aria-expanded') === 'true') return;
+                    this.setAttribute('data-collapsed', '');
+                    const clipped = this.content.scrollHeight > this.content.clientHeight + 1;
+                    this.toggleAttribute('data-collapsed', clipped);
+                    this.toggle.hidden = !clipped;
+                  };
+                  this.measure();
+                  this.observer = new ResizeObserver(() => this.measure());
+                  this.observer.observe(this);
+                }
+                disconnectedCallback() {
+                  if (this.observer) this.observer.disconnect();
+                  if (this.toggle && this.onClick) this.toggle.removeEventListener('click', this.onClick);
                 }
               }
             );
@@ -122,6 +186,57 @@
       "default": true,
       "label": "Show breadcrumbs",
       "info": "Home > collection, with breadcrumb structured data for search engines."
+    },
+    {
+      "type": "header",
+      "content": "Mobile",
+      "info": "Below 750px. Desktop keeps the settings above."
+    },
+    {
+      "type": "checkbox",
+      "id": "breadcrumbs_mobile",
+      "label": "Show breadcrumbs on mobile",
+      "info": "When hidden, the breadcrumb structured data stays in the page for search engines.",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "mobile_title_size",
+      "label": "Title size",
+      "min": 18,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 22
+    },
+    {
+      "type": "range",
+      "id": "mobile_description_lines",
+      "label": "Description lines before \"Read more\"",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "mobile_top_padding",
+      "label": "Space above the title",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "mobile_bottom_spacing",
+      "label": "Space before the filters",
+      "min": 8,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 20
     },
     {
       "type": "select",
