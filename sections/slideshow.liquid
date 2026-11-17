@@ -45,10 +45,11 @@
           {{- 'icon-caret.svg' | inline_asset_content -}}
         </span>
       </button>
-      <div class="slider-counter slider-counter--{{ section.settings.slider_visual }}{% if section.settings.slider_visual == 'counter' or section.settings.slider_visual == 'numbers' %} caption{% endif %}">
-        {%- if section.settings.slider_visual == 'counter' -%}
-          {%- render 'dsr-slider-status', total: section.blocks.size -%}
-        {%- else -%}
+      {%- if section.settings.slider_visual == 'counter' -%}
+        {%- comment -%} No visible "1 / 3" and no box for it: arrows only. {%- endcomment -%}
+        {%- render 'dsr-slider-status', total: section.blocks.size -%}
+      {%- else -%}
+        <div class="slider-counter slider-counter--{{ section.settings.slider_visual }}{% if section.settings.slider_visual == 'numbers' %} caption{% endif %}">
           <div class="slideshow__control-wrapper">
             {%- for block in section.blocks -%}
               <button
@@ -64,8 +65,8 @@
               </button>
             {%- endfor -%}
           </div>
-        {%- endif -%}
-      </div>
+        </div>
+      {%- endif -%}
       <button
         type="button"
         class="slider-button slider-button--next"
@@ -201,10 +202,11 @@
           {{- 'icon-caret.svg' | inline_asset_content -}}
         </span>
       </button>
-      <div class="slider-counter slider-counter--{{ section.settings.slider_visual }}{% if section.settings.slider_visual == 'counter' or section.settings.slider_visual == 'numbers' %} caption{% endif %}">
-        {%- if section.settings.slider_visual == 'counter' -%}
-          {%- render 'dsr-slider-status', total: section.blocks.size -%}
-        {%- else -%}
+      {%- if section.settings.slider_visual == 'counter' -%}
+        {%- comment -%} No visible "1 / 3" and no box for it: arrows only. {%- endcomment -%}
+        {%- render 'dsr-slider-status', total: section.blocks.size -%}
+      {%- else -%}
+        <div class="slider-counter slider-counter--{{ section.settings.slider_visual }}{% if section.settings.slider_visual == 'numbers' %} caption{% endif %}">
           <div class="slideshow__control-wrapper">
             {%- for block in section.blocks -%}
               <button
@@ -220,8 +222,8 @@
               </button>
             {%- endfor -%}
           </div>
-        {%- endif -%}
-      </div>
+        </div>
+      {%- endif -%}
       <button
         type="button"
         class="slider-button slider-button--next"

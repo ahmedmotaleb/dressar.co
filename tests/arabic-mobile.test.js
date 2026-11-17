@@ -121,7 +121,8 @@ async function main() {
         const shows = [...document.querySelectorAll('.shopify-section[id*="__slideshow_"]')].map((s) => {
           const sl = s.querySelector('.slideshow'), bar = s.querySelector('.slideshow__controls');
           const btns = bar ? [...bar.querySelectorAll('.slider-button')].filter(shown).map((b) => [Math.round(r(b).width), Math.round(r(b).height), b.getAttribute('aria-label')]) : [];
-          return { overlay: bar ? bar.classList.contains('dsr-slideshow-arrows') : null, inside: bar && sl ? r(bar).bottom <= r(sl).bottom + 0.5 && r(bar).top >= r(sl).top : null, sectionToImage: sl ? Math.round(r(s).bottom - r(sl).bottom) : null, btns };
+          const bs = bar ? [...bar.querySelectorAll('.slider-button')].filter(shown).map((b) => r(b)).sort((a, b) => a.left - b.left) : [];
+          return { between: bs.length === 2 ? Math.round(bs[1].left - bs[0].right) : null, counterBox: bar ? [...bar.querySelectorAll('.slider-counter')].filter((e) => r(e).width > 0).length : null, overlay: bar ? bar.classList.contains('dsr-slideshow-arrows') : null, inside: bar && sl ? r(bar).bottom <= r(sl).bottom + 0.5 && r(bar).top >= r(sl).top : null, sectionToImage: sl ? Math.round(r(s).bottom - r(sl).bottom) : null, btns };
         });
         const mcs = document.querySelector('.shopify-section[id*="__multicolumn_"]');
         const mcItems = mcs ? [...mcs.querySelectorAll('.multicolumn-list__item')].map((it) => { const img = it.querySelector('.multicolumn-card__image-wrapper'), info = it.querySelector('.multicolumn-card__info'); return { img: img && Math.round(r(img).width), info: info && Math.round(r(info).width), imgEdge: img && Math.round(Math.min(r(img).left, innerWidth - r(img).right)), imgLeft: img && r(img).left, infoLeft: info && r(info).left, align: info && getComputedStyle(info).textAlign }; }) : [];
@@ -155,6 +156,7 @@ async function main() {
         check(`${tag} desktop and tablet rows: more than two cards on screen, as before`, m.rows.every((x) => x.inView >= 2 && x.widths.every((w) => w > 160)), JSON.stringify(m.rows.map((x) => [x.inView, x.widths])));
       }
       check(`${tag} slideshows: arrows over the image, no bar reserved below it`, m.shows.length === 2 && m.shows.every((s) => s.overlay && s.inside && s.sectionToImage <= 1), JSON.stringify(m.shows));
+      check(`${tag} slideshows: the two arrows sit together (no empty counter box between)`, m.shows.every((s) => s.counterBox === 0 && s.between !== null && s.between <= 12), JSON.stringify(m.shows.map((s) => [s.between, s.counterBox])));
       check(`${tag} slideshow arrows: 44px targets with labels`, m.shows.every((s) => s.btns.length === 2 && s.btns.every(([w, h, l]) => w >= 44 && h >= 44 && l)), JSON.stringify(m.shows.map((s) => s.btns)));
 
       // Swipe / arrows still move the rows in reading order.
