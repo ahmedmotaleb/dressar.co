@@ -818,3 +818,123 @@ variant-selects .product-form__input--pill input[type='radio']:focus-visible + l
 .dsr-fs__help .dsr-size-help {
   font-size: 13px;
 }
+
+/* ---------- Description (snippets/dsr-product-description.liquid) ----------
+   Readable on a phone: 14.5px (15.5px from tablet up), 1.8 line height in
+   Arabic and 1.65 in English, 12px between paragraphs, aligned to the reading
+   start (right in Arabic, left in English), never centred. Quiet hairlines
+   separate the size guidance and the WhatsApp button; no cards or boxes. */
+.product__description .dsr-desc {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.65;
+  letter-spacing: 0;
+  text-align: start;
+  color: rgba(var(--color-foreground), 0.82);
+}
+
+:lang(ar) .product__description .dsr-desc {
+  line-height: 1.8;
+}
+
+@media screen and (min-width: 750px) {
+  .product__description .dsr-desc {
+    font-size: 15.5px;
+  }
+}
+
+.product__description .dsr-desc p {
+  margin: 0 0 12px;
+}
+
+.product__description .dsr-desc p:last-child,
+.product__description .dsr-desc > *:last-child {
+  margin-bottom: 0;
+}
+
+/* Merchant text pasted with empty paragraphs or <br> runs: no blank gaps. */
+.product__description .dsr-desc p:empty,
+.product__description .dsr-desc br + br {
+  display: none;
+}
+
+.product__description .dsr-desc__intro p {
+  font-size: 15.5px;
+  color: rgb(var(--color-foreground));
+}
+
+@media screen and (min-width: 750px) {
+  .product__description .dsr-desc__intro p {
+    font-size: 16.5px;
+  }
+}
+
+.product__description .dsr-desc__body {
+  margin-top: 12px;
+}
+
+.product__description .dsr-desc__fit,
+.product__description .dsr-desc__help {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(var(--color-foreground), 0.1);
+}
+
+.product__description .dsr-desc__fit {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.product__description .dsr-desc__icon {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  margin-top: 3px;
+  color: rgba(var(--color-foreground), 0.7);
+}
+
+.product__description .dsr-desc__icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.product__description .dsr-desc__fit-text {
+  min-width: 0;
+}
+
+.product__description .dsr-desc p.dsr-desc__label {
+  margin: 0 0 2px;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: rgb(var(--color-foreground));
+}
+
+.product__description .dsr-desc__help .dsr-size-help {
+  margin: 0;
+}
+
+/* The WhatsApp line as a compact outline button (44px target). */
+.product__description .dsr-desc__help .dsr-size-help {
+  align-items: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid rgba(var(--color-foreground), 0.25);
+  border-radius: 22px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.product__description .dsr-desc__help .dsr-size-help span:first-of-type {
+  text-decoration: none;
+}
+
+.product__description .dsr-desc__help .dsr-size-help:hover {
+  border-color: rgb(var(--color-foreground));
+}
+
+.product__description .dsr-desc__help .dsr-size-help:focus-visible {
+  outline: 2px solid rgb(var(--color-foreground));
+  outline-offset: 2px;
+}

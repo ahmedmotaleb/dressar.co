@@ -5,6 +5,7 @@
   nothing without a number.
 
   @param {product} product - The product.
+  @param {string} [label] - The link text. Defaults to dressar.product.size_help.
 
   @example
   {% render 'dsr-size-help', product: product %}
@@ -22,7 +23,7 @@
     rel="noopener noreferrer"
   >
     {{- 'icon-chat-bubble.svg' | inline_asset_content -}}
-    <span>{{ 'dressar.product.size_help' | t }}</span>
+    <span>{% if label != blank %}{{ label }}{% else %}{{ 'dressar.product.size_help' | t }}{% endif %}</span>
     <span class="visually-hidden">{{ 'accessibility.link_messages.new_window' | t }}</span>
   </a>
 {%- endif -%}
