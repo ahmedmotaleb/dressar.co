@@ -212,8 +212,12 @@ The raw phone number therefore showed in every product's text.
    - The main language is English but the home content is written in Arabic, so `/en` shows Arabic headings.
    - The clean fix is in Settings → Languages: make Arabic the default and English a translation, then add the English text in Translate & Adapt.
    - Until then, English visitors see Arabic home headings.
-2. **Product option names and values** show in English on `/ar`: "Color", "Size", "Fabric", "Off white".
-   - They are product data and need Arabic translations in Translate & Adapt.
+2. **Product option names: done (Nov 17), at the merchant's request.**
+   - Arabic names supplied by the merchant: Color → اللون, Size → المقاس, Fabric → الخامه.
+   - Registered as Arabic translations on all 362 options of the 124 products on the online store. No errors.
+   - Older products' "لون" / "مقاس" were replaced so every product matches.
+   - The two "Accessory size" options and the option *values* ("Off white", "Cotton") are not translated yet.
+   - Translations are store data, not theme data, so they also apply to the live theme.
 3. **Repeated WhatsApp number.**
    - The size chart accordion's own text says the measurements are "in the description above" and repeats the WhatsApp number.
    - It is merchant text in the product template; consider shortening it.
