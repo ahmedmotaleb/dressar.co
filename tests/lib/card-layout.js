@@ -42,8 +42,9 @@ function measureCardLayout() {
         titleTop: r(box(heading).top),
         titleHeight: r(box(heading).height),
         titleLineHeight: parseFloat(cs(heading).lineHeight),
-        titleOneLine: cs(link).whiteSpace === 'nowrap' && cs(link).textOverflow === 'ellipsis' && cs(link).overflow === 'hidden' && link.getClientRects().length === 1,
-        titleCut: link.scrollWidth > link.clientWidth + 1,
+        // The name's own box (span.dsr-card-title inside the link), else the link.
+        titleOneLine: ((n) => cs(n).whiteSpace === 'nowrap' && cs(n).textOverflow === 'ellipsis' && cs(n).overflow === 'hidden' && n.getClientRects().length === 1)(link.querySelector('.dsr-card-title') || link),
+        titleCut: ((n) => n.scrollWidth > n.clientWidth + 1)(link.querySelector('.dsr-card-title') || link),
         titleFont: [cs(heading).fontSize, cs(heading).fontWeight],
         priceTop: r(box(price).top),
         priceHeight: r(box(price).height),
@@ -56,7 +57,8 @@ function measureCardLayout() {
         rating: rating && { rect: box(rating).toJSON(), font: cs(rating).fontSize, text: rating.textContent.replace(/\s+/g, ' ').trim(), label: rating.getAttribute('aria-label') },
         colorsTop: colors ? r(box(colors).top) : null,
         sizesTop: sizesRow ? r(box(sizesRow).top) : null,
-        sizes: sizeButtons.map((b) => ({ h: r(box(b).height), top: r(box(b).top), radius: cs(b).borderTopLeftRadius, font: cs(b).fontSize })),
+        // Sizes shown (those behind "+N" in a narrow card are hidden).
+        sizes: sizeButtons.filter((b) => !b.closest('li[hidden]')).map((b) => ({ h: r(box(b).height), top: r(box(b).top), radius: cs(b).borderTopLeftRadius, font: cs(b).fontSize })),
         sizesScroll: sizesRow && sizesRow.querySelector('.dsr-card-sizes') ? cs(sizesRow.querySelector('.dsr-card-sizes')).overflowX : null,
         dots: dotBoxes.map((d) => r(d.width)),
         dotRadius: dots.map((d) => cs(d).borderTopLeftRadius),

@@ -1,6 +1,7 @@
 {{ 'section-image-banner.css' | asset_url | stylesheet_tag }}
 {{ 'component-slider.css' | asset_url | stylesheet_tag }}
 {{ 'component-slideshow.css' | asset_url | stylesheet_tag }}
+{{ 'dsr-slideshow.css' | asset_url | stylesheet_tag }}
 
 {%- if section.settings.slide_height == 'adapt_image' and section.blocks.first.settings.image != blank -%}
   {%- style -%}
@@ -32,7 +33,7 @@
   aria-label="{{ section.settings.accessibility_info | escape }}"
 >
   {%- if section.settings.auto_rotate and section.blocks.size > 1 -%}
-    <div class="slideshow__controls slideshow__controls--top slider-buttons{% if section.settings.show_text_below %} slideshow__controls--border-radius-mobile{% endif %}">
+    <div class="slideshow__controls slideshow__controls--top slider-buttons{% if section.settings.show_text_below %} slideshow__controls--border-radius-mobile{% endif %}{% if section.settings.slider_visual == 'counter' and section.settings.show_text_below == false %} dsr-slideshow-arrows{% endif %}">
       <button
         type="button"
         class="slider-button slider-button--prev"
@@ -46,10 +47,7 @@
       </button>
       <div class="slider-counter slider-counter--{{ section.settings.slider_visual }}{% if section.settings.slider_visual == 'counter' or section.settings.slider_visual == 'numbers' %} caption{% endif %}">
         {%- if section.settings.slider_visual == 'counter' -%}
-          <span class="slider-counter--current">1</span>
-          <span aria-hidden="true"> / </span>
-          <span class="visually-hidden">{{ 'general.slider.of' | t }}</span>
-          <span class="slider-counter--total">{{ section.blocks.size }}</span>
+          {%- render 'dsr-slider-status', total: section.blocks.size -%}
         {%- else -%}
           <div class="slideshow__control-wrapper">
             {%- for block in section.blocks -%}
@@ -191,7 +189,7 @@
   </div>
 
   {%- if section.blocks.size > 1 and section.settings.auto_rotate == false -%}
-    <div class="slideshow__controls slider-buttons{% if section.settings.show_text_below %} slideshow__controls--border-radius-mobile{% endif %}">
+    <div class="slideshow__controls slider-buttons{% if section.settings.show_text_below %} slideshow__controls--border-radius-mobile{% endif %}{% if section.settings.slider_visual == 'counter' and section.settings.show_text_below == false %} dsr-slideshow-arrows{% endif %}">
       <button
         type="button"
         class="slider-button slider-button--prev"
@@ -205,10 +203,7 @@
       </button>
       <div class="slider-counter slider-counter--{{ section.settings.slider_visual }}{% if section.settings.slider_visual == 'counter' or section.settings.slider_visual == 'numbers' %} caption{% endif %}">
         {%- if section.settings.slider_visual == 'counter' -%}
-          <span class="slider-counter--current">1</span>
-          <span aria-hidden="true"> / </span>
-          <span class="visually-hidden">{{ 'general.slider.of' | t }}</span>
-          <span class="slider-counter--total">{{ section.blocks.size }}</span>
+          {%- render 'dsr-slider-status', total: section.blocks.size -%}
         {%- else -%}
           <div class="slideshow__control-wrapper">
             {%- for block in section.blocks -%}
@@ -328,7 +323,8 @@
         }
       ],
       "default": "counter",
-      "label": "t:sections.slideshow.settings.slider_visual.label"
+      "label": "t:sections.slideshow.settings.slider_visual.label",
+      "info": "Counter: arrows over the image, no number shown. Screen readers still hear the slide position."
     },
     {
       "type": "checkbox",

@@ -77,7 +77,7 @@
   class="color-{{ section.settings.color_scheme }} isolate gradient"
 >
   <div
-    class="collection{% if section.settings.compact_footer != false %} dsr-compact-footer{% endif %}{% if section.settings.quick_add == 'bulk' %} collection-quick-add-bulk{% endif %} section-{{ section.id }}-padding{% if section.settings.full_width %} collection--full-width{% endif %}"
+    class="collection{% if section.settings.compact_footer != false %} dsr-compact-footer{% endif %}{% if show_mobile_slider and columns_mobile_int == 2 %} dsr-two-up{% endif %}{% if section.settings.quick_add == 'bulk' %} collection-quick-add-bulk{% endif %} section-{{ section.id }}-padding{% if section.settings.full_width %} collection--full-width{% endif %}"
     id="collection-{{ section.id }}"
     data-id="{{ section.id }}"
   >
@@ -190,15 +190,7 @@
               {{- 'icon-caret.svg' | inline_asset_content -}}
             </span>
           </button>
-          {%- comment -%}
-            No visible "1 / 8" counter. Screen readers still hear the position:
-            global.js keeps updating these spans as the row moves.
-          {%- endcomment -%}
-          <div class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
-            <span class="slider-counter--current">1</span>
-            {{ 'general.slider.of' | t }}
-            <span class="slider-counter--total">{{ products_to_display }}</span>
-          </div>
+          {%- render 'dsr-slider-status', total: products_to_display -%}
           <button
             type="button"
             class="slider-button slider-button--next"

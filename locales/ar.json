@@ -2227,6 +2227,7 @@
         "other": "{{ count }} لون كمان"
       },
       "sizes_label": "المقاسات",
+      "more_sizes": "مقاسات أكتر في صفحة المنتج",
       "value_sold_out": "{{ value }}، خلص",
       "quick_add": "إضافة سريعة إلى السلة",
       "color_row": "اللون:",

@@ -574,6 +574,7 @@
         "other": "{{ count }} more colours"
       },
       "sizes_label": "Sizes",
+      "more_sizes": "More sizes on the product page",
       "value_sold_out": "{{ value }}, sold out",
       "quick_add": "Quick add to cart",
       "color_row": "Colour:",

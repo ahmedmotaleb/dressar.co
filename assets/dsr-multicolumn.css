@@ -1,0 +1,71 @@
+/*
+  Multicolumn, "Mobile layout: List". On phones each column becomes a row:
+  a small image beside full-width text, instead of a swipe row of 150px
+  columns that wrapped every two or three words. Logical properties, so the
+  image sits at the reading start in both LTR and RTL. Tablet and desktop
+  keep Dawn's grid.
+*/
+@media screen and (max-width: 749px) {
+  .multicolumn.dsr-mc-list .multicolumn-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-inline: 0;
+    padding-inline: 16px;
+  }
+
+  .dsr-mc-list .multicolumn-list .multicolumn-list__item {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+  }
+
+  .dsr-mc-list .multicolumn-card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    height: auto;
+    text-align: start;
+  }
+
+  .dsr-mc-list .multicolumn-card .multicolumn-card__image-wrapper {
+    flex: 0 0 88px;
+    width: 88px;
+    margin: 0;
+    padding: 0;
+  }
+
+  .dsr-mc-list .multicolumn-card__image-wrapper .media {
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .multicolumn.dsr-mc-list .multicolumn-list .multicolumn-list__item .multicolumn-card__info {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 0;
+    text-align: start;
+  }
+
+  .dsr-mc-list .multicolumn-card__info h3 {
+    margin: 0 0 4px;
+    font-size: 1.6rem;
+    line-height: 1.45;
+  }
+
+  .dsr-mc-list .multicolumn-card__info .rte {
+    margin: 0;
+    font-size: 1.4rem;
+    line-height: 1.75;
+  }
+
+  .dsr-mc-list .multicolumn-card__info .rte p {
+    margin: 0;
+  }
+
+  .multicolumn.dsr-mc-list .multicolumn__title {
+    margin-bottom: 16px;
+    padding-inline: 16px;
+  }
+}

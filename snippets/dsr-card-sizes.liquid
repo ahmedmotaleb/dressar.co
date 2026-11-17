@@ -58,7 +58,12 @@
         assign only_size = true
       endif
     -%}
-    <ul class="dsr-card-sizes list-unstyled" role="list" aria-label="{{ 'dressar.card.sizes_label' | t }}">
+    <ul
+      class="dsr-card-sizes list-unstyled"
+      role="list"
+      aria-label="{{ 'dressar.card.sizes_label' | t }}"
+      data-more-label="{{ 'dressar.card.more_sizes' | t | escape }}"
+    >
       {%- for value in size_option.values -%}
         {%- liquid
           assign token = '|' | append: value.name | append: '|'
