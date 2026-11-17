@@ -103,7 +103,8 @@ async function main() {
         const header = document.querySelector('header.header');
         const controls = header ? [...header.querySelectorAll('a, button, summary')].filter((e) => r(e).width > 0 && getComputedStyle(e).visibility !== 'hidden').map((e) => [Math.round(r(e).width), Math.round(r(e).height), Math.round(r(e).left), Math.round(r(e).right)]) : [];
         const logo = document.querySelector('.header__heading-logo, .header__heading-link img');
-        const slideshowCounters = document.querySelectorAll('.shopify-section[id*="__slideshow_"] .slider-counter').length;
+        // Since docs/stages/arabic-mobile.md the slideshows have no visible counter either, only the screen-reader status.
+        const slideshowCounters = document.querySelectorAll('.shopify-section[id*="__slideshow_"] [role="status"] .slider-counter--current').length;
         return {
           slideshowCounters,
           overflow: document.documentElement.scrollWidth > window.innerWidth,
@@ -136,7 +137,7 @@ async function main() {
       check(`${tag} no visible "1 / 8" counter under the product rows`, m.rows.every((x) => !x.visibleCounter && !x.pagerText), JSON.stringify(m.rows.map((x) => x.pagerText)));
       check(`${tag} arrows only: no space kept for the counter`, m.rows.every((x) => x.pagerH === null || x.pagerH <= 45), JSON.stringify(m.rows.map((x) => x.pagerH)));
       check(`${tag} screen readers still get the position`, m.rows.every((x) => x.status && /^1 \S+ \d+$/.test(x.status)), JSON.stringify(m.rows.map((x) => x.status)));
-      check(`${tag} slideshow keeps its own counter`, m.slideshowCounters > 0, String(m.slideshowCounters));
+      check(`${tag} slideshows: no visible counter, position still announced`, m.slideshowCounters === 2, String(m.slideshowCounters));
       {
         const sel = '.shopify-section[id*="__dsr_row_new_arrivals"]';
         const next = page.locator(`${sel} .slider-button--next`);
