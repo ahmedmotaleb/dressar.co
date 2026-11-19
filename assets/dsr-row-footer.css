@@ -57,10 +57,7 @@
     padding-bottom: 0;
   }
 
-  .dsr-compact-footer slider-component .slider-buttons {
-    margin-top: 12px;
-  }
-
+  /* No arrows on touch screens (below), so "View all" sits 16px under the cards. */
   .dsr-compact-footer .collection__view-all {
     margin-top: 16px;
     margin-bottom: 0;
@@ -72,8 +69,86 @@
   }
 }
 
-/* Product rows: no visible "1 / 8" counter, so the two arrows sit together. */
-.dsr-row-pager { gap: 8px; }
+/*
+  Product row arrows.
+  - Touch screens (below 990px): none. The cards move with a swipe, and no
+    space is kept under the row for buttons.
+  - Desktop: round arrows over the product images, one on each side, at the
+    middle of the image (card width x 4/3 / 2; --dsr-cols comes from the
+    section). In Arabic "next" is on the left, following reading order. The
+    arrow at the end of the row hides. "View all" sits 20px under the cards.
+*/
+@media screen and (max-width: 989px) {
+  slider-component .slider-buttons.dsr-row-pager {
+    display: none;
+  }
+}
+
+@media screen and (min-width: 990px) {
+  slider-component.slider-component-desktop {
+    position: relative;
+    container-type: inline-size;
+  }
+
+  slider-component .slider-buttons.dsr-row-pager {
+    position: absolute;
+    inset-inline: 0;
+    top: calc(100cqw / var(--dsr-cols, 4) * 0.62);
+    z-index: 3;
+    display: flex;
+    justify-content: space-between;
+    height: 44px;
+    margin: 0;
+    padding-inline: 12px;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+
+  .dsr-row-pager .slider-button {
+    pointer-events: auto;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    color: rgb(18, 18, 18);
+    background-color: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.15);
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+  }
+
+  .dsr-row-pager .slider-button:hover {
+    background-color: rgb(255, 255, 255);
+  }
+
+  .dsr-row-pager .slider-button[disabled] {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .dsr-row-pager .slider-button:focus-visible {
+    outline: 2px solid rgb(18, 18, 18);
+    outline-offset: 2px;
+  }
+
+  .dsr-compact-footer slider-component .product-grid.slider {
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .dsr-compact-footer .collection__view-all {
+    margin-top: 20px;
+    margin-bottom: 0;
+  }
+
+  .dsr-compact-footer .collection__view-all > a:not(.link) {
+    margin: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dsr-row-pager .slider-button {
+    transition: none;
+  }
+}
 
 /*
   Phones: exactly two whole cards per screen when the row shows 2 columns.

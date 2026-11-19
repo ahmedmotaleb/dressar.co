@@ -86,6 +86,9 @@ async function main() {
             pagerH: pagerShown ? Math.round(r(pager).height) : null,
             visibleCounter: Boolean(pager && pager.querySelector('.slider-counter')),
             status: pager && pager.querySelector('[role="status"][aria-live="polite"]') ? pager.querySelector('[role="status"]').textContent.replace(/\s+/g, ' ').trim() : null,
+            cardsToViewAll: va ? Math.round(r(a).top - r(grid).bottom) : null,
+            // Desktop arrows sit over the first card's image (docs/stages/arabic-mobile.md).
+            overImage: (() => { if (!pagerShown) return null; const img = grid.querySelector('li .card__media, li .media'); if (!img) return null; const bs = [...pager.querySelectorAll('button')].map(r); const ib = r(img); return bs.every((b) => b.top >= ib.top && b.bottom <= ib.bottom) && bs.every((b) => b.left >= r(grid.parentElement).left - 1 && b.right <= r(grid.parentElement).right + 1); })(),
             sliderButtons: pagerShown ? [...pager.querySelectorAll('button')].map((b) => [Math.round(r(b).width), Math.round(r(b).height), b.getAttribute('aria-label')]) : [],
           };
         });
@@ -119,11 +122,10 @@ async function main() {
       check(`${tag} product rows found, compact footer on`, m.rows.length >= 5 && m.rows.every((x) => x.compact), m.rows.map((x) => x.id).join());
       check(`${tag} "View all": compact 40px outline button, localized, linking to the collection`, m.rows.every((x) => !x.btn || (x.btn.h === 40 && /rgba\(0, 0, 0, 0\)|transparent/.test(x.btn.bg) && /0px 0px 0px 1px/.test(x.btn.edge) && x.btn.text === viewAll && /^\/collections\//.test(x.btn.href))), JSON.stringify(m.rows.map((x) => x.btn)));
       if (mobile) {
-        check(`${tag} 12px from the cards to the arrows`, m.rows.every((x) => x.cardsToPager === null || Math.abs(x.cardsToPager - 12) <= 1), JSON.stringify(m.rows.map((x) => x.cardsToPager)));
-        check(`${tag} 16px from the arrows to "View all"`, m.rows.every((x) => x.pagerToViewAll === null || Math.abs(x.pagerToViewAll - 16) <= 1), JSON.stringify(m.rows.map((x) => x.pagerToViewAll)));
+        check(`${tag} no arrows under the row on touch screens (swipe instead)`, m.rows.every((x) => x.cardsToPager === null), JSON.stringify(m.rows.map((x) => x.cardsToPager)));
+        check(`${tag} "View all" 16px under the cards`, m.rows.every((x) => x.cardsToViewAll === null || Math.abs(x.cardsToViewAll - 16) <= 1), JSON.stringify(m.rows.map((x) => x.cardsToViewAll)));
         check(`${tag} 24px below "View all" (section end)`, m.rows.every((x) => x.viewAllToEnd === null || Math.abs(x.viewAllToEnd - 24) <= 1), JSON.stringify(m.rows.map((x) => x.viewAllToEnd)));
         check(`${tag} 24px above the row heading`, m.rows.every((x) => x.top === null || Math.abs(x.top - 24) <= 1), JSON.stringify(m.rows.map((x) => x.top)));
-        check(`${tag} arrows keep their 44px targets and labels`, m.rows.every((x) => x.sliderButtons.every(([w, h, label]) => w >= 44 && h >= 44 && label)), JSON.stringify(m.rows[0].sliderButtons));
         const [big, s1, s2] = m.grid.imgs;
         const near = (a, b, t = 1.5) => Math.abs(a - b) <= t;
         check(`${tag} media grid: first image full width at 16:9`, big && near(big.h, (big.w * 9) / 16) && near(big.w, width - 32, 2), JSON.stringify(big));
@@ -135,6 +137,10 @@ async function main() {
       }
       check(`${tag} media grid: images cover their frame, responsive and lazy, with alt`, m.grid.imgs.length === 3 && m.grid.imgs.every((i) => i.fit === 'cover' && i.fills && i.srcset && i.sizes && i.lazy && i.alt), JSON.stringify(m.grid.imgs.map((i) => [i.fit, i.fills, i.srcset, i.lazy])));
       check(`${tag} no visible "1 / 8" counter under the product rows`, m.rows.every((x) => !x.visibleCounter && !x.pagerText), JSON.stringify(m.rows.map((x) => x.pagerText)));
+      if (width >= 990) {
+        check(`${tag} desktop: arrows over the product images, 44px, labelled`, m.rows.every((x) => x.overImage && x.sliderButtons.length === 2 && x.sliderButtons.every(([w, h, label]) => w >= 44 && h >= 44 && label)), JSON.stringify(m.rows.map((x) => [x.overImage, x.sliderButtons.length])));
+        check(`${tag} desktop: "View all" 20px under the cards`, m.rows.every((x) => x.cardsToViewAll === null || Math.abs(x.cardsToViewAll - 20) <= 1), JSON.stringify(m.rows.map((x) => x.cardsToViewAll)));
+      }
       check(`${tag} arrows only: no space kept for the counter`, m.rows.every((x) => x.pagerH === null || x.pagerH <= 45), JSON.stringify(m.rows.map((x) => x.pagerH)));
       check(`${tag} screen readers still get the position`, m.rows.every((x) => x.status && /^1 \S+ \d+$/.test(x.status)), JSON.stringify(m.rows.map((x) => x.status)));
       check(`${tag} slideshows: no visible counter, position still announced`, m.slideshowCounters === 2, String(m.slideshowCounters));

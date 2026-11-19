@@ -163,14 +163,17 @@ async function main() {
       if (mobile) {
         const sel = '.shopify-section[id*="__dsr_row_new_arrivals"]';
         const before = await page.evaluate((s) => document.querySelector(`${s} .product-grid`).scrollLeft, sel);
-        await page.locator(`${sel} .slider-button--next`).click();
+        // No arrows on phones: the row moves by swipe (a horizontal scroll), card by card.
+        const pagerShown = await page.evaluate((s) => { const p = document.querySelector(`${s} .slider-buttons`); return !!p && p.getBoundingClientRect().height > 0; }, sel);
+        check(`${tag} no arrows under the row (swipe instead)`, !pagerShown);
+        await page.evaluate((s) => { const g = document.querySelector(`${s} .product-grid`); const w = g.children[0].getBoundingClientRect().width + 8; g.scrollBy({ left: (document.documentElement.dir === 'rtl' ? -1 : 1) * w, behavior: 'instant' }); }, sel);
         await page.waitForTimeout(700);
         const after = await page.evaluate((s) => {
           const q = document.querySelector(s); const g = q.querySelector('.product-grid'); const vw = innerWidth;
           const full = [...g.children].map((li) => li.getBoundingClientRect()).filter((b) => { const gr = g.getBoundingClientRect(); const l = Math.max(0, gr.left), rr = Math.min(vw, gr.right); return b.left >= l - 0.5 && b.right <= rr + 0.5; }).length;
           return { scrollLeft: g.scrollLeft, full, status: q.querySelector('[role="status"]').textContent.replace(/\s+/g, ' ').trim() };
         }, sel);
-        check(`${tag} "next" moves the row ${rtl ? 'leftwards' : 'rightwards'}, two whole cards still on screen`, (rtl ? after.scrollLeft < before : after.scrollLeft > before) && after.full === 2 && /^2 /.test(after.status), JSON.stringify({ before, ...after }));
+        check(`${tag} a swipe moves the row ${rtl ? 'leftwards' : 'rightwards'} by one card, two whole cards still on screen`, (rtl ? after.scrollLeft < before : after.scrollLeft > before) && after.full === 2 && /^2 /.test(after.status), JSON.stringify({ before, ...after }));
         // A touch-style scroll (what a swipe does) snaps to whole cards too.
         await page.evaluate((s) => { const g = document.querySelector(`${s} .product-grid`); g.scrollBy({ left: (document.documentElement.dir === 'rtl' ? -1 : 1) * 60, behavior: 'instant' }); }, '.shopify-section[id*="__dsr_row_best_sellers"]');
         await page.waitForTimeout(700);
