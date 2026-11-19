@@ -226,3 +226,23 @@ The raw phone number therefore showed in every product's text.
    - The translation fixes were made on the preview theme only.
    - Publishing the preview carries them over.
    - Fixing the live theme separately needs the same change there.
+
+## Follow-up (Nov 19): row arrows
+The merchant asked for these changes:
+- **Phones and tablets (below 990px):**
+  - The arrows under the product rows are removed, with no space kept for them.
+  - Products move by swipe.
+- **Desktop:**
+  - Round 44px arrows sit over the product images, on each side. In Arabic "next" is on the left.
+  - The arrow at the end of the row hides.
+- **"View all":** 16px under the cards on phones (was 12 + 44 + 16px), 20px on desktop.
+
+**Store state:** the merchant has since published `#168455471335`, so it is the live theme and was not written to. The change is on a new unpublished copy of it: `#168582217959`.
+- Arabic: https://dnx31m-mi.myshopify.com/ar/?preview_theme_id=168582217959
+- English: https://dnx31m-mi.myshopify.com/en/?preview_theme_id=168582217959
+
+**Checks:**
+- **Real preview:** 50/50, Arabic and English at 320, 390, 430, 768, 1024 and 1440px.
+- **Tests:** `arabic-mobile` 312/312, `mobile-spacing` 208/208.
+
+**Screenshots:** `arabic-mobile-shots/arrows-ar-390.jpg` and `arrows-ar-1440.jpg`.
