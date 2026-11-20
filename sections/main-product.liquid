@@ -217,8 +217,12 @@
                   </p>
                 {%- when 'description' -%}
                   {%- if product.description != blank -%}
-                    <div class="product__description rte quick-add-hidden" {{ block.shopify_attributes }}>
-                      {{ product.description }}
+                    <div class="product__description quick-add-hidden" {{ block.shopify_attributes }}>
+                      {%- render 'dsr-product-description',
+                        product: product,
+                        structured: block.settings.dsr_structured,
+                        whatsapp_button: block.settings.dsr_whatsapp_button
+                      -%}
                     </div>
                   {%- endif -%}
                 {%- when 'sku' -%}
@@ -1022,7 +1026,23 @@
     {
       "type": "description",
       "name": "t:sections.main-product.blocks.description.name",
-      "limit": 1
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "dsr_structured",
+          "label": "Structured layout",
+          "info": "Introduction first, measurements under \"Size guidance\". The text itself is not changed. Lists and tables are shown as written.",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "dsr_whatsapp_button",
+          "label": "WhatsApp line as a button",
+          "info": "Shows a \"WhatsApp us on …\" paragraph as the size help button (number from Theme settings > Dressar).",
+          "default": true
+        }
+      ]
     },
     {
       "type": "share",

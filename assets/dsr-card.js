@@ -16,6 +16,46 @@
 // - The quick-add bag (snippets/dsr-card-quick-add.liquid): adds that exact
 //   variant through Dawn's product-form; with no complete, in-stock choice it
 //   opens Dawn's quick-add dialog instead. It never adds anything else.
+// Sizes in a narrow card: as many whole size boxes as fit, then "+N", so no
+// box is ever cut off at the card's edge (two cards per phone screen leave
+// about 120px). The hidden sizes are on the product page, which the card
+// opens; screen readers hear that. Re-fitted whenever the row's width changes.
+function dsrFitSizes(list) {
+  const items = Array.from(list.children).filter((li) => !li.classList.contains('dsr-card-sizes__more'));
+  let more = list.querySelector(':scope > .dsr-card-sizes__more');
+  items.forEach((li) => (li.hidden = false));
+  if (more) more.hidden = true;
+  if (list.scrollWidth <= list.clientWidth + 1) return;
+  if (!more) {
+    more = document.createElement('li');
+    more.className = 'dsr-card-sizes__more';
+    const count = document.createElement('span');
+    count.setAttribute('aria-hidden', 'true');
+    // "+2", never "2+" in Arabic.
+    count.dir = 'ltr';
+    const label = document.createElement('span');
+    label.className = 'visually-hidden';
+    label.textContent = dsrCardDecode(list.dataset.moreLabel || '');
+    more.append(count, label);
+    list.append(more);
+  }
+  more.hidden = false;
+  // Hide from the end, but never the chosen size.
+  const order = items.slice(1).reverse();
+  const chosen = items.find((li) => li.querySelector('[aria-pressed="true"]'));
+  for (const li of order) {
+    if (list.scrollWidth <= list.clientWidth + 1) break;
+    if (li === chosen) continue;
+    li.hidden = true;
+    more.firstChild.textContent = '+' + items.filter((item) => item.hidden).length;
+  }
+}
+
+// One observer for every card; kept on window because this file may load twice.
+window.dsrSizesObserver =
+  window.dsrSizesObserver ||
+  ('ResizeObserver' in window ? new ResizeObserver((entries) => entries.forEach((entry) => dsrFitSizes(entry.target))) : null);
+
 // Shopify HTML-escapes translated text; the card writes plain text.
 function dsrCardDecode(text) {
   const area = document.createElement('textarea');
@@ -138,11 +178,19 @@ if (!customElements.get('dsr-card-options')) {
         this.addEventListener('click', this.onClick);
         this.addEventListener('dsr-card:color', this.onColor);
         this.refreshSizes();
+
+        this.sizeList = this.querySelector('.dsr-card-sizes');
+        if (this.sizeList) {
+          dsrFitSizes(this.sizeList);
+          if (window.dsrSizesObserver) window.dsrSizesObserver.observe(this.sizeList);
+          if (document.fonts) document.fonts.ready.then(() => this.sizeList && dsrFitSizes(this.sizeList));
+        }
       }
 
       disconnectedCallback() {
         this.removeEventListener('click', this.onClick);
         this.removeEventListener('dsr-card:color', this.onColor);
+        if (this.sizeList && window.dsrSizesObserver) window.dsrSizesObserver.unobserve(this.sizeList);
       }
 
       values(index) {

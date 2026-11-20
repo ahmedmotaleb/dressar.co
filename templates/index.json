@@ -91,6 +91,7 @@
         "products_to_show": 8,
         "title": "عروض الوايت فرايدي 🖤",
         "heading_size": "h1",
+        "heading_alignment": "left",
         "description": "",
         "show_description": false,
         "description_style": "body",
@@ -106,7 +107,7 @@
         "show_vendor": false,
         "show_rating": false,
         "quick_add": "standard",
-        "columns_mobile": "1",
+        "columns_mobile": "2",
         "swipe_on_mobile": true,
         "padding_top": 36,
         "padding_bottom": 36
@@ -119,6 +120,7 @@
         "products_to_show": 8,
         "title": "New Arrivals",
         "heading_size": "h1",
+        "heading_alignment": "left",
         "description": "",
         "show_description": false,
         "description_style": "body",
@@ -146,37 +148,49 @@
         "featured_collection_T9R379": {
           "type": "featured_collection",
           "settings": {
-            "collection": "skirts"
+            "collection": "skirts",
+            "featured": false,
+            "image_position": "focal"
           }
         },
         "featured_collection_GLFzCx": {
           "type": "featured_collection",
           "settings": {
-            "collection": "home-wear"
+            "collection": "home-wear",
+            "featured": false,
+            "image_position": "focal"
           }
         },
         "featured_collection_7myMae": {
           "type": "featured_collection",
           "settings": {
-            "collection": "pants"
+            "collection": "pants",
+            "featured": false,
+            "image_position": "focal"
           }
         },
         "featured_collection_HYWNxp": {
           "type": "featured_collection",
           "settings": {
-            "collection": "dresses"
+            "collection": "dresses",
+            "featured": false,
+            "image_position": "focal"
           }
         },
         "featured_collection_ieq4yj": {
           "type": "featured_collection",
           "settings": {
-            "collection": "back-to-university"
+            "collection": "back-to-university",
+            "featured": false,
+            "image_position": "focal"
           }
         },
         "featured_collection_PXKGCQ": {
           "type": "featured_collection",
           "settings": {
-            "collection": "shirts-blouses"
+            "collection": "shirts-blouses",
+            "featured": false,
+            "image_position": "focal"
           }
         }
       },
@@ -192,6 +206,14 @@
       "settings": {
         "title": "تسوّقي حسب احتياجك",
         "heading_size": "h1",
+        "heading_alignment": "left",
+        "show_heading": true,
+        "layout": "mosaic",
+        "mobile_layout": "feature",
+        "desktop_layout": "feature",
+        "mosaic_gap": 8,
+        "mosaic_radius": 6,
+        "card_title_position": "overlay",
         "image_ratio": "portrait",
         "columns_desktop": 3,
         "color_scheme": "scheme-1",
@@ -209,6 +231,7 @@
         "products_to_show": 8,
         "title": "الأكثر مبيعًا",
         "heading_size": "h1",
+        "heading_alignment": "left",
         "description": "",
         "show_description": false,
         "description_style": "body",
@@ -224,7 +247,7 @@
         "show_vendor": false,
         "show_rating": true,
         "quick_add": "none",
-        "columns_mobile": "1",
+        "columns_mobile": "2",
         "swipe_on_mobile": true,
         "padding_top": 36,
         "padding_bottom": 36
@@ -258,6 +281,7 @@
         "products_to_show": 8,
         "title": "Complete Looks | أطقم متكاملة",
         "heading_size": "h1",
+        "heading_alignment": "left",
         "description": "",
         "show_description": false,
         "description_style": "body",
@@ -273,7 +297,7 @@
         "show_vendor": false,
         "show_rating": false,
         "quick_add": "none",
-        "columns_mobile": "1",
+        "columns_mobile": "2",
         "swipe_on_mobile": true,
         "padding_top": 36,
         "padding_bottom": 36
@@ -342,6 +366,7 @@
         "products_to_show": 8,
         "title": "Back to University | لبس الجامعة",
         "heading_size": "h1",
+        "heading_alignment": "left",
         "description": "",
         "show_description": false,
         "description_style": "body",
@@ -408,69 +433,39 @@
         "include_margins": true
       }
     },
-    "1783545576ddb21e92": {
-      "type": "_blocks",
-      "blocks": {
-        "ai_gen_block_f4a271d_B6tKPW": {
-          "type": "ai_gen_block_f4a271d",
-          "settings": {
-            "heading": "Dressar Signature",
-            "heading_alignment": "center",
-            "heading_size": 40,
-            "heading_weight": "300",
-            "heading_transform": "none",
-            "heading_letter_spacing": 0,
-            "heading_color": "#121212",
-            "heading_spacing": 40,
-            "video_1": "shopify://files/videos/mobile 08(1).mp4",
-            "video_2": "shopify://files/videos/VID-20250923-WA0011_4e048d90-ea29-403c-8cf3-801662c84fdb.mp4",
-            "video_3": "shopify://files/videos/SnapInsta.to_AQPf1yPNZOhoo1YXTPWZeciWwuMfBV_4Q99TRd2iYZ9kBIltoXWjysYwZYz2Wy9je7VkBHVSJ76IoFpBbCvwcef6ZhJsIMWF6ArUph8.mp4",
-            "video_4": "shopify://files/videos/lv_0_٢٠٢٥١٢٢٢١٧٠٠٤٢.mp4",
-            "container_width": "1200",
-            "columns_per_row": 4,
-            "desktop_row_height": 420,
-            "mobile_row_height": 220,
-            "column_spacing": "4",
-            "video_border_radius": 0,
-            "enable_section_border": false,
-            "section_padding_top": 60,
-            "section_padding_bottom": 60,
-            "section_padding_horizontal": 20
-          },
-          "blocks": {}
-        }
-      },
-      "block_order": [
-        "ai_gen_block_f4a271d_B6tKPW"
-      ],
-      "settings": {},
-      "disabled": true
-    },
     "dsr_video_stories": {
       "type": "dsr-video-stories",
       "blocks": {
         "story_1": {
           "type": "video",
           "settings": {
-            "video": "shopify://files/videos/mobile 08(1).mp4"
+            "video": "shopify://files/videos/mobile 08(1).mp4",
+            "product": "",
+            "caption": ""
           }
         },
         "story_2": {
           "type": "video",
           "settings": {
-            "video": "shopify://files/videos/VID-20250923-WA0011_4e048d90-ea29-403c-8cf3-801662c84fdb.mp4"
+            "video": "shopify://files/videos/VID-20250923-WA0011_4e048d90-ea29-403c-8cf3-801662c84fdb.mp4",
+            "product": "",
+            "caption": ""
           }
         },
         "story_3": {
           "type": "video",
           "settings": {
-            "video": "shopify://files/videos/SnapInsta.to_AQPf1yPNZOhoo1YXTPWZeciWwuMfBV_4Q99TRd2iYZ9kBIltoXWjysYwZYz2Wy9je7VkBHVSJ76IoFpBbCvwcef6ZhJsIMWF6ArUph8.mp4"
+            "video": "shopify://files/videos/SnapInsta.to_AQPf1yPNZOhoo1YXTPWZeciWwuMfBV_4Q99TRd2iYZ9kBIltoXWjysYwZYz2Wy9je7VkBHVSJ76IoFpBbCvwcef6ZhJsIMWF6ArUph8.mp4",
+            "product": "",
+            "caption": ""
           }
         },
         "story_4": {
           "type": "video",
           "settings": {
-            "video": "shopify://files/videos/lv_0_٢٠٢٥١٢٢٢١٧٠٠٤٢.mp4"
+            "video": "shopify://files/videos/lv_0_٢٠٢٥١٢٢٢١٧٠٠٤٢.mp4",
+            "product": "",
+            "caption": ""
           }
         }
       },
@@ -552,7 +547,8 @@
         "columns_mobile": "2",
         "swipe_on_mobile": true,
         "padding_top": 16,
-        "padding_bottom": 16
+        "padding_bottom": 16,
+        "mobile_layout": "list"
       }
     },
     "1783546806decc8eee": {
@@ -569,6 +565,14 @@
             "stack_on_mobile": true,
             "spacing": 24,
             "section_padding": 40,
+            "mobile_cards": true,
+            "mobile_section_background": "#f7f5f2",
+            "mobile_card_background": "#ffffff",
+            "mobile_card_radius": 10,
+            "mobile_gap": 10,
+            "mobile_section_padding": 16,
+            "mobile_card_padding": 12,
+            "mobile_outer_spacing": 12,
             "item_padding": 16,
             "item_background_color": "rgba(0,0,0,0)",
             "item_border_radius": 0,
@@ -716,7 +720,6 @@
     "slideshow_ATRpFY",
     "dsr_row_back_to_uni",
     "17855997423e962d80",
-    "1783545576ddb21e92",
     "dsr_video_stories",
     "multicolumn_YVGgni",
     "1783546806decc8eee",

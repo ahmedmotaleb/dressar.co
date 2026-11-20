@@ -218,7 +218,8 @@ async function main() {
 
     // Long titles: two lines at most, no overflow.
     const long = await page.evaluate((sel) => {
-      const a = document.querySelector(`${sel} .card__heading.h5 a`);
+      const link = document.querySelector(`${sel} .card__heading.h5 a`);
+      const a = link.querySelector('.dsr-card-title') || link;
       const lh = parseFloat(getComputedStyle(a).lineHeight);
       // The text's own boxes, not scrollWidth: on rtl pages Chromium counts hanging spaces in scrollWidth.
       const box = a.getBoundingClientRect();

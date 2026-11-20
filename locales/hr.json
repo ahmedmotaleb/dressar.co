@@ -562,6 +562,7 @@
         "other": "{{ count }} more colours"
       },
       "sizes_label": "Sizes",
+      "more_sizes": "More sizes on the product page",
       "value_sold_out": "{{ value }}, sold out",
       "quick_add": "Quick add to cart",
       "color_row": "Colour:",
@@ -572,6 +573,8 @@
       "pick_size": "Choose your size",
       "sale_badge": "{{ percent }}% off · save {{ amount }}",
       "size_help": "Not sure of your size? Send us your height and weight on WhatsApp",
+      "description_fit": "Size guidance",
+      "size_help_short": "Ask about your size on WhatsApp",
       "facts": {
         "fabric": "Fabric",
         "fit": "Fit",

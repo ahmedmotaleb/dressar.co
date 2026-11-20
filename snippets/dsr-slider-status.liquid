@@ -1,0 +1,16 @@
+{%- comment -%}
+  Slide position for screen readers only, in place of a visible "1 / 8" counter.
+  Dawn's slider script (global.js) keeps the two spans up to date, so the position
+  is announced politely as the carousel moves. Nothing is shown and no space is kept.
+
+  Accepts:
+  - total {Number} - number of slides at first render
+
+  Usage:
+  {% render 'dsr-slider-status', total: section.blocks.size %}
+{%- endcomment -%}
+<div class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+  <span class="slider-counter--current">1</span>
+  {{ 'general.slider.of' | t }}
+  <span class="slider-counter--total">{{ total }}</span>
+</div>

@@ -2227,6 +2227,7 @@
         "other": "{{ count }} لون كمان"
       },
       "sizes_label": "المقاسات",
+      "more_sizes": "مقاسات أكتر في صفحة المنتج",
       "value_sold_out": "{{ value }}، خلص",
       "quick_add": "إضافة سريعة إلى السلة",
       "color_row": "اللون:",
@@ -2237,6 +2238,8 @@
       "pick_size": "اختاري مقاسك",
       "sale_badge": "خصم {{ percent }}% · وفّري {{ amount }}",
       "size_help": "مش متأكدة من مقاسك؟ ابعتيلنا طولك ووزنك على واتساب",
+      "description_fit": "إرشادات المقاس",
+      "size_help_short": "اسألي على مقاسك واتساب",
       "facts": {
         "fabric": "الخامة",
         "fit": "القَصّة",

@@ -57,10 +57,7 @@
     padding-bottom: 0;
   }
 
-  .dsr-compact-footer slider-component .slider-buttons {
-    margin-top: 12px;
-  }
-
+  /* No arrows on touch screens (below), so "View all" sits 16px under the cards. */
   .dsr-compact-footer .collection__view-all {
     margin-top: 16px;
     margin-bottom: 0;
@@ -72,5 +69,121 @@
   }
 }
 
-/* Product rows: no visible "1 / 8" counter, so the two arrows sit together. */
-.dsr-row-pager { gap: 8px; }
+/*
+  Product row arrows.
+  - Touch screens (below 990px): none. The cards move with a swipe, and no
+    space is kept under the row for buttons.
+  - Desktop: round arrows over the product images, one on each side, at the
+    middle of the image (card width x 4/3 / 2; --dsr-cols comes from the
+    section). In Arabic "next" is on the left, following reading order. The
+    arrow at the end of the row hides. "View all" sits 20px under the cards.
+*/
+@media screen and (max-width: 989px) {
+  slider-component .slider-buttons.dsr-row-pager {
+    display: none;
+  }
+}
+
+@media screen and (min-width: 990px) {
+  slider-component.slider-component-desktop {
+    position: relative;
+    container-type: inline-size;
+  }
+
+  slider-component .slider-buttons.dsr-row-pager {
+    position: absolute;
+    inset-inline: 0;
+    top: calc(100cqw / var(--dsr-cols, 4) * 0.62);
+    z-index: 3;
+    display: flex;
+    justify-content: space-between;
+    height: 44px;
+    margin: 0;
+    padding-inline: 12px;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+
+  .dsr-row-pager .slider-button {
+    pointer-events: auto;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    color: rgb(18, 18, 18);
+    background-color: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.15);
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+  }
+
+  .dsr-row-pager .slider-button:hover {
+    background-color: rgb(255, 255, 255);
+  }
+
+  .dsr-row-pager .slider-button[disabled] {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .dsr-row-pager .slider-button:focus-visible {
+    outline: 2px solid rgb(18, 18, 18);
+    outline-offset: 2px;
+  }
+
+  .dsr-compact-footer slider-component .product-grid.slider {
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .dsr-compact-footer .collection__view-all {
+    margin-top: 20px;
+    margin-bottom: 0;
+  }
+
+  .dsr-compact-footer .collection__view-all > a:not(.link) {
+    margin: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dsr-row-pager .slider-button {
+    transition: none;
+  }
+}
+
+/*
+  Phones: exactly two whole cards per screen when the row shows 2 columns.
+  Dawn's mobile slider pads and spaces slides with physical left/right values
+  (margin-right on every slide, scroll padding on one side only). In RTL that
+  leaves uneven edges and a cut-off third card. Logical properties behave the
+  same in both directions: 16px on each side, 8px between cards, snap to start.
+*/
+@media screen and (max-width: 749px) {
+  /* Inset the scroll area itself (not padding inside it), so the next card
+     starts outside the clipped area and never peeks in. */
+  .collection.dsr-two-up .product-grid.slider.slider--tablet {
+    gap: 8px;
+    width: auto;
+    margin-inline: 16px;
+    padding-inline: 0;
+    scroll-padding-inline: 0;
+  }
+  .collection.dsr-two-up .product-grid.slider.slider--tablet > .grid__item.slider__slide {
+    flex: 0 0 calc(50% - 4px);
+    width: calc(50% - 4px);
+    max-width: calc(50% - 4px);
+    margin: 0;
+    scroll-snap-align: start;
+  }
+  /* Nothing inside a card may spill past it at 140px (320px screens). */
+  .collection.dsr-two-up .product-grid.slider.slider--tablet .card-wrapper,
+  .collection.dsr-two-up .product-grid.slider.slider--tablet .card__information {
+    min-width: 0;
+    max-width: 100%;
+  }
+}
+@media screen and (max-width: 749px) {
+  /* Dawn's end-of-row spacer is replaced by padding-inline above. */
+  .collection.dsr-two-up .product-grid.slider.slider--tablet::after {
+    content: none;
+  }
+}

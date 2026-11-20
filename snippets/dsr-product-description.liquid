@@ -1,0 +1,156 @@
+{%- doc -%}
+  The product description, laid out for reading on a phone
+  (docs/stages/arabic-mobile.md). The merchant's own paragraphs, unchanged,
+  in three groups:
+
+  1. The introduction (first paragraph), a touch larger.
+  2. The other paragraphs (fabric, styling...).
+  3. "Size guidance": paragraphs that give a measurement ("155–170 cm",
+     "طول 150 سم"), under a small label with a ruler icon.
+
+  A "WhatsApp us on 0102…" paragraph is taken out of the text and shown as the
+  compact size-help button instead (snippets/dsr-size-help.liquid), but only
+  when that button can be shown (a WhatsApp number in Theme settings) and the
+  block setting allows it. Otherwise it stays in the text as written.
+
+  Anything that isn't plain paragraphs (lists, tables, headings, images) is
+  shown exactly as written, with the same typography: nothing is reordered,
+  hidden or rewritten. Nothing is invented: no fabric, measurement or fit
+  claim is added.
+
+  @param {product} product - The product.
+  @param {boolean} [structured] - Group the paragraphs. Defaults to true.
+  @param {boolean} [whatsapp_button] - Move the WhatsApp line into the button. Defaults to true.
+
+  @example
+  {% render 'dsr-product-description', product: product, structured: true, whatsapp_button: true %}
+{%- enddoc -%}
+
+{%- liquid
+  assign description = product.description | strip
+  assign group = structured
+  if group == nil
+    assign group = true
+  endif
+  assign move_whatsapp = whatsapp_button
+  if move_whatsapp == nil
+    assign move_whatsapp = true
+  endif
+  assign wa_number = settings.whatsapp_number | remove: '+' | remove: ' ' | remove: '-'
+  if wa_number == blank
+    assign move_whatsapp = false
+  endif
+
+  # Plain paragraphs only: every piece between </p> tags must be one <p>.
+  assign pieces = description | split: '</p>'
+  assign plain = group
+  for piece in pieces
+    assign p = piece | strip
+    if p == blank
+      continue
+    endif
+    assign head = p | slice: 0, 2
+    if head != '<p'
+      assign plain = false
+      break
+    endif
+    assign rest = p | split: '>'
+    if rest.size < 2
+      assign plain = false
+      break
+    endif
+    assign inner_check = p | remove_first: '<p' | downcase
+    if inner_check contains '<ul' or inner_check contains '<ol' or inner_check contains '<table' or inner_check contains '<h' or inner_check contains '<img' or inner_check contains '<div' or inner_check contains '<iframe'
+      assign plain = false
+      break
+    endif
+  endfor
+  if pieces.size == 0
+    assign plain = false
+  endif
+
+  assign digits = '0,1,2,3,4,5,6,7,8,9,٠,١,٢,٣,٤,٥,٦,٧,٨,٩' | split: ','
+-%}
+
+<div class="dsr-desc rte{% if plain %} dsr-desc--structured{% endif %}">
+  {%- if plain -%}
+    {%- liquid
+      assign intro = ''
+      assign body = ''
+      assign fit = ''
+      assign moved = false
+      for piece in pieces
+        assign p = piece | strip
+        if p == blank
+          continue
+        endif
+        assign open_tag_end = p | split: '>' | first | append: '>'
+        assign inner = p | remove_first: open_tag_end | strip
+        assign text = inner | strip_html | strip
+        if text == blank
+          continue
+        endif
+        assign low = text | downcase
+
+        assign has_digit = false
+        for d in digits
+          if text contains d
+            assign has_digit = true
+            break
+          endif
+        endfor
+
+        assign is_whatsapp = false
+        if low contains 'whatsapp' or low contains 'واتساب' or low contains 'واتس'
+          assign is_whatsapp = true
+        endif
+
+        assign is_fit = false
+        if has_digit
+          if low contains ' cm' or text contains ' سم'
+            assign is_fit = true
+          endif
+        endif
+
+        capture para
+          echo '<p>' | append: inner | append: '</p>'
+        endcapture
+
+        if is_whatsapp and move_whatsapp and has_digit
+          assign moved = true
+        elsif is_fit
+          assign fit = fit | append: para
+        elsif intro == blank
+          assign intro = para
+        else
+          assign body = body | append: para
+        endif
+      endfor
+    -%}
+    {%- if intro != blank -%}
+      <div class="dsr-desc__intro">{{ intro }}</div>
+    {%- endif -%}
+    {%- if body != blank -%}
+      <div class="dsr-desc__body">{{ body }}</div>
+    {%- endif -%}
+    {%- if fit != blank -%}
+      <div class="dsr-desc__fit">
+        <span class="dsr-desc__icon svg-wrapper" aria-hidden="true">
+          {{- 'icon-ruler.svg' | inline_asset_content -}}
+        </span>
+        <div class="dsr-desc__fit-text">
+          <p class="dsr-desc__label">{{ 'dressar.product.description_fit' | t }}</p>
+          {{ fit }}
+        </div>
+      </div>
+    {%- endif -%}
+    {%- if moved -%}
+      <div class="dsr-desc__help">
+        {%- assign help_label = 'dressar.product.size_help_short' | t -%}
+        {%- render 'dsr-size-help', product: product, label: help_label -%}
+      </div>
+    {%- endif -%}
+  {%- else -%}
+    {{ product.description }}
+  {%- endif -%}
+</div>

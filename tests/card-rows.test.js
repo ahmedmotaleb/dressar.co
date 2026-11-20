@@ -91,7 +91,9 @@ async function main() {
           const plus = box(li.querySelector('.dsr-quick-add__button'));
           const rel = (b) => (b ? Math.round((b.top - card.top) * 10) / 10 : null);
           const items = [...li.querySelectorAll('.dsr-card-colors-row li')].map((x) => x.getBoundingClientRect());
-          const sizeItems = [...li.querySelectorAll('.dsr-card-sizes li')].map((x) => x.getBoundingClientRect());
+          // Shown boxes (a narrow card shows "+N" for sizes that don't fit; those are hidden).
+          const sizeItems = [...li.querySelectorAll('.dsr-card-sizes li')].filter((x) => !x.hidden).map((x) => x.getBoundingClientRect());
+          const sizeAll = li.querySelectorAll('.dsr-card-sizes li:not(.dsr-card-sizes__more)').length;
           const handle = (li.querySelector('a.full-unstyled-link').getAttribute('href') || '').split('/').pop().split('?')[0];
           return {
             handle,
@@ -117,7 +119,7 @@ async function main() {
             // The size row stays inside the card; more sizes than fit scroll sideways inside it.
             sizeInside: (() => { const list = li.querySelector('.dsr-card-sizes'); if (!list) return true; const r = list.getBoundingClientRect(); return r.left >= card.left - 1 && r.right <= card.right + 1; })(),
             sizesStruck: [...li.querySelectorAll('.dsr-card-size')].every((b) => b.getAttribute('aria-disabled') === 'true'),
-            sizeCount: sizeItems.length,
+            sizeCount: sizeAll,
             plusInside: plus && media ? plus.left >= media.left && plus.right <= media.right && plus.top >= media.top && plus.bottom <= media.bottom : null,
           };
         })

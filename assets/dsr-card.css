@@ -154,13 +154,27 @@
   display: block;
   overflow: hidden;
   white-space: nowrap;
-  text-overflow: ellipsis;
-  unicode-bidi: plaintext;
   text-align: left;
 }
 
 [dir='rtl'] .product-card-wrapper .card__heading.h5 > a {
   text-align: right;
+}
+
+/* The name itself: as wide as it needs, at most the card. A short name sits on
+   the page's reading side (the link's alignment above). A long one fills the
+   card, takes the direction of its own first letters (plaintext) and is cut at
+   its own end: "Long Linen Shirt Dr…" in an Arabic card no longer loses its
+   first letters, and Arabic names are still cut on the left. */
+.product-card-wrapper .card__heading.h5 > a > .dsr-card-title {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  vertical-align: top;
+  unicode-bidi: plaintext;
+  text-align: start;
 }
 
 /* ---------- Rating (snippets/dsr-card-rating.liquid) ---------- */
@@ -791,4 +805,22 @@ dsr-card-slides {
 :lang(ar) .product-card-wrapper .card__badge .badge,
 :lang(ar) .dsr-card-size {
   letter-spacing: 0;
+}
+
+/* "+N" after the size boxes that fit (assets/dsr-card.js, dsrFitSizes): the
+   rest are on the product page, which tapping the card opens. */
+.dsr-card-sizes > li.dsr-card-sizes__more {
+  display: inline-flex;
+  align-items: center;
+  height: var(--dsr-card-control);
+  padding-inline: 2px;
+  font-size: var(--dsr-card-size-text);
+  line-height: 1;
+  color: rgba(var(--color-foreground), 0.7);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.dsr-card-sizes > li[hidden] {
+  display: none;
 }
