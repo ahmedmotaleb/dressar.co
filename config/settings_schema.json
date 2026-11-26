@@ -1597,7 +1597,14 @@
         "id": "card_background",
         "label": "Card background",
         "info": "The whole product card: behind the photo, name, rating, price, colours and sizes.",
-        "default": "#F2EEE9"
+        "default": "#FAF8F5"
+      },
+      {
+        "type": "color",
+        "id": "card_border",
+        "label": "Card border",
+        "info": "A 1px line around each product card. Clear it for no border.",
+        "default": "#E5E0DA"
       },
       {
         "type": "color",

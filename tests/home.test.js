@@ -240,10 +240,12 @@ async function main() {
       const rowSel = '#shopify-section-template--1__dsr_row_new_arrivals';
       await page.locator(rowSel).scrollIntoViewIfNeeded();
       const r0 = await page.evaluate((s) => document.querySelector(`${s} .slider`).scrollLeft, rowSel);
-      await page.click(`${rowSel} .slider-button--next`);
+      // Phones: no arrows under the row since Nov 19 (docs/stages/arabic-mobile.md); a swipe moves it.
+      if (width >= 990) await page.click(`${rowSel} .slider-button--next`);
+      else await page.evaluate((s) => { const g = document.querySelector(`${s} .slider`); g.scrollBy({ left: (document.documentElement.dir === 'rtl' ? -1 : 1) * (g.children[0].getBoundingClientRect().width + 8), behavior: 'instant' }); }, rowSel);
       await page.waitForTimeout(700);
       const r1 = await page.evaluate((s) => document.querySelector(`${s} .slider`).scrollLeft, rowSel);
-      check(`${tag} new arrivals: "next" scrolls the row`, r1 !== r0, `${r0} -> ${r1}`);
+      check(`${tag} new arrivals: ${width >= 990 ? '"next"' : 'a swipe'} scrolls the row`, r1 !== r0, `${r0} -> ${r1}`);
     }
 
     const missing = (page.missing || []).filter((p) => p.startsWith('/assets/'));

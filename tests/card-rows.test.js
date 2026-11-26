@@ -138,10 +138,12 @@ async function main() {
       check(`${tag} names take the same height (one line) and place on every card`, same('title') && cards[0].title[1] >= 14 && cards[0].title[1] <= 20, detail('title'));
       check(`${tag} prices at the same height and place on every card`, same('price'), detail('price'));
       check(`${tag} colour rows at the same height and place on every card`, same('colours'), detail('colours'));
-      check(`${tag} size rows at the same height and place on every card`, same('sizes'), detail('sizes'));
+      // Since the card refresh, sizes wrap: the size rows start at the same place; their heights can differ.
+      check(`${tag} size rows start at the same place on every card`, cards.every((c) => c.sizes && Math.abs(c.sizes[0] - cards[0].sizes[0]) <= 0.5), detail('sizes'));
       const rows = {};
       cards.forEach((c) => (rows[c.top] = rows[c.top] || []).push(c.height));
-      check(`${tag} cards side by side have the same height`, Object.values(rows).every((h) => new Set(h).size === 1), JSON.stringify(rows));
+      // Within a pixel: a 336.5px card can round to 336 or 337.
+      check(`${tag} cards side by side have the same height`, Object.values(rows).every((h) => Math.max(...h) - Math.min(...h) <= 1), JSON.stringify(rows));
       if (width < 750) check(`${tag} two columns`, Object.values(rows)[0].length === 2, JSON.stringify(Object.values(rows).map((r) => r.length)));
       check(`${tag} 3:4 photos`, cards.every((c) => Math.abs(c.ratio - 4 / 3) < 0.01), detail('ratio'));
       check(`${tag} the "+" stays on the photo`, cards.every((c) => c.plusInside !== false), detail('plusInside'));
@@ -155,7 +157,7 @@ async function main() {
       check(`${tag} 7 colours: 4 swatches and "+3" (5 items at most)`, by['qa-row-many'].swatches.length === 4 && by['qa-row-many'].more === '+3', `${by['qa-row-many'].swatches.length} ${by['qa-row-many'].more}`);
       check(`${tag} no made-up swatch anywhere`, cards.every((c) => c.fake === 0), detail('fake'));
       check(`${tag} colour rows on one line, inside the card`, cards.every((c) => c.colourLine && c.colourInside), JSON.stringify(cards.filter((c) => !c.colourLine || !c.colourInside).map((c) => c.handle)));
-      check(`${tag} size rows on one line, inside the card (6 sizes too)`, cards.every((c) => c.sizeLine && c.sizeInside) && by['qa-row-six-sizes'].sizeCount === 6, JSON.stringify(cards.filter((c) => !c.sizeLine || !c.sizeInside).map((c) => c.handle)));
+      check(`${tag} size rows inside the card, every size shown (6 sizes too)`, cards.every((c) => c.sizeInside) && by['qa-row-six-sizes'].sizeCount === 6, JSON.stringify(cards.filter((c) => !c.sizeLine || !c.sizeInside).map((c) => c.handle)));
       check(`${tag} sold out: its sizes shown, all struck through`, by['qa-row-sold-out'].sizeCount === 3 && by['qa-row-sold-out'].sizesStruck, JSON.stringify(by['qa-row-sold-out'].sizes));
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
       check(`${tag} no sideways page scroll`, overflow <= 0, overflow);

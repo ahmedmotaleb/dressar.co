@@ -55,31 +55,33 @@ async function main() {
       const row = await page.evaluate((s) => {
         const sec = document.querySelector(s);
         const first = sec.querySelector('.product-grid > li').getBoundingClientRect();
-        const prev = sec.querySelector('.slider-button--prev').getBoundingClientRect();
-        const next = sec.querySelector('.slider-button--next').getBoundingClientRect();
-        return { firstLeft: first.left, firstRight: first.right, prevX: prev.left, nextX: next.left, vw: window.innerWidth, counter: sec.querySelector('.slider-counter--current').textContent.trim() };
+        return { firstLeft: first.left, firstRight: first.right, vw: window.innerWidth, counter: sec.querySelector('.slider-counter--current').textContent.trim() };
       }, sel);
       check(
         `${L} [390] product row starts at the ${rtl ? 'right' : 'left'} page margin`,
         rtl ? near(row.vw - row.firstRight, 15, 3) : near(row.firstLeft, 15, 3),
         JSON.stringify(row)
       );
-      check(`${L} [390] "next" button sits ${rtl ? 'left' : 'right'} of "previous"`, rtl ? row.nextX < row.prevX : row.nextX > row.prevX, JSON.stringify(row));
-      await page.click(`${sel} .slider-button--next`);
+      // Since the row arrows change (docs/stages/arabic-mobile.md, Nov 19): no arrows on
+      // phones; a swipe moves the row in reading order and the position is announced.
+      const pager = await page.evaluate((s) => { const p = document.querySelector(`${s} .slider-buttons`); return !!p && p.getBoundingClientRect().height > 0; }, sel);
+      check(`${L} [390] no arrows under the row on phones`, !pager);
+      const swipe = (dir) => page.evaluate(([s, d]) => { const g = document.querySelector(`${s} .slider`); const w = g.children[0].getBoundingClientRect().width + 8; g.scrollBy({ left: d * (document.documentElement.dir === 'rtl' ? -1 : 1) * w, behavior: 'instant' }); }, [sel, dir]);
+      await swipe(1);
       await page.waitForTimeout(800);
       const after = await page.evaluate((s) => {
         const sec = document.querySelector(s);
-        return { scrollLeft: sec.querySelector('.slider').scrollLeft, counter: sec.querySelector('.slider-counter--current').textContent.trim(), prevDisabled: sec.querySelector('.slider-button--prev').hasAttribute('disabled') };
+        return { scrollLeft: sec.querySelector('.slider').scrollLeft, counter: sec.querySelector('.slider-counter--current').textContent.trim() };
       }, sel);
       check(
-        `${L} [390] "next" scrolls the row ${rtl ? 'leftwards (negative scrollLeft)' : 'rightwards'}, counter 1 -> 2, "previous" enabled`,
-        (rtl ? after.scrollLeft < 0 : after.scrollLeft > 0) && row.counter === '1' && after.counter === '2' && !after.prevDisabled,
+        `${L} [390] a swipe moves the row ${rtl ? 'leftwards (negative scrollLeft)' : 'rightwards'}, position 1 -> 2`,
+        (rtl ? after.scrollLeft < 0 : after.scrollLeft > 0) && row.counter === '1' && after.counter === '2',
         JSON.stringify(after)
       );
-      await page.click(`${sel} .slider-button--prev`);
+      await swipe(-1);
       await page.waitForTimeout(800);
       const back = await page.evaluate((s) => document.querySelector(`${s} .slider-counter--current`).textContent.trim(), sel);
-      check(`${L} [390] "previous" returns to 1`, back === '1', back);
+      check(`${L} [390] swiping back returns to 1`, back === '1', back);
 
       // Menu drawer opens from the reading-start side.
       await page.evaluate(() => window.scrollTo(0, 0));
