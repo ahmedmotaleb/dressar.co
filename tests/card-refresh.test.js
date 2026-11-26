@@ -1,7 +1,7 @@
 // Product card refresh (docs/stages/card-refresh.md): 12px photo and card
 // corners, #FAF8F5 card on a 1px #E5E0DA border, exact spacing (photo→name
 // 8px, name→price 6px, price→colours 8px, colours→sizes 6px, 12px at the
-// bottom), and every size shown, centred and wrapping, with unavailable sizes
+// bottom), and every size shown on one line, centred, with unavailable sizes
 // clearly marked. Equal card heights per grid row; two cards per row on
 // phones. The theme's real collection page, Arabic and English.
 // usage: node tests/card-refresh.test.js [themeRoot] [--shots <dir>]
@@ -124,6 +124,9 @@ async function main() {
             centred,
             inside,
             disabled,
+            minFont: Math.min(...[...w.querySelectorAll('.dsr-card-size')].map((b) => parseFloat(getComputedStyle(b).fontSize))),
+            // Each label fits its box (nothing clipped).
+            textFits: [...w.querySelectorAll('.dsr-card-size')].every((b) => b.scrollWidth <= b.clientWidth + 0.5),
             btn: btn && { h: Math.round(r(btn).height), radius: getComputedStyle(btn).borderTopLeftRadius },
             badge: !!w.querySelector('.card__badge .badge:not([hidden])'),
             bag: !!w.querySelector('.dsr-quick-add__button'),
@@ -150,11 +153,14 @@ async function main() {
       check(`${tag} equal card heights on each grid row`, Object.values(rows).every((h) => Math.max(...h) - Math.min(...h) <= 1), JSON.stringify(rows));
       if (mobile) check(`${tag} two cards per row`, Object.values(rows).every((h) => h.length === 2), JSON.stringify(Object.values(rows).map((h) => h.length)));
       check(`${tag} every size shown, none behind "+N"`, c.every((x) => x.sizesShown === x.sizes && x.hidden === 0 && !x.more) && by('Six') && by('Six').sizesShown === 6 && by('Seven') && by('Seven').sizesShown === 7, JSON.stringify(c.map((x) => [x.title, x.sizes, x.sizesShown])));
-      check(`${tag} sizes centred on every line, inside the card`, c.every((x) => x.centred && x.inside), JSON.stringify(c.map((x) => [x.title, x.centred, x.inside, x.lines])));
+      check(`${tag} sizes on one line, centred, each box inside the card`, c.every((x) => x.lines <= 1 && x.centred && x.inside), JSON.stringify(c.map((x) => [x.title, x.centred, x.inside, x.lines])));
       check(`${tag} One Size centred`, by('One Size') && by('One Size').sizes === 1 && by('One Size').centred, JSON.stringify(by('One Size')));
       check(`${tag} size buttons: 24px, 6px corners`, c.every((x) => !x.btn || (x.btn.h === 24 && x.btn.radius === '6px')), JSON.stringify(c.map((x) => x.btn)));
       check(`${tag} unavailable sizes: struck through and dashed`, by('Partly') && by('Partly').disabled.length === 2 && by('Partly').disabled.every((d) => d.line.includes('line-through') && d.border === 'dashed'), JSON.stringify(by('Partly') && by('Partly').disabled));
-      if (width <= 360) check(`${tag} 7 sizes wrap onto a second line at this width`, by('Seven') && by('Seven').lines >= 2, String(by('Seven') && by('Seven').lines));
+      // The store's own five sizes, M L XL XXL 3XL, at the full 11px on one line.
+      const five = c.filter((x) => x.sizes === 5);
+      check(`${tag} five sizes (M–3XL): one line at 11px, nothing cut`, five.length > 0 && five.every((x) => x.lines === 1 && x.minFont === 11 && x.textFits && x.inside), JSON.stringify(five.map((x) => [x.title, x.lines, x.minFont, x.textFits])));
+      check(`${tag} 6 and 7 sizes still on one line, text at least 8px and not cut`, ['Six', 'Seven'].every((t) => by(t) && by(t).lines === 1 && by(t).minFont >= 8 && by(t).textFits), JSON.stringify(['Six', 'Seven'].map((t) => by(t) && [by(t).lines, by(t).minFont, by(t).textFits])));
       check(`${tag} badge, swatches and quick-add bag still there`, by('Partly').badge && c.every((x) => x.bag && x.swatches >= 1), JSON.stringify(c.map((x) => [x.badge, x.bag, x.swatches])));
       check(`${tag} no sideways scrolling`, !m.overflow);
 

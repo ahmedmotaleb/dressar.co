@@ -201,7 +201,7 @@ async function main() {
 
         // 4. Sizes: 24px, 4px corners, 11px, one row (scrolls sideways when needed).
         // Since the card refresh: every size shown, wrapping (no sideways scroll), 6px corners.
-        check(`${t}: sizes 24px high, 6px corners, 11px, all shown, wrapping (no sideways scroll)`, cards.every((c) => c.sizes.every((b) => b.h === 24 && b.radius === '6px' && b.font === '11px') && (!c.sizes.length || c.sizesScroll === 'visible')), JSON.stringify(cards.map((c) => [c.sizes[0], new Set(c.sizes.map((b) => b.top)).size]).slice(0, 2)));
+        check(`${t}: sizes 24px high, 6px corners, 11px, all shown on one line (no sideways scroll)`, cards.every((c) => c.sizes.every((b) => b.h === 24 && b.radius === '6px' && b.font === '11px') && new Set(c.sizes.map((b) => b.top)).size <= 1 && (!c.sizes.length || c.sizesScroll === 'visible')), JSON.stringify(cards.map((c) => [c.sizes[0], new Set(c.sizes.map((b) => b.top)).size]).slice(0, 2)));
 
         // Rows of cards: every row and the card's bottom within 1px, cards the same height.
         const bad = rows.map((rw) => Object.fromEntries(ALIGNED.map((k) => [k, Math.round(spread(rw, k) * 10) / 10]))).filter((sp) => Object.values(sp).some((v) => v > 1));

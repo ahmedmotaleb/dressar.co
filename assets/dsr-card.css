@@ -13,8 +13,7 @@
      2. the price, and the rating on the same line (real reviews only; the
         line is the same height without);
      3. the colours (rounded squares);
-     4. the sizes: all of them, centred, wrapping onto another line when
-        needed.
+     4. the sizes: all of them, on one line, centred.
    Spacing: photo to name 8px, name to price 6px, price to colours 8px,
    colours to sizes 6px, 12px under the last row. No labels, no dividers. On the photo: the sale badge ("38%")
    top-right and the quick-add bag bottom-right.
@@ -372,9 +371,7 @@
   z-index: 2;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  /* Colours: one fixed row. Sizes: every size shown, wrapping onto a second
-     line when needed (the card stays as tall as its neighbours: grid rows
-     stretch the cards). 6px between the two. */
+  /* Colours and sizes: one row each (sizes never wrap). 6px between them. */
   grid-template-rows: var(--dsr-card-control) auto;
   row-gap: var(--dsr-card-gap);
   min-width: 0;
@@ -491,17 +488,18 @@
   padding-inline-start: 2px;
 }
 
-/* Sizes: every size, centred (One Size too), compact 24px boxes with 6px
-   corners, wrapping onto another line when they don't fit; never sideways
-   scrolling or cut off. The chosen size has a dark frame on white; a size not
-   in stock (in the chosen colour) is struck through, dashed and lighter, and
-   can't be chosen. */
+/* Sizes: every size, on one line, centred (One Size too), compact 24px boxes
+   with 6px corners; never wrapped, scrolled, cut off or hidden. Narrow cards
+   (phones about 320–360px) use tighter boxes and a slightly smaller size
+   (below), so the store's longest row, six sizes S–3XL, still fits. The chosen
+   size has a dark frame on white; a size not in stock (in the chosen colour)
+   is struck through, dashed and lighter, and can't be chosen. */
 .dsr-card-sizes {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: center;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   min-width: 0;
   max-width: 100%;
   margin: 0;
@@ -509,7 +507,8 @@
 }
 
 .dsr-card-sizes > li {
-  flex: 0 0 auto;
+  flex: 0 1 auto;
+  min-width: 0;
 }
 
 .dsr-card-size {
@@ -519,10 +518,11 @@
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  min-width: 28px;
+  min-width: 26px;
   height: var(--dsr-card-control);
   margin: 0;
-  padding: 0 5px;
+  padding: 0 4px;
+  white-space: nowrap;
   border: 1px solid rgba(17, 17, 17, 0.2);
   border-radius: 6px;
   background: transparent;
@@ -564,6 +564,45 @@
   outline-offset: -2px;
 }
 
+/* Narrow cards: tighter boxes, then a smaller size when there are 6 or more
+   (the card's info area is a size container, dsr-card-info). */
+@container dsr-card-info (max-width: 150px) {
+  .dsr-card-sizes {
+    gap: 2px;
+  }
+
+  .dsr-card-size {
+    min-width: 20px;
+    padding: 0 2px;
+  }
+}
+
+/* The store's sizes are five (M, L, XL, XXL, 3XL): they keep the full 11px
+   on one line even at 320px. Only a row of six or more gets smaller. */
+@container dsr-card-info (max-width: 132px) {
+  .dsr-card-sizes--6 .dsr-card-size {
+    min-width: 17px;
+    font-size: 9px;
+  }
+
+  .dsr-card-sizes--7 {
+    gap: 1px;
+  }
+
+  .dsr-card-sizes--7 .dsr-card-size {
+    min-width: 15px;
+    padding: 0 1px;
+    font-size: 8px;
+  }
+}
+
+@container dsr-card-info (max-width: 150px) and (min-width: 133px) {
+  .dsr-card-sizes--7 .dsr-card-size {
+    min-width: 17px;
+    font-size: 9px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .dsr-card-size {
     transition: none;
@@ -583,8 +622,8 @@
   --grid-desktop-vertical-spacing: 16px;
 }
 
-/* Equal card heights on each row, even when one card's sizes wrap onto a
-   second line: the grid cell is a column and the card fills it. */
+/* Equal card heights on each row: the grid cell is a column and the card
+   fills it. */
 .product-grid > .grid__item {
   display: flex;
   flex-direction: column;

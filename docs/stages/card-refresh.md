@@ -18,9 +18,9 @@
 | 2 | Card background #FAF8F5 | Through Theme settings > Dressar > **Card background**, whose default is now #FAF8F5. The page background is unchanged. |
 | 3 | 1px #E5E0DA border, 12px card corners, no heavy shadow | New setting **Card border** (#E5E0DA; clear it for no border). Dawn's "Card" style shadow is switched off. |
 | 4 | Spacing | Photo → name 8px, name → price 6px, price → colours 8px, colours → sizes 6px, 12px bottom padding. Dawn's extra 0.7rem margins are removed. |
-| 5 | Sizes | Every size is shown; no "+N". They are centred, including One Size, with 24px buttons and 6px corners. They wrap onto a second line instead of scrolling or being cut. Unavailable sizes are struck through with a dashed frame. |
+| 5 | Sizes | Every size is shown; no "+N". **On one line** (merchant follow-up), centred, including One Size, with 24px buttons and 6px corners. The store's five sizes (M, L, XL, XXL, 3XL) stay 11px even at 320px; narrow cards use tighter boxes. A rare row of 6 or more gets 9px (8px for 7) to stay on one line. Unavailable sizes are struck through with a dashed frame. |
 
-**Equal heights:** cards stay the same height across each grid row, even when one card's sizes wrap. The grid cell and Shopify's `<product-component>` now fill the cell.
+**Equal heights:** cards stay the same height across each grid row. The grid cell and Shopify's `<product-component>` now fill the cell.
 
 **Card style:** the live store uses Theme settings > Product cards > Style **"Card"**, not "Standard". The design is now identical with either style. Before this change, the "Card" style showed white, square cards on live.
 
@@ -67,3 +67,13 @@ Screenshots: `card-refresh-shots/` (before on the left, after on the right).
 
 ## Note
 The "+N" strings (`dressar.card.more_sizes`) stay in the language files, unused. They are harmless, and they are kept in case the merchant wants a one-line size row again.
+
+## Follow-up: sizes on one line
+The merchant asked for the sizes on one line, and noted that the sizes are just five: M, L, XL, XXL, 3XL.
+- **Five sizes:** one line at the full 11px, at 320–430px.
+- **Narrow cards:** a 2px gap and 2px padding.
+- **Six or more:** a rarer row only shrinks below 11px when the card is narrow.
+
+**Store data, not changed:**
+- One product lists its sizes as L, XL, XXL, M, 3XL, so the card shows that order.
+- One product has S as a sixth size.

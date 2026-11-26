@@ -59,7 +59,7 @@
       endif
     -%}
     <ul
-      class="dsr-card-sizes list-unstyled"
+      class="dsr-card-sizes list-unstyled{% if size_option.values.size >= 7 %} dsr-card-sizes--7{% elsif size_option.values.size == 6 %} dsr-card-sizes--6{% endif %}"
       role="list"
       aria-label="{{ 'dressar.card.sizes_label' | t }}"
     >
