@@ -209,13 +209,15 @@ function resolveResource(def, v, globals) {
 
 // ---------- harness ----------
 
+// settingsOverrides: optional { settingId: value } merged over settings_data.
 // templatePatch(name, template): optional, returns a JSON template changed for
 // a test (for example a block setting switched on that the store has off).
-function createHarness({ root, fixtures, locale = 'en.default', origin = 'http://dressar.test', templatePatch = null }) {
+function createHarness({ root, fixtures, locale = 'en.default', origin = 'http://dressar.test', templatePatch = null, settingsOverrides = null }) {
   const store = readJson(fixtures);
   const localeData = readJson(path.join(root, 'locales', `${locale}.json`));
   const settingsSchema = JSON.parse(fs.readFileSync(path.join(root, 'config/settings_schema.json'), 'utf8'));
-  const settingsData = readJson(path.join(root, 'config/settings_data.json')).current;
+  // settingsOverrides: optional theme settings to use instead of settings_data's (e.g. the live store's card style).
+  const settingsData = { ...readJson(path.join(root, 'config/settings_data.json')).current, ...(settingsOverrides || {}) };
   const menus = (currentPath) =>
     Object.fromEntries(
       Object.entries(store.menus).map(([handle, links]) => [

@@ -12,7 +12,7 @@ const { storefront } = require('./lib/pages');
 const root = path.resolve(process.argv[2] && !process.argv[2].startsWith('--') ? process.argv[2] : path.join(__dirname, '..'));
 const fontsDir = process.env.FONTS_DIR || path.join(path.dirname(require.resolve('@fontsource/poppins/package.json')), 'files');
 const WIDTHS = [360, 390, 430, 768, 990, 1280, 1440];
-const CARD_BG = 'rgb(242, 238, 233)'; // #F2EEE9
+const CARD_BG = 'rgb(250, 248, 245)'; // #FAF8F5 since the card refresh (docs/stages/card-refresh.md)
 
 const results = [];
 const check = (name, ok, detail = '') => results.push({ name, ok: Boolean(ok), detail });
@@ -127,8 +127,8 @@ async function main() {
       const c = r.cards;
       // The card since the compact V2 (docs/stages/card-v2.md); its full checks (one-line
       // names, row alignment, colours, sizes, quick add) are in tests/card-upgrade.test.js.
-      check(`${tag}: the whole card #F2EEE9 (photo, name, price, rating, colours, sizes), no white panel`, c.every((x) => x.bg === CARD_BG && x.contentBg === 'rgba(0, 0, 0, 0)'), JSON.stringify(c.map((x) => [x.bg, x.contentBg])));
-      check(`${tag}: 10px corners, no lines above or between the colour and size rows, no row labels`, c.every((x) => x.radius === '10px' && x.innerShadow === 'none' && (!x.rules || x.rules.join() === '0px,0px') && !x.colourLabel && !x.sizeLabel), JSON.stringify(c.map((x) => [x.radius, x.rules, Boolean(x.colourLabel)]).slice(0, 2)));
+      check(`${tag}: the whole card #FAF8F5 (photo, name, price, rating, colours, sizes), no white panel`, c.every((x) => x.bg === CARD_BG && x.contentBg === 'rgba(0, 0, 0, 0)'), JSON.stringify(c.map((x) => [x.bg, x.contentBg])));
+      check(`${tag}: 12px corners, no lines above or between the colour and size rows, no row labels`, c.every((x) => x.radius === '12px' && x.innerShadow === 'none' && (!x.rules || x.rules.join() === '0px,0px') && !x.colourLabel && !x.sizeLabel), JSON.stringify(c.map((x) => [x.radius, x.rules, Boolean(x.colourLabel)]).slice(0, 2)));
       check(`${tag}: name ${desktop ? 13 : 12}px 500 on one line, price 14px 600, sizes 11px`, c.every((x) => x.titleSize === (desktop ? 13 : 12) && x.titleLines === 1 && x.titleStyle[0] === '500' && x.priceSize === 14 && x.priceWeight === '600' && x.sizeButtons.every((sz) => sz === 11)), JSON.stringify(c.map((x) => [x.titleSize, x.titleLines, x.priceSize, x.sizeButtons[0]]).slice(0, 3)));
       check(`${tag}: colours: 16px rounded squares`, c.every((x) => x.swatch === null || x.swatch.join() === '16,16,4px'), JSON.stringify(c.map((x) => x.swatch).slice(0, 3)));
       const reviewed = c.filter((x) => x.handle.startsWith('linen-maxi-skirt-with-front-pockets'));

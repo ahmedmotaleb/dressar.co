@@ -4,23 +4,29 @@
 
    A styling layer on Dawn's snippets/card-product.liquid, used by every grid
    that renders Dawn cards: collection, search, recommendations, featured
-   collection. One light card (Theme settings > Dressar > "Card background",
-   #F2EEE9) with 10px corners holds the photo and, under it, four rows of
-   fixed height on a grid, so every card in a row lines up from the photo's
-   bottom to the card's bottom:
+   collection. One soft off-white card (Theme settings > Dressar > "Card
+   background", #FAF8F5) with a 1px border ("Card border", #E5E0DA) and 12px
+   corners holds the photo (12px corners too) and, under it, rows on a grid,
+   so every card in a row lines up from the photo's bottom down (card
+   refresh, docs/stages/card-refresh.md):
      1. the name, on one line (ellipsis);
      2. the price, and the rating on the same line (real reviews only; the
         line is the same height without);
      3. the colours (rounded squares);
-     4. the sizes (24px boxes, one row, scrolling sideways when needed).
-   8px padding, no labels, no dividers. On the photo: the sale badge ("38%")
+     4. the sizes: all of them, centred, wrapping onto another line when
+        needed.
+   Spacing: photo to name 8px, name to price 6px, price to colours 8px,
+   colours to sizes 6px, 12px under the last row. No labels, no dividers. On the photo: the sale badge ("38%")
    top-right and the quick-add bag bottom-right.
    Sizes in px on purpose: this theme sets html { font-size: 11px }.
    ========================================================================== */
 
 .product-card-wrapper {
   --dsr-card-pad: 8px;
+  --dsr-card-pad-bottom: 12px;
   --dsr-card-gap: 6px;
+  --dsr-card-gap-options: 8px;
+  --dsr-card-radius: 12px;
   --dsr-card-title: 12px;
   --dsr-card-title-h: 16px;
   --dsr-card-rating: 10px;
@@ -44,11 +50,23 @@
 
 /* ---------- The card ---------- */
 
-.product-card-wrapper .card.card--standard:not(.card--horizontal) {
+.product-card-wrapper .card:is(.card--standard, .card--card):not(.card--horizontal) {
+  /* The quick-add bag is placed from the card's inner edge, so the 1px
+     border doesn't move it (10px from the photo's corner, as before). */
+  position: relative;
   height: 100%;
   overflow: hidden;
-  border-radius: 10px;
-  background-color: var(--dsr-card-bg, #f2eee9);
+  border: 1px solid var(--dsr-card-border, #e5e0da);
+  border-radius: var(--dsr-card-radius);
+  background: var(--dsr-card-bg, #faf8f5);
+  box-shadow: none;
+}
+
+/* Theme settings > Product cards > Style can be "Standard" or "Card": the
+   Dressar card looks the same with either. Dawn's "Card" style draws its own
+   frame and shadow on ::after; the 1px border above replaces it. */
+.product-card-wrapper .card.card--card:not(.card--horizontal)::after {
+  display: none;
 }
 
 /* Arabic letters in Cairo, as on the product page (layout/theme.liquid,
@@ -59,27 +77,32 @@
   font-family: var(--font-body-family);
 }
 
-.product-card-wrapper .card--standard:not(.card--horizontal) .card__inner {
+/* The photo: 12px corners, the same 3:4 frame on every card (the image fills
+   the frame with object-fit: cover, as before; nothing is stretched). */
+.product-card-wrapper :is(.card--standard, .card--card):not(.card--horizontal) .card__inner {
   border: 0;
-  border-radius: 0;
-  background-color: var(--dsr-card-media-bg, var(--dsr-card-bg, #f2eee9));
+  border-radius: var(--dsr-card-radius);
+  overflow: hidden;
+  background-color: var(--dsr-card-media-bg, var(--dsr-card-bg, #faf8f5));
 }
 
-.product-card-wrapper .card--standard:not(.card--horizontal) .card__inner::after {
+.product-card-wrapper :is(.card--standard, .card--card):not(.card--horizontal) .card__inner::after {
   display: none;
 }
 
-.product-card-wrapper .card--standard:not(.card--horizontal) .card__media {
-  border-radius: 0;
+.product-card-wrapper :is(.card--standard, .card--card):not(.card--horizontal) .card__media,
+.product-card-wrapper :is(.card--standard, .card--card):not(.card--horizontal) .card__media .media {
+  border-radius: var(--dsr-card-radius);
 }
 
 /* Under the photo: one grid of fixed rows. minmax(0, 1fr) and min-width: 0
    keep a long row (many sizes, a long name) from widening the card. */
-.product-card-wrapper .card--standard:not(.card--horizontal) > .card__content {
+.product-card-wrapper :is(.card--standard, .card--card):not(.card--horizontal) > .card__content {
   grid-template-columns: minmax(0, 1fr);
   grid-template-rows: max-content;
   align-content: start;
-  padding: var(--dsr-card-pad);
+  /* 8px from the photo to the name; 12px under the last row. */
+  padding: var(--dsr-card-pad) var(--dsr-card-pad) var(--dsr-card-pad-bottom);
 }
 
 .product-card-wrapper .card__content > .card__information {
@@ -103,11 +126,15 @@
     'options options';
   align-items: center;
   column-gap: 6px;
-  row-gap: var(--dsr-card-gap);
+  /* 8px from the price to the colours. */
+  row-gap: var(--dsr-card-gap-options);
   min-width: 0;
 }
 
-.product-card-wrapper .card-information > * + * {
+/* The grid gaps are the spacing: no Dawn 0.7rem margins on top (Dawn's own
+   selector, with the card wrapper in front so this wins). */
+.product-card-wrapper .card-information > * + *,
+.product-card-wrapper .card-information > *:not(.visually-hidden:first-child) + *:not(.rating):not(.card__information-volume-pricing-note) {
   margin-top: 0;
 }
 
@@ -345,7 +372,10 @@
   z-index: 2;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: var(--dsr-card-control) var(--dsr-card-control);
+  /* Colours: one fixed row. Sizes: every size shown, wrapping onto a second
+     line when needed (the card stays as tall as its neighbours: grid rows
+     stretch the cards). 6px between the two. */
+  grid-template-rows: var(--dsr-card-control) auto;
   row-gap: var(--dsr-card-gap);
   min-width: 0;
   text-align: start;
@@ -359,6 +389,13 @@
   align-items: center;
   min-width: 0;
   height: var(--dsr-card-control);
+}
+
+.dsr-card-sizes-row,
+.dsr-card-sizes-row:empty {
+  justify-content: center;
+  height: auto;
+  min-height: var(--dsr-card-control);
 }
 
 .dsr-card-colors-row > *,
@@ -454,26 +491,21 @@
   padding-inline-start: 2px;
 }
 
-/* Sizes: compact 24px boxes, 4px corners, one row; more than fit scroll
-   sideways inside the row. The chosen size has a dark frame on white; a size
-   not in stock (in the chosen colour) is struck through, lighter, and can't
-   be chosen. */
+/* Sizes: every size, centred (One Size too), compact 24px boxes with 6px
+   corners, wrapping onto another line when they don't fit; never sideways
+   scrolling or cut off. The chosen size has a dark frame on white; a size not
+   in stock (in the chosen colour) is struck through, dashed and lighter, and
+   can't be chosen. */
 .dsr-card-sizes {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
+  justify-content: center;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
   min-width: 0;
   max-width: 100%;
   margin: 0;
   padding: 0;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scrollbar-width: none;
-}
-
-.dsr-card-sizes::-webkit-scrollbar {
-  display: none;
 }
 
 .dsr-card-sizes > li {
@@ -487,12 +519,12 @@
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  min-width: 24px;
+  min-width: 28px;
   height: var(--dsr-card-control);
   margin: 0;
-  padding: 0 4px;
+  padding: 0 5px;
   border: 1px solid rgba(17, 17, 17, 0.2);
-  border-radius: 4px;
+  border-radius: 6px;
   background: transparent;
   color: rgba(var(--color-foreground), 0.9);
   font-family: var(--font-body-family);
@@ -515,10 +547,12 @@
   box-shadow: inset 0 0 0 1px #111111;
 }
 
-/* Struck through and lighter, still at least 4.5:1 on the card (WCAG 1.4.3). */
+/* Unavailable: struck through, dashed frame, lighter text (still at least
+   4.5:1 on the card, WCAG 1.4.3). */
 .dsr-card-size[aria-disabled='true'],
 .dsr-card-size[aria-disabled='true']:hover {
-  border-color: rgba(var(--color-foreground), 0.12);
+  border-color: rgba(var(--color-foreground), 0.22);
+  border-style: dashed;
   background: transparent;
   color: rgba(var(--color-foreground), 0.62);
   text-decoration: line-through;
@@ -547,6 +581,26 @@
   --grid-mobile-vertical-spacing: 8px;
   --grid-desktop-horizontal-spacing: 16px;
   --grid-desktop-vertical-spacing: 16px;
+}
+
+/* Equal card heights on each row, even when one card's sizes wrap onto a
+   second line: the grid cell is a column and the card fills it. */
+.product-grid > .grid__item {
+  display: flex;
+  flex-direction: column;
+}
+
+/* The card sits in Shopify's <product-component> (snippets/card-product.liquid). */
+.product-grid > .grid__item > product-component {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.product-grid > .grid__item > .product-card-wrapper,
+.product-grid > .grid__item > product-component > .product-card-wrapper {
+  flex: 1 1 auto;
 }
 
 /* ---------- Quick add (snippets/dsr-card-quick-add.liquid) ---------- */
@@ -807,20 +861,3 @@ dsr-card-slides {
   letter-spacing: 0;
 }
 
-/* "+N" after the size boxes that fit (assets/dsr-card.js, dsrFitSizes): the
-   rest are on the product page, which tapping the card opens. */
-.dsr-card-sizes > li.dsr-card-sizes__more {
-  display: inline-flex;
-  align-items: center;
-  height: var(--dsr-card-control);
-  padding-inline: 2px;
-  font-size: var(--dsr-card-size-text);
-  line-height: 1;
-  color: rgba(var(--color-foreground), 0.7);
-  white-space: nowrap;
-  pointer-events: none;
-}
-
-.dsr-card-sizes > li[hidden] {
-  display: none;
-}

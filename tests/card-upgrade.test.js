@@ -178,7 +178,8 @@ async function main() {
         check(`${t}: cards shown`, cards.length >= 2, String(cards.length));
 
         // The card: #F2EEE9, 10px corners, 8px padding, no labels, no dividers.
-        check(`${t}: card #F2EEE9, 10px corners, 8px padding, no row labels, no divider lines`, cards.every((c) => c.background === 'rgb(242, 238, 233)' && c.radius === '10px' && c.padding === '8px' && c.labels === 0 && c.dividers.every((w) => w === '0px')), JSON.stringify(cards[0] && [c0(cards).background, c0(cards).radius, c0(cards).padding, c0(cards).labels, c0(cards).dividers]));
+        // Since the card refresh (docs/stages/card-refresh.md): #FAF8F5, 12px corners.
+        check(`${t}: card #FAF8F5, 12px corners, 8px padding, no row labels, no divider lines`, cards.every((c) => c.background === 'rgb(250, 248, 245)' && c.radius === '12px' && c.padding === '8px' && c.labels === 0 && c.dividers.every((w) => w === '0px')), JSON.stringify(cards[0] && [c0(cards).background, c0(cards).radius, c0(cards).padding, c0(cards).labels, c0(cards).dividers]));
 
         // 1. The name: one line, the same height, cut with "…".
         check(`${t}: name ${desktop ? 13 : 12}px 500 on exactly one line (nowrap, hidden, ellipsis), same height on every card`, cards.every((c) => c.titleOneLine && c.titleFont[0] === `${desktop ? 13 : 12}px` && c.titleFont[1] === '500' && Math.abs(c.titleHeight - c.titleLineHeight) <= 0.5) && spread(cards, 'titleHeight') <= 0.5, JSON.stringify(cards.filter((c) => !c.titleOneLine || Math.abs(c.titleHeight - c.titleLineHeight) > 0.5).map((c) => [c.title.slice(0, 20), c.titleHeight, c.titleLineHeight])));
@@ -199,7 +200,8 @@ async function main() {
         check(`${t}: colours: 16px rounded squares (4px), 8px apart, not clipped`, dotted.length && dotted.every((c) => c.dots.every((d) => d === 16) && c.dotRadius.every((x) => x === '4px') && c.dotGaps.every((g) => g === 8) && c.dotsInside), JSON.stringify(dotted.map((c) => [c.dots, c.dotRadius[0], c.dotGaps, c.dotsInside]).slice(0, 3)));
 
         // 4. Sizes: 24px, 4px corners, 11px, one row (scrolls sideways when needed).
-        check(`${t}: sizes 24px high, 4px corners, 11px, on one row (sideways scroll)`, cards.every((c) => c.sizes.every((b) => b.h === 24 && b.radius === '4px' && b.font === '11px') && new Set(c.sizes.map((b) => b.top)).size <= 1 && (!c.sizes.length || c.sizesScroll === 'auto')), JSON.stringify(cards.map((c) => [c.sizes[0], new Set(c.sizes.map((b) => b.top)).size]).slice(0, 2)));
+        // Since the card refresh: every size shown, wrapping (no sideways scroll), 6px corners.
+        check(`${t}: sizes 24px high, 6px corners, 11px, all shown, wrapping (no sideways scroll)`, cards.every((c) => c.sizes.every((b) => b.h === 24 && b.radius === '6px' && b.font === '11px') && (!c.sizes.length || c.sizesScroll === 'visible')), JSON.stringify(cards.map((c) => [c.sizes[0], new Set(c.sizes.map((b) => b.top)).size]).slice(0, 2)));
 
         // Rows of cards: every row and the card's bottom within 1px, cards the same height.
         const bad = rows.map((rw) => Object.fromEntries(ALIGNED.map((k) => [k, Math.round(spread(rw, k) * 10) / 10]))).filter((sp) => Object.values(sp).some((v) => v > 1));
@@ -213,7 +215,7 @@ async function main() {
 
         // Sale badge (unchanged since the card upgrade).
         const badged = cards.filter((c) => c.badge && /%$/.test(c.badge.text));
-        check(`${t}: sale badge just the percentage, top-right, clear of the bag`, badged.length > 0 && badged.every((c) => /^\d+%$/.test(c.badge.text) && Math.abs(c.badge.rect.top - (c.imageBottom - (c.imageBottom - c.top)) - edge) <= 1) && cards.every((c) => !overlaps(c.badge && c.badge.rect, c.bag && c.bag.rect)), JSON.stringify(badged.map((c) => c.badge.text)));
+        check(`${t}: sale badge just the percentage, top-right, clear of the bag`, badged.length > 0 && badged.every((c) => /^\d+%$/.test(c.badge.text) && Math.abs(c.badge.rect.top - c.top - 1 - edge) <= 1) /* from the photo's top: 1px card border since the card refresh */ && cards.every((c) => !overlaps(c.badge && c.badge.rect, c.bag && c.bag.rect)), JSON.stringify(badged.map((c) => c.badge.text)));
 
         check(`${t}: no sideways scrolling`, overflow <= 0, String(overflow));
         check(`${t}: no JS errors`, page.errors.length === 0, page.errors.join(' | '));

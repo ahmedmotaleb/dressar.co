@@ -47,14 +47,14 @@
   {%- if dsr_quick_add == 'standard' -%}
     {{ 'quick-add.css' | asset_url | stylesheet_tag }}
   {%- endif -%}
-  {%- if settings.card_media_background != blank or settings.card_background != blank -%}
-    {%- style -%}
-      .product-card-wrapper {
-        {%- if settings.card_background != blank %} --dsr-card-bg: {{ settings.card_background }};{% endif -%}
-        {%- if settings.card_media_background != blank %} --dsr-card-media-bg: {{ settings.card_media_background }};{% endif %}
-      }
-    {%- endstyle -%}
-  {%- endif -%}
+  {%- comment -%} Card colours from Theme settings. An empty "Card border" means no border (a transparent 1px line keeps sizes equal). {%- endcomment -%}
+  {%- style -%}
+    .product-card-wrapper {
+      {%- if settings.card_background != blank %} --dsr-card-bg: {{ settings.card_background }};{% endif -%}
+      {%- if settings.card_border != blank %} --dsr-card-border: {{ settings.card_border }};{% else %} --dsr-card-border: transparent;{% endif -%}
+      {%- if settings.card_media_background != blank %} --dsr-card-media-bg: {{ settings.card_media_background }};{% endif %}
+    }
+  {%- endstyle -%}
 {%- endunless -%}
 {%- if card_product and card_product != empty -%}
   {%- liquid
