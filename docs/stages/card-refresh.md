@@ -77,3 +77,8 @@ The merchant asked for the sizes on one line, and noted that the sizes are just 
 **Store data, not changed:**
 - One product lists its sizes as L, XL, XXL, M, 3XL, so the card shows that order.
 - One product has S as a sixth size.
+
+## Follow-up: colours and sizes aligned the same way
+The merchant asked for colours and sizes to be both centred or both at the side. Both are now **centred** under the name and price.
+- The colour list's start offset (which lined the first square up with the name) is removed.
+- Checked: the centre of the colours and of the sizes is the card's centre, within 2px.

@@ -388,9 +388,17 @@
   height: var(--dsr-card-control);
 }
 
+/* Colours and sizes both centred under the name and price (merchant
+   follow-up: the two rows line up the same way). */
+.dsr-card-colors-row,
+.dsr-card-colors-row:empty,
 .dsr-card-sizes-row,
 .dsr-card-sizes-row:empty {
   justify-content: center;
+}
+
+.dsr-card-sizes-row,
+.dsr-card-sizes-row:empty {
   height: auto;
   min-height: var(--dsr-card-control);
 }
@@ -410,10 +418,10 @@
 .dsr-card-swatches__list {
   display: flex;
   flex-wrap: nowrap;
+  justify-content: center;
   align-items: center;
   gap: 0;
   margin: 0;
-  margin-inline-start: calc(var(--dsr-card-dot-gap) / -2);
 }
 
 .dsr-card-swatch {

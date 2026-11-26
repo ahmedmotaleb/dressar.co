@@ -124,6 +124,9 @@ async function main() {
             centred,
             inside,
             disabled,
+            // Centre of the colour squares and of the size boxes, relative to the card.
+            colorsMid: (() => { const sw = [...w.querySelectorAll('.dsr-card-swatch')].filter((e) => r(e).width > 0).map(r); if (!sw.length) return null; const c = r(card); return Math.round((Math.min(...sw.map((b) => b.left)) + Math.max(...sw.map((b) => b.right))) / 2 - (c.left + c.right) / 2); })(),
+            sizesMid: (() => { const bx = shown.map(r); if (!bx.length) return null; const c = r(card); return Math.round((Math.min(...bx.map((b) => b.left)) + Math.max(...bx.map((b) => b.right))) / 2 - (c.left + c.right) / 2); })(),
             minFont: Math.min(...[...w.querySelectorAll('.dsr-card-size')].map((b) => parseFloat(getComputedStyle(b).fontSize))),
             // Each label fits its box (nothing clipped).
             textFits: [...w.querySelectorAll('.dsr-card-size')].every((b) => b.scrollWidth <= b.clientWidth + 0.5),
@@ -154,6 +157,7 @@ async function main() {
       if (mobile) check(`${tag} two cards per row`, Object.values(rows).every((h) => h.length === 2), JSON.stringify(Object.values(rows).map((h) => h.length)));
       check(`${tag} every size shown, none behind "+N"`, c.every((x) => x.sizesShown === x.sizes && x.hidden === 0 && !x.more) && by('Six') && by('Six').sizesShown === 6 && by('Seven') && by('Seven').sizesShown === 7, JSON.stringify(c.map((x) => [x.title, x.sizes, x.sizesShown])));
       check(`${tag} sizes on one line, centred, each box inside the card`, c.every((x) => x.lines <= 1 && x.centred && x.inside), JSON.stringify(c.map((x) => [x.title, x.centred, x.inside, x.lines])));
+      check(`${tag} colours and sizes both centred in the card`, c.every((x) => (x.colorsMid === null || Math.abs(x.colorsMid) <= 2) && (x.sizesMid === null || Math.abs(x.sizesMid) <= 2)), JSON.stringify(c.map((x) => [x.title, x.colorsMid, x.sizesMid])));
       check(`${tag} One Size centred`, by('One Size') && by('One Size').sizes === 1 && by('One Size').centred, JSON.stringify(by('One Size')));
       check(`${tag} size buttons: 24px, 6px corners`, c.every((x) => !x.btn || (x.btn.h === 24 && x.btn.radius === '6px')), JSON.stringify(c.map((x) => x.btn)));
       check(`${tag} unavailable sizes: struck through and dashed`, by('Partly') && by('Partly').disabled.length === 2 && by('Partly').disabled.every((d) => d.line.includes('line-through') && d.border === 'dashed'), JSON.stringify(by('Partly') && by('Partly').disabled));
